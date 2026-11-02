@@ -10,6 +10,8 @@ if [[ "$mode" == release ]]; then
     python3 "$SCRIPT_DIR/lib/check_deinstall.py" \
         "$SCRIPT_DIR/schema/install.list" "$scriptSourceDir" "$deinstallSqlScript" \
         || die 'Release deinstall SQL is inconsistent with schema sources'
+    python3 "$SCRIPT_DIR/lib/metadata_source.py" check --repo "$repoHome" \
+        || die 'Release metadata is inconsistent with VERSION.txt or missing'
 fi
 python3 "$SCRIPT_DIR/lib/check_source_consistency.py" \
     --repo "$repoHome" --dev-ids "${devAppIds[@]}" --mode "$mode"

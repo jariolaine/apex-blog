@@ -63,17 +63,18 @@ class RepositorySchemaTests(unittest.TestCase):
             self.assertNotIn('alter table blog_comments add constraint blog_comments_fk1', sql)
             self.assertNotIn('create index blog_comments_ix1 on blog_comments', sql)
 
-    def test_legacy_database_exporters_are_removed(self):
-        pkg = (ROOT / 'automation/database/BUILD_API.sql').read_text()
+    def test_build_api_retired_and_git_sources_are_authoritative(self):
         helper = (ROOT / 'automation/supporting_objects.sh').read_text()
-        for member in ('export_object_list', 'export_upgrade_list',
-                       'export_foreign_keys', 'export_indexes', 'write_object_list'):
-            self.assertNotIn(member, pkg)
-            self.assertNotIn('build_api.' + member, helper)
-        self.assertIn('procedure export_metadata', pkg)
-        self.assertIn('build_api.export_metadata', helper)
-        self.assertNotIn('export_deinstall', pkg)
-        self.assertNotIn('build_api.export_deinstall', helper)
+        self.assertFalse((ROOT / 'automation/database').exists())
+        self.assertFalse((ROOT / 'automation/setup_build_api.sh').exists())
+        self.assertNotIn('run_sqlcl', helper)
+        self.assertNotIn('check_environment', helper)
+        self.assertIn('lib/metadata_source.py', helper)
+        self.assertIn('schema/install.list', helper)
+        self.assertIn('schema/upgrade.list', helper)
+        self.assertIn('lib/check_deinstall.py', helper)
+        self.assertIn('lib/metadata_source.py', (ROOT / 'Makefile').read_text())
+        self.assertNotIn('setup-build-api', (ROOT / 'Makefile').read_text())
 
 
 class DeinstallSourceTests(unittest.TestCase):

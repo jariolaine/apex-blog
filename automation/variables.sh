@@ -45,17 +45,14 @@ stackZipName="apex-blog-stack-latest.zip"
 upgDownloadUrl="${APEX_BLOG_UPGRADE_DOWNLOAD_URL:-https://github.com/jariolaine/apex-blog/releases/latest/download/apex-blog-latest.zip}"
 deinstallSqlScript="$apexSourceDir/blog-admin/supporting-objects/deinstall-script.sql"
 
-# Supporting Objects destinations. Schema SQL is assembled from Git manifests,
-# metadata comes from DEV; deinstall SQL is maintained in Git.
-objExportDir="$tempDir/blog_objects"
-objLogFile="$objExportDir/blog_supporting_objects.log"
-
-dbObjectsFile=("$objExportDir/database_objects.sql" "$apexSourceDir/blog-admin/supporting-objects/install-scripts/database-objects.sql")
-adminAppMetadataFile=("$objExportDir/admin_app_metadata.sql" "$apexSourceDir/blog-admin/supporting-objects/install-scripts/metadata.sql")
-publicAppMetadataFile=("$objExportDir/public_app_metadata.sql" "$apexSourceDir/blog/supporting-objects/install-scripts/metadata.sql")
-appPostupgradeFile=("$objExportDir/postupgrade.sql" "$apexSourceDir/blog/supporting-objects/upgrade-scripts/postupgrade.sql")
-upgradeFile=("$objExportDir/database_objects_upgrade.sql" "$apexSourceDir/blog/supporting-objects/upgrade-scripts/database-objects-upgrade.sql")
-pubVwBlogVersion=("$scriptSourceDir/Views/BLOG_V_VERSION.sql" "$apexSourceDir/blog/supporting-objects/install-scripts/create-view-blog-v-version.sql")
+# Git-owned Supporting Objects: no database exports or temporary path aliases.
+dbObjectsFile="$apexSourceDir/blog-admin/supporting-objects/install-scripts/database-objects.sql"
+adminAppMetadataFile="$apexSourceDir/blog-admin/supporting-objects/install-scripts/metadata.sql"
+publicAppMetadataFile="$apexSourceDir/blog/supporting-objects/install-scripts/metadata.sql"
+appPostupgradeFile="$apexSourceDir/blog/supporting-objects/upgrade-scripts/postupgrade.sql"
+upgradeFile="$apexSourceDir/blog/supporting-objects/upgrade-scripts/database-objects-upgrade.sql"
+pubVwBlogVersionSource="$scriptSourceDir/Views/BLOG_V_VERSION.sql"
+pubVwBlogVersionTarget="$apexSourceDir/blog/supporting-objects/install-scripts/create-view-blog-v-version.sql"
 
 # Optional machine-specific overrides; keep this file out of version control.
 if [[ -f "$repoHome/automation/variables.local.sh" ]]; then

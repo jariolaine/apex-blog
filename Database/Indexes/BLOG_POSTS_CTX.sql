@@ -37,4 +37,5 @@ indextype is ctxsys.context parameters(
    stoplist       ctxsys.empty_stoplist
    filter         ctxsys.null_filter
    sync           (on commit)'
-);
+)
+/

@@ -11,7 +11,7 @@ import zipfile
 
 
 SOURCE_DIRS = (
-    "applications", "Database", "less", "automation/database",
+    "applications", "Database", "less",
     "automation/lib", "automation/schema", "automation/sql", "automation/templates", "Stack/terraform",
 )
 RELEASE_FILES = ("VERSION.txt", "README.md", "LICENSE.txt")

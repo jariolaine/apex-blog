@@ -246,8 +246,6 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_ADMIN";
 /
-
-
 create or replace package "BLOG_AI"
 authid definer
 as
@@ -306,8 +304,6 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_AI";
 /
-
-
 create or replace package "BLOG_COMMENT"
 authid definer
 as
@@ -442,8 +438,6 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_COMMENT";
 /
-
-
 create or replace package "BLOG_CTX"
 authid definer
 as
@@ -477,8 +471,6 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_CTX";
 /
-
-
 create or replace package "BLOG_FILE"
 authid definer
 as
@@ -536,8 +528,6 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_FILE";
 /
-
-
 create or replace package "BLOG_HTML"
 authid definer
 as
@@ -660,8 +650,6 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_HTML";
 /
-
-
 create or replace package "BLOG_INSTALL"
 authid definer
 as
@@ -713,8 +701,6 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_INSTALL";
 /
-
-
 create or replace package "BLOG_MIME"
 authid definer
 as
@@ -742,8 +728,6 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_MIME";
 /
-
-
 create or replace package "BLOG_OCI_OS"
 authid definer
 as
@@ -821,8 +805,6 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_OCI_OS";
 /
-
-
 create or replace package "BLOG_PLUGIN"
 authid definer
 as
@@ -868,8 +850,6 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_PLUGIN";
 /
-
-
 create or replace package "BLOG_URL"
 authid definer
 as
@@ -1038,8 +1018,6 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_URL";
 /
-
-
 create or replace package "BLOG_UTIL"
 authid definer
 as
@@ -1196,8 +1174,6 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";
 /
-
-
 create or replace package "BLOG_XML"
 authid definer
 as
@@ -1307,8 +1283,6 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_XML";
 /
-
-
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_DYNAMIC_CONTENT
 --------------------------------------------------------
@@ -1327,6 +1301,73 @@ select
   ,t1.content_desc      as content_desc
   ,t1.content_html      as content_html
 from blog_dynamic_content t1
+where 1 = 1
+/
+--------------------------------------------------------
+--  DDL for View BLOG_V_ALL_FILES
+--------------------------------------------------------
+create or replace force view blog_v_all_files as
+select
+  t1.id                         as id
+, t1.row_version                as row_version
+, t1.created_on                 as created_on
+, lower(t1.created_by)          as created_by
+, t1.changed_on                 as changed_on
+, lower(t1.changed_by)          as changed_by
+, t1.is_active                  as is_active
+, t1.is_download                as is_download
+, t1.file_path                  as file_path
+, t1.file_dir                   as file_dir
+, t1.file_name                  as file_name
+, t1.mime_type                  as mime_type
+, t1.blob_content               as blob_content
+, t1.file_size                  as file_size
+, t1.file_charset               as file_charset
+, t1.file_desc                  as file_desc
+, t1.notes                      as notes
+, t1.etag                       as etag
+, t1.md5                        as md5
+, t1.apex$row_sync_timestamp
+, cast(
+    t1.apex$row_sync_timestamp  as timestamp with local time zone
+  )                             as sync_timestamp
+, apex_string_util.to_display_filesize(
+    p_size_in_bytes => t1.file_size
+  )                             as file_size_display
+, dbms_lob.getlength(
+    lob_loc => coalesce( blob_content, empty_blob() )
+  )                             as local_size
+, case lkp.object_storage
+    when 'INCLUDE'
+    then
+      case when lkp.proxy_url is null
+        then lkp.bucket_url
+        else lkp.proxy_url
+      end || t1.file_path
+    else
+      blog_url.get_file(
+        p_application => lkp.pub_app_id
+      , p_file_path   => t1.file_path
+      )
+  end                           as file_url
+from blog_files t1
+cross join(
+  select
+      apex_application_admin.get_build_option_status(
+        p_application_id    => sys_context( 'APEX$SESSION', 'APP_ID')
+      , p_build_option_name => 'BLOG_FEATURE_OCI_OBJECT_STORAGE'
+      ) as object_storage
+    , blog_util.get_attribute_value(
+        p_attribute_name    => 'G_OCI_OS_BUCKET_URL'
+      ) as bucket_url
+    , blog_util.get_attribute_value(
+        p_attribute_name    => 'G_OCI_OS_PROXY_URL'
+      ) as proxy_url
+    , blog_util.get_attribute_value(
+        p_attribute_name    => 'G_PUB_APP_ID'
+      ) as pub_app_id
+  from dual
+) lkp
 where 1 = 1
 /
 --------------------------------------------------------
@@ -1480,6 +1521,26 @@ and t1.show_desc = 1
 with read only
 /
 --------------------------------------------------------
+--  DDL for View BLOG_V_DYNAMIC_CONTENT
+--------------------------------------------------------
+create or replace force view blog_v_dynamic_content as
+select
+   t1.id              as content_id
+  ,t1.content_type    as content_type
+  ,t1.changed_on      as changed_on
+  ,t1.display_seq     as display_seq
+  ,t1.show_changed_on as show_changed_on
+  ,t1.content_desc    as content_desc
+  ,t1.content_html    as content_html
+  ,blog_url.get_dynamic_page(
+    p_content_id => t1.id
+  )                   as content_url
+from blog_dynamic_content t1
+where 1 = 1
+and t1.is_active = 1
+with read only
+/
+--------------------------------------------------------
 --  DDL for View BLOG_V_FEATURES
 --------------------------------------------------------
 create or replace force view blog_v_features as
@@ -1535,6 +1596,57 @@ where 1 = 1
   end = 1
 start with t1.build_option_parent is null
 connect by prior t1.build_option_name = t1.build_option_parent
+with read only
+/
+--------------------------------------------------------
+--  DDL for View BLOG_V_FILES
+--------------------------------------------------------
+create or replace force view blog_v_files as
+select
+  t1.id             as file_id
+, t1.row_version    as row_version
+, t1.created_on     as created_on
+, t1.changed_on     as changed_on
+, t1.is_download    as is_download
+, t1.file_name      as file_name
+, t1.file_path      as file_path
+, t1.mime_type      as mime_type
+, t1.blob_content   as blob_content
+, apex_string_util.to_display_filesize(
+    p_size_in_bytes => t1.file_size
+  )                 as file_size
+, t1.file_charset   as file_charset
+, t1.file_desc      as file_desc
+, lkp.object_storage
+, case lkp.object_storage
+    when 'INCLUDE'
+    then
+      case when lkp.proxy_url is null
+        then lkp.bucket_url || t1.file_path
+        else lkp.proxy_url  || t1.file_path
+      end
+    else
+      blog_url.get_file(
+        p_file_path => t1.file_path
+      )
+  end             as file_url
+from blog_files t1
+cross join(
+  select
+      apex_application_admin.get_build_option_status(
+        p_application_id    => sys_context( 'APEX$SESSION', 'APP_ID')
+      , p_build_option_name => 'BLOG_FEATURE_OCI_OBJECT_STORAGE'
+    )  as object_storage
+    , blog_util.get_attribute_value(
+        p_attribute_name => 'G_OCI_OS_BUCKET_URL'
+      ) as bucket_url
+    , blog_util.get_attribute_value(
+        p_attribute_name => 'G_OCI_OS_PROXY_URL'
+      ) as proxy_url
+  from dual
+) lkp
+where 1 = 1
+and t1.is_active = 1
 with read only
 /
 --------------------------------------------------------
@@ -1603,15 +1715,76 @@ and t1.is_active = 1
 with read only
 /
 --------------------------------------------------------
---  DDL for View BLOG_V_VERSION
+--  DDL for View BLOG_V_POSTS_TAGS
 --------------------------------------------------------
-create or replace force view blog_v_version as
+create or replace force view blog_v_post_tags as
+with q1 as(
+  select --+ inline
+    t2.post_id     as post_id
+  , t2.tag_id      as tag_id
+  , t2.display_seq as display_seq
+  , t1.tag         as tag
+  , greatest(
+      t1.changed_on
+    , t2.changed_on
+    ) as changed_on
+  -- Generate tag URL
+  , blog_url.get_tag(
+      p_tag_id => t1.id
+    ) as tag_url
+  -- Generate HTML for tags used in APEX reports
+  , xmlelement( "span"
+    , xmlattributes(
+        't-Icon fa fa-tag'  as "class"
+      , 'true'              as "aria-hidden"
+      )
+    ) as tag_icon
+  , xmlelement( "span"
+      ,xmlattributes(
+        't-Button-label' as "class"
+      )
+    , t1.tag
+    ) as tag_label
+  -- Tag CSS class
+  , 't-Button t-Button--icon t-Button--large t-Button--noUI t-Button--iconLeft' as tag_class
+  from blog_tags t1
+  join blog_post_tags t2 on t1.id = t2.tag_id
+  where 1 = 1
+    and t1.is_active = 1
+    and t2.is_active = 1
+)
 select
-  attribute_value                             as application_version
-  ,to_number( substr( attribute_value, -8 ) ) as application_date
-from blog_settings
-where 1 = 1
-and attribute_name = 'G_APP_VERSION'
+  q1.post_id      as post_id
+, q1.tag_id       as tag_id
+, q1.display_seq  as display_seq
+, q1.tag          as tag
+, q1.changed_on   as changed_on
+, q1.tag_url      as tag_url
+-- Generate HTML for tags used in APEX reports
+, xmlelement( "a"
+  , xmlattributes(
+      q1.tag_url          as "href"
+    , 'tag'               as "rel"
+    )
+    ,q1.tag
+  ) as tag_html1
+, xmlelement( "a"
+  , xmlattributes(
+      q1.tag_url    as "href"
+    , q1.tag_class  as "class"
+    , 'tag'         as "rel"
+    )
+  , q1.tag_icon
+  , q1.tag_label
+  ) as tag_html2
+, xmlelement( "span"
+  , xmlattributes(
+      q1.tag_class as "class"
+    )
+  , q1.tag_icon
+  , q1.tag_label
+  ) as tag_html3
+from q1
 with read only
 /
 --------------------------------------------------------
@@ -1800,301 +1973,6 @@ select
   )                       as ctx_datastore
 from q1
 where 1 = 1
-/
---------------------------------------------------------
---  DDL for View BLOG_V_ALL_FILES
---------------------------------------------------------
-create or replace force view blog_v_all_files as
-select
-  t1.id                         as id
-, t1.row_version                as row_version
-, t1.created_on                 as created_on
-, lower(t1.created_by)          as created_by
-, t1.changed_on                 as changed_on
-, lower(t1.changed_by)          as changed_by
-, t1.is_active                  as is_active
-, t1.is_download                as is_download
-, t1.file_path                  as file_path
-, t1.file_dir                   as file_dir
-, t1.file_name                  as file_name
-, t1.mime_type                  as mime_type
-, t1.blob_content               as blob_content
-, t1.file_size                  as file_size
-, t1.file_charset               as file_charset
-, t1.file_desc                  as file_desc
-, t1.notes                      as notes
-, t1.etag                       as etag
-, t1.md5                        as md5
-, t1.apex$row_sync_timestamp
-, cast(
-    t1.apex$row_sync_timestamp  as timestamp with local time zone
-  )                             as sync_timestamp
-, apex_string_util.to_display_filesize(
-    p_size_in_bytes => t1.file_size
-  )                             as file_size_display
-, dbms_lob.getlength(
-    lob_loc => coalesce( blob_content, empty_blob() )
-  )                             as local_size
-, case lkp.object_storage
-    when 'INCLUDE'
-    then
-      case when lkp.proxy_url is null
-        then lkp.bucket_url
-        else lkp.proxy_url
-      end || t1.file_path
-    else
-      blog_url.get_file(
-        p_application => lkp.pub_app_id
-      , p_file_path   => t1.file_path
-      )
-  end                           as file_url
-from blog_files t1
-cross join(
-  select
-      apex_application_admin.get_build_option_status(
-        p_application_id    => sys_context( 'APEX$SESSION', 'APP_ID')
-      , p_build_option_name => 'BLOG_FEATURE_OCI_OBJECT_STORAGE'
-      ) as object_storage
-    , blog_util.get_attribute_value(
-        p_attribute_name    => 'G_OCI_OS_BUCKET_URL'
-      ) as bucket_url
-    , blog_util.get_attribute_value(
-        p_attribute_name    => 'G_OCI_OS_PROXY_URL'
-      ) as proxy_url
-    , blog_util.get_attribute_value(
-        p_attribute_name    => 'G_PUB_APP_ID'
-      ) as pub_app_id
-  from dual
-) lkp
-where 1 = 1
-/
---------------------------------------------------------
---  DDL for View BLOG_V_DYNAMIC_CONTENT
---------------------------------------------------------
-create or replace force view blog_v_dynamic_content as
-select
-   t1.id              as content_id
-  ,t1.content_type    as content_type
-  ,t1.changed_on      as changed_on
-  ,t1.display_seq     as display_seq
-  ,t1.show_changed_on as show_changed_on
-  ,t1.content_desc    as content_desc
-  ,t1.content_html    as content_html
-  ,blog_url.get_dynamic_page(
-    p_content_id => t1.id
-  )                   as content_url
-from blog_dynamic_content t1
-where 1 = 1
-and t1.is_active = 1
-with read only
-/
---------------------------------------------------------
---  DDL for View BLOG_V_FILES
---------------------------------------------------------
-create or replace force view blog_v_files as
-select
-  t1.id             as file_id
-, t1.row_version    as row_version
-, t1.created_on     as created_on
-, t1.changed_on     as changed_on
-, t1.is_download    as is_download
-, t1.file_name      as file_name
-, t1.file_path      as file_path
-, t1.mime_type      as mime_type
-, t1.blob_content   as blob_content
-, apex_string_util.to_display_filesize(
-    p_size_in_bytes => t1.file_size
-  )                 as file_size
-, t1.file_charset   as file_charset
-, t1.file_desc      as file_desc
-, lkp.object_storage
-, case lkp.object_storage
-    when 'INCLUDE'
-    then
-      case when lkp.proxy_url is null
-        then lkp.bucket_url || t1.file_path
-        else lkp.proxy_url  || t1.file_path
-      end
-    else
-      blog_url.get_file(
-        p_file_path => t1.file_path
-      )
-  end             as file_url
-from blog_files t1
-cross join(
-  select
-      apex_application_admin.get_build_option_status(
-        p_application_id    => sys_context( 'APEX$SESSION', 'APP_ID')
-      , p_build_option_name => 'BLOG_FEATURE_OCI_OBJECT_STORAGE'
-    )  as object_storage
-    , blog_util.get_attribute_value(
-        p_attribute_name => 'G_OCI_OS_BUCKET_URL'
-      ) as bucket_url
-    , blog_util.get_attribute_value(
-        p_attribute_name => 'G_OCI_OS_PROXY_URL'
-      ) as proxy_url
-  from dual
-) lkp
-where 1 = 1
-and t1.is_active = 1
-with read only
-/
---------------------------------------------------------
---  DDL for View BLOG_V_FORM_POSTS
---------------------------------------------------------
-create or replace force view blog_v_form_posts as
-select
-  t1.id               as id
-  ,t1.row_version     as row_version
-  ,t1.blogger_id      as blogger_id
-  ,t1.category_id     as category_id
-  ,t1.first_paragraph as first_paragraph
-  ,t1.is_active       as is_active
-  ,t1.post_desc       as post_desc
-  ,(
-    select lkp.title
-    from blog_categories lkp
-    where 1 = 1
-      and lkp.id = t1.category_id
-  )                   as category_title
-  ,(
-    select
-      listagg( lkp.tag, ',' )
-        within group( order by lkp.display_seq )
-    from blog_v_all_post_tags lkp
-    where 1 = 1
-      and lkp.post_id = t1.id
-  )                   as tags
-  ,t1.published_on    as published_on
-  ,t1.title           as title
-  ,t1.body_html       as body_html
-  ,t1.notes           as notes
-from blog_posts t1
-where 1 = 1
-/
---------------------------------------------------------
---  DDL for View BLOG_V_POSTS_TAGS
---------------------------------------------------------
-create or replace force view blog_v_post_tags as
-with q1 as(
-  select --+ inline
-    t2.post_id     as post_id
-  , t2.tag_id      as tag_id
-  , t2.display_seq as display_seq
-  , t1.tag         as tag
-  , greatest(
-      t1.changed_on
-    , t2.changed_on
-    ) as changed_on
-  -- Generate tag URL
-  , blog_url.get_tag(
-      p_tag_id => t1.id
-    ) as tag_url
-  -- Generate HTML for tags used in APEX reports
-  , xmlelement( "span"
-    , xmlattributes(
-        't-Icon fa fa-tag'  as "class"
-      , 'true'              as "aria-hidden"
-      )
-    ) as tag_icon
-  , xmlelement( "span"
-      ,xmlattributes(
-        't-Button-label' as "class"
-      )
-    , t1.tag
-    ) as tag_label
-  -- Tag CSS class
-  , 't-Button t-Button--icon t-Button--large t-Button--noUI t-Button--iconLeft' as tag_class
-  from blog_tags t1
-  join blog_post_tags t2 on t1.id = t2.tag_id
-  where 1 = 1
-    and t1.is_active = 1
-    and t2.is_active = 1
-)
-select
-  q1.post_id      as post_id
-, q1.tag_id       as tag_id
-, q1.display_seq  as display_seq
-, q1.tag          as tag
-, q1.changed_on   as changed_on
-, q1.tag_url      as tag_url
--- Generate HTML for tags used in APEX reports
-, xmlelement( "a"
-  , xmlattributes(
-      q1.tag_url          as "href"
-    , 'tag'               as "rel"
-    )
-    ,q1.tag
-  ) as tag_html1
-, xmlelement( "a"
-  , xmlattributes(
-      q1.tag_url    as "href"
-    , q1.tag_class  as "class"
-    , 'tag'         as "rel"
-    )
-  , q1.tag_icon
-  , q1.tag_label
-  ) as tag_html2
-, xmlelement( "span"
-  , xmlattributes(
-      q1.tag_class as "class"
-    )
-  , q1.tag_icon
-  , q1.tag_label
-  ) as tag_html3
-from q1
-with read only
-/
---------------------------------------------------------
---  DDL for View BLOG_V_SETTINGS
---------------------------------------------------------
-create or replace force view blog_v_settings as
-select
-  t1.id                       as id
-, t1.row_version              as row_version
-, t1.changed_on               as changed_on
-, lower(t1.changed_by)        as changed_by
-, t1.is_nullable              as is_nullable
-, t1.display_seq              as display_seq
-, t1.attribute_name           as attribute_name
-, apex_lang.get_message(
-    p_name => t1.attribute_message
-  )                           as attribute_desc
-, t1.attribute_value          as attribute_value
-, t1.data_type                as data_type
-, t1.int_min                  as int_min
-, t1.int_max                  as int_max
-, t1.help_message             as help_message
-, (
-    select lov.display_value
-    from blog_v_lov lov
-    where lov.lov_name = 'YES_NO'
-    and to_number( lov.return_value ) = ( t1.is_nullable - 1 ) * -1
-  )                           as value_required
--- HTML in query because IG removes HTML from column HTM expression in control break column
--- Control break is sorted and attribute data-sort-order gives correct order
-, apex_string.format(
-    p_message => '<span data-sort-order="%s" class="u-bold">%s</span>'
-  , p0 => lpad( min( t1.display_seq ) over( partition by t1.attribute_group_message ), 5, '0' )
-  , p1 =>
-      apex_lang.get_message(
-        p_name => t1.attribute_group_message
-      )
-  )                           as attribute_group_html
-, t1.attribute_group_message  as attribute_group
-from blog_settings t1
-where 1 = 1
-  and case
-    when t1.build_option_name is null
-    then 1
-    when apex_application_admin.get_build_option_status(
-      p_application_id    => sys_context( 'APEX$SESSION', 'APP_ID' )
-    , p_build_option_name => t1.build_option_name
-    ) = t1.build_option_status
-    then 1
-    else 0
-  end = 1
-with read only
 /
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_POSTS
@@ -2311,38 +2189,37 @@ from q1
 where 1 = 1
 /
 --------------------------------------------------------
---  DDL for View BLOG_V_FORM_COMMENTS
+--  DDL for View BLOG_V_FORM_POSTS
 --------------------------------------------------------
-create or replace force view blog_v_form_comments as
+create or replace force view blog_v_form_posts as
 select
-  t1.id
-, t1.row_version
-, t1.is_active
-, t1.post_id
-, t1.parent_id
-, t1.body_html
-, t1.comment_by
-, (
-    select
-      lkp.sentiment_json.documentSentiment
-    from blog_comment_sentiments lkp
-    where 1 = 1
-      and lkp.comment_id = t1.id
-  ) as sentiment
-, (
+  t1.id               as id
+  ,t1.row_version     as row_version
+  ,t1.blogger_id      as blogger_id
+  ,t1.category_id     as category_id
+  ,t1.first_paragraph as first_paragraph
+  ,t1.is_active       as is_active
+  ,t1.post_desc       as post_desc
+  ,(
     select lkp.title
-    from blog_posts lkp
+    from blog_categories lkp
     where 1 = 1
-      and lkp.id = t1.post_id
-  ) as post_title
-, (
+      and lkp.id = t1.category_id
+  )                   as category_title
+  ,(
     select
-      lkp.comment_status_code
-    from blog_v_all_comments lkp
+      listagg( lkp.tag, ',' )
+        within group( order by lkp.display_seq )
+    from blog_v_all_post_tags lkp
     where 1 = 1
-      and lkp.id = t1.id
-  ) as comment_status_code
-from blog_comments t1
+      and lkp.post_id = t1.id
+  )                   as tags
+  ,t1.published_on    as published_on
+  ,t1.title           as title
+  ,t1.body_html       as body_html
+  ,t1.notes           as notes
+from blog_posts t1
+where 1 = 1
 /
 --------------------------------------------------------
 --  DDL for View BLOG_V_POSTS
@@ -2466,6 +2343,57 @@ where 1 = 1
 with read only
 /
 --------------------------------------------------------
+--  DDL for View BLOG_V_SETTINGS
+--------------------------------------------------------
+create or replace force view blog_v_settings as
+select
+  t1.id                       as id
+, t1.row_version              as row_version
+, t1.changed_on               as changed_on
+, lower(t1.changed_by)        as changed_by
+, t1.is_nullable              as is_nullable
+, t1.display_seq              as display_seq
+, t1.attribute_name           as attribute_name
+, apex_lang.get_message(
+    p_name => t1.attribute_message
+  )                           as attribute_desc
+, t1.attribute_value          as attribute_value
+, t1.data_type                as data_type
+, t1.int_min                  as int_min
+, t1.int_max                  as int_max
+, t1.help_message             as help_message
+, (
+    select lov.display_value
+    from blog_v_lov lov
+    where lov.lov_name = 'YES_NO'
+    and to_number( lov.return_value ) = ( t1.is_nullable - 1 ) * -1
+  )                           as value_required
+-- HTML in query because IG removes HTML from column HTM expression in control break column
+-- Control break is sorted and attribute data-sort-order gives correct order
+, apex_string.format(
+    p_message => '<span data-sort-order="%s" class="u-bold">%s</span>'
+  , p0 => lpad( min( t1.display_seq ) over( partition by t1.attribute_group_message ), 5, '0' )
+  , p1 =>
+      apex_lang.get_message(
+        p_name => t1.attribute_group_message
+      )
+  )                           as attribute_group_html
+, t1.attribute_group_message  as attribute_group
+from blog_settings t1
+where 1 = 1
+  and case
+    when t1.build_option_name is null
+    then 1
+    when apex_application_admin.get_build_option_status(
+      p_application_id    => sys_context( 'APEX$SESSION', 'APP_ID' )
+    , p_build_option_name => t1.build_option_name
+    ) = t1.build_option_status
+    then 1
+    else 0
+  end = 1
+with read only
+/
+--------------------------------------------------------
 --  DDL for View BLOG_V_ARCHIVE_YEAR
 --------------------------------------------------------
 create or replace force view blog_v_archive_year as
@@ -2579,6 +2507,40 @@ where 1 = 1
 with read only
 /
 --------------------------------------------------------
+--  DDL for View BLOG_V_FORM_COMMENTS
+--------------------------------------------------------
+create or replace force view blog_v_form_comments as
+select
+  t1.id
+, t1.row_version
+, t1.is_active
+, t1.post_id
+, t1.parent_id
+, t1.body_html
+, t1.comment_by
+, (
+    select
+      lkp.sentiment_json.documentSentiment
+    from blog_comment_sentiments lkp
+    where 1 = 1
+      and lkp.comment_id = t1.id
+  ) as sentiment
+, (
+    select lkp.title
+    from blog_posts lkp
+    where 1 = 1
+      and lkp.id = t1.post_id
+  ) as post_title
+, (
+    select
+      lkp.comment_status_code
+    from blog_v_all_comments lkp
+    where 1 = 1
+      and lkp.id = t1.id
+  ) as comment_status_code
+from blog_comments t1
+/
+--------------------------------------------------------
 --  DDL for View BLOG_V_POSTS_LAST20
 --------------------------------------------------------
 create or replace force view blog_v_posts_last20 as
@@ -2667,6 +2629,18 @@ where 1 = 1
 with read only
 /
 --------------------------------------------------------
+--  DDL for View BLOG_V_VERSION
+--------------------------------------------------------
+create or replace force view blog_v_version as
+select
+  attribute_value                             as application_version
+  ,to_number( substr( attribute_value, -8 ) ) as application_date
+from blog_settings
+where 1 = 1
+and attribute_name = 'G_APP_VERSION'
+with read only
+/
+--------------------------------------------------------
 --  DDL for Trigger BLOG_BLOGGERS_TRG
 --------------------------------------------------------
 CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_BLOGGERS_TRG"
@@ -2729,6 +2703,45 @@ begin
     ,sys_context( 'USERENV', 'PROXY_USER' )
     ,sys_context( 'USERENV', 'SESSION_USER' )
   );
+
+end;
+/
+--------------------------------------------------------
+--  DDL for Trigger BLOG_COMMENTS_TRG
+--------------------------------------------------------
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_COMMENTS_TRG"
+before
+insert or
+update on blog_comments
+for each row
+begin
+
+  if inserting then
+    :new.id           := coalesce( :new.id, blog_seq.nextval );
+    :new.row_version  := coalesce( :new.row_version, 1 );
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
+    :new.created_by   := coalesce(
+      :new.created_by
+      ,sys_context( 'APEX$SESSION', 'APP_USER' )
+      ,sys_context( 'USERENV', 'PROXY_USER' )
+      ,sys_context( 'USERENV', 'SESSION_USER' )
+    );
+  elsif updating then
+    :new.row_version := :old.row_version + 1;
+  end if;
+
+  :new.changed_on := localtimestamp;
+  :new.changed_by := coalesce(
+     sys_context( 'APEX$SESSION', 'APP_USER' )
+    ,sys_context( 'USERENV', 'PROXY_USER' )
+    ,sys_context( 'USERENV', 'SESSION_USER' )
+  );
+
+  -- Generate comment preview
+  :new.comment_preview := blog_comment.short_text( :new.body_html );
+
+  -- tickle text index
+  :new.ctx_search := 'X';
 
 end;
 /
@@ -2894,6 +2907,48 @@ begin
     ,sys_context( 'USERENV', 'PROXY_USER' )
     ,sys_context( 'USERENV', 'SESSION_USER' )
   );
+
+end;
+/
+--------------------------------------------------------
+--  DDL for Trigger BLOG_FILES_TRG
+--------------------------------------------------------
+CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_FILES_TRG"
+before
+insert or
+update on blog_files
+for each row
+begin
+
+  if inserting then
+
+    :new.id           := coalesce( :new.id, blog_seq.nextval );
+    :new.row_version  := coalesce( :new.row_version, 1 );
+    :new.created_on   := coalesce( :new.created_on, localtimestamp );
+    :new.created_by   := coalesce(
+      :new.created_by
+      ,sys_context( 'APEX$SESSION', 'APP_USER' )
+      ,sys_context( 'USERENV', 'PROXY_USER' )
+      ,sys_context( 'USERENV', 'SESSION_USER' )
+    );
+
+    :new.is_active    := coalesce( :new.is_active, 1 );
+    :new.is_download  := coalesce( :new.is_download, 0 );
+
+    :new.mime_type    := coalesce( :new.mime_type, blog_mime.get_mime_type( :new.file_name ) );
+
+  elsif updating then
+    :new.row_version := :old.row_version + 1;
+  end if;
+
+  :new.changed_on := localtimestamp;
+  :new.changed_by := coalesce(
+     sys_context( 'APEX$SESSION', 'APP_USER' )
+    ,sys_context( 'USERENV', 'PROXY_USER' )
+    ,sys_context( 'USERENV', 'SESSION_USER' )
+  );
+
+  :new.file_size := coalesce( :new.file_size, coalesce( sys.dbms_lob.getlength( :new.blob_content ), 0 ) );
 
 end;
 /
@@ -3299,87 +3354,6 @@ begin
     ,sys_context( 'USERENV', 'PROXY_USER' )
     ,sys_context( 'USERENV', 'SESSION_USER' )
   );
-
-end;
-/
---------------------------------------------------------
---  DDL for Trigger BLOG_COMMENTS_TRG
---------------------------------------------------------
-CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_COMMENTS_TRG"
-before
-insert or
-update on blog_comments
-for each row
-begin
-
-  if inserting then
-    :new.id           := coalesce( :new.id, blog_seq.nextval );
-    :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := coalesce( :new.created_on, localtimestamp );
-    :new.created_by   := coalesce(
-      :new.created_by
-      ,sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context( 'USERENV', 'PROXY_USER' )
-      ,sys_context( 'USERENV', 'SESSION_USER' )
-    );
-  elsif updating then
-    :new.row_version := :old.row_version + 1;
-  end if;
-
-  :new.changed_on := localtimestamp;
-  :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context( 'USERENV', 'PROXY_USER' )
-    ,sys_context( 'USERENV', 'SESSION_USER' )
-  );
-
-  -- Generate comment preview
-  :new.comment_preview := blog_comment.short_text( :new.body_html );
-
-  -- tickle text index
-  :new.ctx_search := 'X';
-
-end;
-/
---------------------------------------------------------
---  DDL for Trigger BLOG_FILES_TRG
---------------------------------------------------------
-CREATE OR REPLACE EDITIONABLE TRIGGER "BLOG_FILES_TRG"
-before
-insert or
-update on blog_files
-for each row
-begin
-
-  if inserting then
-
-    :new.id           := coalesce( :new.id, blog_seq.nextval );
-    :new.row_version  := coalesce( :new.row_version, 1 );
-    :new.created_on   := coalesce( :new.created_on, localtimestamp );
-    :new.created_by   := coalesce(
-      :new.created_by
-      ,sys_context( 'APEX$SESSION', 'APP_USER' )
-      ,sys_context( 'USERENV', 'PROXY_USER' )
-      ,sys_context( 'USERENV', 'SESSION_USER' )
-    );
-
-    :new.is_active    := coalesce( :new.is_active, 1 );
-    :new.is_download  := coalesce( :new.is_download, 0 );
-
-    :new.mime_type    := coalesce( :new.mime_type, blog_mime.get_mime_type( :new.file_name ) );
-
-  elsif updating then
-    :new.row_version := :old.row_version + 1;
-  end if;
-
-  :new.changed_on := localtimestamp;
-  :new.changed_by := coalesce(
-     sys_context( 'APEX$SESSION', 'APP_USER' )
-    ,sys_context( 'USERENV', 'PROXY_USER' )
-    ,sys_context( 'USERENV', 'SESSION_USER' )
-  );
-
-  :new.file_size := coalesce( :new.file_size, coalesce( sys.dbms_lob.getlength( :new.blob_content ), 0 ) );
 
 end;
 /

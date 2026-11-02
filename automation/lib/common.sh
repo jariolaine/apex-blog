@@ -56,7 +56,7 @@ read_release_version() {
 }
 
 # Replace the sole trusted placeholder using an already validated version.
-# Template stays in Git; neither SQLcl nor BUILD_API controls this DDL text.
+# Template stays in Git; SQLcl never controls this DDL text.
 render_release_template() {
     local template="$1" output="$2" version="$3" contents
     local version_pattern='^Release [0-9]+(\.[0-9]+)+\.[0-9]{8}$'

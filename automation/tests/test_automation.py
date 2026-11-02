@@ -263,7 +263,7 @@ class AutomationTests(unittest.TestCase):
         self.assertFalse((self.candidate()/'apex-blog-latest.zip').exists())
 
     def test_source_only_preserves_local_static_files_and_adds_new_dev_files(self):
-        # Static CSS/JS/images belong to Git just like BUILD_API-generated SQL.
+        # Static CSS/JS/images belong to Git just like the Supporting Objects metadata.
         # A source export must not overwrite locally maintained asset bytes.
         public = self.repo/'applications/blog/shared-components/static-files'
         admin = self.repo/'applications/blog-admin/shared-components/static-files'
@@ -478,12 +478,16 @@ class AutomationTests(unittest.TestCase):
         self.assertIn('APEX_BLOG_DEINSTALL_OK', sql)
         self.assertNotRegex(sql.lower(), r"object_name\s+like\s+'blog_")
 
-    def test_supporting_objects_generation_preserves_sql_literals(self):
+    def test_supporting_objects_generation_preserves_git_owned_metadata(self):
         deinstall = self.repo / 'applications/blog-admin/supporting-objects/deinstall-script.sql'
-        original_deinstall = deinstall.read_bytes()
+        admin_metadata = self.repo/'applications/blog-admin/supporting-objects/install-scripts/metadata.sql'
+        public_metadata = self.repo/'applications/blog/supporting-objects/install-scripts/metadata.sql'
+        original = {path: path.read_bytes() for path in (deinstall, admin_metadata, public_metadata)}
+        # An invalid saved connection or missing SQLcl must not affect offline assembly.
+        self.env['SQLCL_BIN'] = 'sqlcl-is-not-installed-here'
         self.script('supporting_objects.sh')
-        self.assertEqual(deinstall.read_bytes(), original_deinstall,
-                         'make supporting must not regenerate the Git-owned deinstall script')
+        for path, content in original.items():
+            self.assertEqual(path.read_bytes(), content, f'Git-owned SQL changed: {path}')
         target = self.repo/'applications/blog-admin/supporting-objects/install-scripts/database-objects.sql'
         generated = target.read_text()
         self.assertIn((self.repo/'Database/Packages/BLOG_ADMIN.pks').read_text(), generated)
@@ -495,19 +499,8 @@ class AutomationTests(unittest.TestCase):
         self.assertEqual((self.repo/'README.md').read_text(), (SOURCE/'README.md').read_text())
         self.assertEqual((self.repo/'LICENSE.txt').read_text(), (SOURCE/'LICENSE.txt').read_text())
         self.assertEqual((self.repo/'VERSION.txt').read_text(), (SOURCE/'VERSION.txt').read_text())
-        sql_calls = '\n'.join(c['sql'] for c in self.calls_data())
+        self.assertFalse(self.calls.exists(), 'Offline supporting must not invoke SQLcl')
         release_version = (self.repo/'VERSION.txt').read_text().strip()
-        self.assertIn(f"p_release_version => '{release_version}'", sql_calls)
-        self.assertNotIn('build_api.export_license', sql_calls)
-        self.assertNotIn('build_api.export_readme', sql_calls)
-        self.assertNotIn('build_api.export_postupgrade', sql_calls)
-        for obsolete in ('export_object_list', 'export_upgrade_list',
-                         'export_foreign_keys', 'export_indexes'):
-            self.assertNotIn('build_api.' + obsolete, sql_calls)
-        self.assertNotIn('build_api.export_deinstall', sql_calls)
-        self.assertNotIn('deinstall.sql', sql_calls,
-                         'BUILD_API must spool only metadata, never deinstall SQL')
-        public_metadata = self.repo/'applications/blog/supporting-objects/install-scripts/metadata.sql'
         self.assertIn(f"'{release_version}'", public_metadata.read_text())
         postupgrade = self.repo/'applications/blog/supporting-objects/upgrade-scripts/postupgrade.sql'
         self.assertIn(f"'{release_version}'", postupgrade.read_text())
@@ -550,9 +543,10 @@ class AutomationTests(unittest.TestCase):
         self.assertEqual((self.repo/'README.md').read_bytes(), original_readme)
         self.assertEqual((self.repo/'LICENSE.txt').read_bytes(), original_license)
         self.assertEqual((self.repo/'VERSION.txt').read_text(), expected+'\n')
-        first = postupgrade.read_bytes()
+        first = (postupgrade.read_bytes(), metadata.read_bytes())
         self.script('supporting_objects.sh')
-        self.assertEqual(postupgrade.read_bytes(), first)
+        self.assertEqual((postupgrade.read_bytes(), metadata.read_bytes()), first)
+        self.assertFalse(self.calls.exists(), 'Offline supporting must not access DEV')
 
     def test_invalid_version_is_rejected_before_export(self):
         (self.repo/'VERSION.txt').write_text("Release 1.2.3.20261101' --\n")
@@ -575,25 +569,25 @@ class AutomationTests(unittest.TestCase):
         self.assertIn('update blog_settings set attribute_value', calls)
         self.assertIn('APEX_BLOG_VERSION_OK', calls)
 
-    def test_compile_build_api_requires_confirmation_and_validates(self):
-        self.script('setup_build_api.sh', ok=False)
-        self.script('setup_build_api.sh', '--confirm-dev-ddl')
-        calls = '\n'.join(c['sql'] for c in self.calls_data())
-        self.assertIn('BUILD_API.sql', calls)
-        self.assertIn('user_errors', calls)
-        self.env['MOCK_COMPILE_INVALID'] = '1'
-        self.script('setup_build_api.sh', '--confirm-dev-ddl', ok=False)
+    def test_release_rejects_invalid_metadata_before_contacting_dev(self):
+        public = self.repo/'applications/blog/supporting-objects/install-scripts/metadata.sql'
+        original = public.read_text()
+        public.write_text(original.replace(
+            'blog_util.int_to_vc2(apex_application_install.get_application_id)', '401', 1
+        ))
+        result = self.script('export_application.sh', '--build-only', ok=False)
+        self.assertIn('Release metadata is inconsistent', result.stderr)
+        self.assertFalse(self.calls.exists(), 'Metadata validation must run before DEV SQLcl')
 
-    def test_plsql_export_cannot_change_dev_versions(self):
-        plsql = (SOURCE/'automation/database/BUILD_API.sql').read_text()
-        export_settings = plsql.split('  procedure export_settings(\n', 2)[2].split('  end export_settings;', 1)[0]
-        self.assertNotIn('set_application_version(', export_settings.lower())
-        self.assertNotIn('update blog_settings', export_settings.lower())
-        self.assertIn('p_release_version', export_settings)
-        # G_APP_VERSION is generated from the explicit release input, not DEV state.
-        self.assertIn("when c1.attribute_name = 'G_APP_VERSION'", export_settings)
-        self.assertIn('then quote(p_release_version)', export_settings)
-        # Repository object inventory/order is verified in test_schema_manifests.py.
+    def test_supporting_failure_does_not_partially_write_sql(self):
+        sql = self.repo/'applications/blog-admin/supporting-objects/install-scripts/database-objects.sql'
+        original = sql.read_bytes()
+        public = self.repo/'applications/blog/supporting-objects/install-scripts/metadata.sql'
+        public.write_text(public.read_text().replace("'G_APP_VERSION'", "'UNKNOWN_VERSION'"))
+        result = self.script('supporting_objects.sh', ok=False)
+        self.assertIn('Git-owned metadata validation failed', result.stderr)
+        self.assertEqual(sql.read_bytes(), original)
+        self.assertFalse(self.calls.exists())
 
     def test_upgrade_uses_previous_and_candidate(self):
         self.script('export_application.sh')

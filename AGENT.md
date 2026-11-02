@@ -12,10 +12,11 @@ Scope: this repository. Target Oracle APEX **26.1**. Work in small, reviewable s
 ## Repository map
 
 - `applications/blog/` and `applications/blog-admin/`: **APEXLang** application source (`.apx`), not split SQL.
-- `Database/`: schema SQL, including separate package `.pks`/`.pkb` files. `automation/schema/`: Git-owned install/upgrade order. `automation/database/BUILD_API.sql`: metadata export helpers only.
-- `applications/*/supporting-objects/`: install and upgrade SQL, plus manually
-  maintained `blog-admin/supporting-objects/deinstall-script.sql`. Never
-  regenerate deinstall SQL from DEV. Update it alongside schema changes.
+- `Database/`: schema SQL, including separate package `.pks`/`.pkb` files. `automation/schema/`: Git-owned install/upgrade order.
+- `applications/*/supporting-objects/`: Git-owned install metadata, generated
+  schema/upgrade SQL and manually maintained `blog-admin/supporting-objects/deinstall-script.sql`.
+  Never generate metadata or deinstall SQL from DEV. Keep the dynamic APEX
+  application-ID expressions; update tracked deinstall SQL with schema changes.
 - `applications/*/shared-components/static-files/`: Git-owned CSS, JS, images, and binaries. Add/rename assets in `shared-components/static-files.apx` too.
 - `less/`: LESS source for generated CSS. Keep LESS and CSS consistent.
 - `VERSION.txt`: authoritative release version; keep its final `YYYYMMDD` suffix.
@@ -41,17 +42,18 @@ make check
 
 `make validate` needs SQLcl but does not connect to a database. If SQLcl is missing, say so.
 
+**Local-only setup and source generation (no database connection):**
+
+- `make setup`: install local CI tools and Git hook. No DEV confirmation needed.
+- `make supporting`: assemble database objects, foreign keys and indexes from Git; validate checked-in metadata and render its `G_APP_VERSION` value from `VERSION.txt`. It never overwrites the tracked deinstall script. Inspect the resulting diff.
+
 **Read DEV but change local files (run only when relevant; warn about overwritten source):**
 
-- `make supporting`: assemble database objects, foreign keys and indexes from Git manifests/files; export **metadata only** from DEV. It validates but never overwrites the tracked deinstall script. Inspect the resulting diff.
 - `make source`: export APEXLang from DEV; may overwrite `.apx` changes. Existing local Supporting Objects SQL and static-file bytes are preserved.
 - `make build`: read-only APEXLang parity/source validation and versioned SQL release ZIPs, manifest, checksums. Existing versions remain protected by default; `make build OVERWRITE=YES` replaces only the current unpromoted local candidate with staged verification and rollback, without changing tracked source. Never overwrite a QA-approved/published candidate.
 
 **Requires explicit human approval BEFORE execution:**
 
-- `make setup CONFIRM=YES`: installs local CI tools and then compiles `BUILD_API`
-  in DEV. This is one command, but **not a local-only operation**.
-- `make setup-build-api`: compiles `BUILD_API` in DEV only.
 - `make prepare-release CONFIRM=YES`: changes DEV versions.
 - `make sync-dev`: overwrites both DEV APEX application definitions.
 - `make test-install` / `make test-upgrade` / `make test-deinstall`: reset the **disposable TEST** schema. `test-deinstall` always runs `test-install` first, then removes both TEST apps and Supporting Objects and verifies the schema has **zero** user objects. Run only against an approved disposable TEST schema.
@@ -62,10 +64,9 @@ Check the saved SQLcl connection and target schema before any approved database 
 
 ## Mandatory quality checks
 
-- Read `automation/ci/README.md` for tooling setup and lint scope. Use
-  `make setup-ci` to create the local `.venv/` and Git hook without touching
-  a database; use `make setup CONFIRM=YES` only with explicit authorization
-  for DEV `BUILD_API` compilation. `make doctor` is a read-only diagnostic.
+- Read `automation/README.md` for tooling setup, CI and lint scope. Use
+  `make setup` (or `make setup-ci`) to create the local `.venv/` and Git hook;
+  neither command connects to a database. `make doctor` is a read-only diagnostic.
   Do not require a fixed Node.js major version or global `pre-commit`.
 - Use `make lint` for all linters, `make test` for full automation regression
   tests, and `make preflight` for both plus SQLcl APEXLang validation.
@@ -93,7 +94,7 @@ Only use this path when explicitly requested. Follow `automation/HOTFIX.md`:
 
 - `make hotfix-export`: export both current QA/UAT applications to `build/hotfix/f<ID>.sql` (overwrites any prior hotfix candidate).
 - `make hotfix-production`: import those two saved SQL files into PROD, Admin first. Request explicit human approval before running.
-- This path deliberately skips DEV/TEST, APEXLang export, BUILD_API, checksum validation, and normal release gates. Supporting Objects are exported but **not executed** on import.
+- This path deliberately skips DEV/TEST, APEXLang export, checksum validation, and normal release gates. Supporting Objects are exported but **not executed** on import.
 - Do not commit generated `build/hotfix/` files. Developers must carry fixes back into the usual development and source-control process separately.
 
 ## Finish every task

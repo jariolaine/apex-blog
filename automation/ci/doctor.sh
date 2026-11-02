@@ -40,10 +40,12 @@ check_local_executable '.venv/bin/python' 'run make setup-ci'
 check_local_executable '.venv/bin/pre-commit' 'run make setup-ci'
 check_local_executable '.venv/bin/actionlint' 'run make setup-ci'
 
-if [[ -s 'automation/variables.sh' && -s 'automation/database/BUILD_API.sql' ]]; then
-  ok 'repository DEV setup files'
+if [[ -s 'automation/variables.sh' && -s 'automation/lib/metadata_source.py'
+      && -s 'applications/blog-admin/supporting-objects/install-scripts/metadata.sql'
+      && -s 'applications/blog/supporting-objects/install-scripts/metadata.sql' ]]; then
+  ok 'Git-owned Supporting Objects sources'
 else
-  missing 'repository DEV setup files' 'verify automation/variables.sh and automation/database/BUILD_API.sql'
+  missing 'Git-owned Supporting Objects sources' 'verify metadata.sql files, metadata_source.py and variables.sh'
 fi
 
 # Check the active Git hook location, including a custom core.hooksPath.

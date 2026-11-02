@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Simple application-only hotfix: export BOTH QA/UAT apps, then import BOTH to PROD.
-# Deliberately separate from DEV/TEST, APEXLang, BUILD_API and release packaging.
+# Deliberately separate from DEV/TEST, APEXLang and release packaging.
 set -Eeuo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 source "$SCRIPT_DIR/lib/common.sh"

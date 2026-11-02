@@ -19,13 +19,6 @@ if 'APEX_BLOG_RELEASE_PREPARED' in src:
     print('APEX_BLOG_RELEASE_PREPARED')
     sys.exit(0)
 
-if 'APEX_BLOG_BUILD_API_VALID' in src:
-    if os.environ.get('MOCK_COMPILE_INVALID'):
-        print('ORA-20075: BUILD_API compilation errors')
-        sys.exit(2)
-    print('APEX_BLOG_BUILD_API_VALID')
-    sys.exit(0)
-
 if 'APEX_BLOG_VERSION_OK' in src:
     if os.environ.get('MOCK_WRONG_RELEASE_VERSION'):
         print('ORA-20074: DEV APEX application versions differ from VERSION.txt')
@@ -87,31 +80,6 @@ if re.search(r'^apex validate ', src, flags=re.M):
 
 if re.search(r'^apex import ', src, flags=re.M):
     print('Import successful')
-    sys.exit(0)
-
-if 'build_api.export_metadata' in src:
-    # An explicit release must be supplied for both applications.
-    versions = re.findall(r"build_api\.export_metadata\(p_application => '(?:ADMIN|PUBLIC)', p_release_version => '([^']+)'\)", src)
-    if len(versions) != 2 or versions[0] != versions[1]:
-        print('Missing or inconsistent version in BUILD_API calls', file=sys.stderr)
-        sys.exit(2)
-    version = versions[0]
-    if any(f'build_api.{name}' in src for name in (
-        'export_object_list', 'export_upgrade_list', 'export_foreign_keys', 'export_indexes', 'export_deinstall'
-    )):
-        print('Obsolete BUILD_API exporter called', file=sys.stderr)
-        sys.exit(2)
-    fixtures = {
-      'admin_metadata.sql': 'prompt admin metadata\n',
-      'public_metadata.sql': "blog_install.settings_merge('G_APP_VERSION',10,0,'STRING','INTERNAL',null,null,null,null,'" + version + "');\n",
-    }
-    for output in re.findall(r'^spool\s+"([^"]+)"', src, flags=re.M):
-        file = Path(output)
-        file.parent.mkdir(parents=True, exist_ok=True)
-        if file.name not in fixtures:
-            print(f'Unexpected BUILD_API export: {file.name}', file=sys.stderr)
-            sys.exit(2)
-        file.write_text(fixtures[file.name], encoding='utf-8')
     sys.exit(0)
 
 if re.search(r'^@', src, flags=re.M) and 'deinstall_supporting_objects.sql' in src:

@@ -1,5 +1,8 @@
 # Immutable release candidates and source consistency
 
+For routine automation setup, linting and commands, see the
+[automation guide](README.md).
+
 Normal APEX Blog releases are built from APEXLang in `applications/` and
 packaged into **two full SQL exports with Supporting Objects**. This is separate
 from the emergency QA/UAT-to-production hotfix workflow in `HOTFIX.md`.
@@ -7,14 +10,16 @@ from the emergency QA/UAT-to-production hotfix workflow in `HOTFIX.md`.
 ## Check source before preparing a release
 
 ```bash
-make check-schema    # Offline: validate manifests and tracked deinstall SQL
+make check-schema    # Offline: validate manifests, metadata and deinstall SQL
 make check-source    # WIP-safe: APEXLang static and Supporting Objects references, DEV IDs
 make check-release   # Strict: also match VERSION.txt and current installer metadata
 ```
 
-`make supporting` assembles schema files in manifest order, uses the checked-in
-foreign keys and indexes, and contacts DEV **only for metadata**. It validates
-but never regenerates the repository-owned admin deinstall script. When an
+`make supporting` is fully offline: it assembles schema files in manifest order,
+uses checked-in foreign keys and indexes, and renders the Public metadata
+`G_APP_VERSION` from VERSION.txt. The checked-in Admin and Public metadata
+remain authoritative; installation IDs must use dynamic APEX expressions.
+It validates but never regenerates the repository-owned admin deinstall script. When an
 object, foreign key, or Oracle Text preference is added or removed, update
 `applications/blog-admin/supporting-objects/deinstall-script.sql` together
 with `install.list`, run `make check-schema`, and validate actual removal with
@@ -24,16 +29,15 @@ upgrade Supporting Objects SQL against the previous release.
 strict check; a failed check stops before publishing a candidate. Historical
 upgrade patch version numbers are intentionally *not* compared to VERSION.txt.
 
-**Baseline drift in the 2026-11-01 repository:** `VERSION.txt` and generated
-installer metadata say `Release 26.1.5.20261003`, but both `application.apx`
-files say `Release 26.1.5.20261031`. This mismatch is real. Choose the intended
-release version before building. If `VERSION.txt` is authoritative, run the
-explicit release-preparation sequence and review its diffs:
+Before building, keep the release version aligned in `VERSION.txt`, both
+`application.apx` files, current metadata and the upgrade version statement.
+After changing the version, run and review:
 
 ```bash
-make prepare-release CONFIRM=YES  # Changes DEV applications and BLOG_SETTINGS
-make supporting                   # Updates generated Supporting Objects SQL
-make source                       # Refreshes local APEXLang from DEV
+make supporting                   # Offline, updates current metadata/Supporting Objects
+make check-schema
+make prepare-release CONFIRM=YES  # Explicit DEV version mutation (approval required)
+make source                       # Refresh APEXLang source from DEV
 make check-release
 ```
 

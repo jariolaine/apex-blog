@@ -455,6 +455,73 @@ create table blog_tags (
   constraint blog_tags_ck2 check( is_active in( 0 , 1 ) )
 )
 /
+-- DDL for Foreign Keys
+alter table blog_comments add constraint blog_comments_fk1 foreign key (post_id)
+  references blog_posts (id) enable
+/
+alter table blog_comments add constraint blog_comments_fk2 foreign key (parent_id)
+  references blog_comments (id) enable
+/
+alter table blog_comment_flags add constraint blog_comment_flags_fk1 foreign key (comment_id)
+  references blog_comments (id) on delete cascade enable
+/
+alter table blog_comment_sentiments add constraint blog_comment_sentiments_fk1 foreign key (comment_id)
+  references blog_comments (id) on delete cascade enable
+/
+alter table blog_comment_subscribers add constraint blog_comment_subscribers_fk1 foreign key (post_id)
+  references blog_posts (id) on delete cascade enable
+/
+alter table blog_comment_subscribers add constraint blog_comment_subscribers_fk2 foreign key (email_id)
+  references blog_subscribers_email (id) on delete cascade enable
+/
+alter table blog_features add constraint blog_features_fk1 foreign key (build_option_parent)
+  references blog_features (build_option_name) enable
+/
+alter table blog_features add constraint blog_features_fk2 foreign key (ref_build_option_name)
+  references blog_features (build_option_name) enable
+/
+alter table blog_init_items add constraint blog_init_items_fk1 foreign key (item_name)
+  references blog_settings (attribute_name) enable
+/
+alter table blog_links add constraint blog_links_fk1 foreign key (link_group_id)
+  references blog_link_groups (id) on delete cascade enable
+/
+alter table blog_posts add constraint blog_posts_fk1 foreign key (blogger_id)
+  references blog_bloggers (id) enable
+/
+alter table blog_posts add constraint blog_posts_fk2 foreign key (category_id)
+  references blog_categories (id) enable
+/
+alter table blog_post_tags add constraint blog_post_tags_fk1 foreign key (post_id)
+  references blog_posts (id) on delete cascade enable
+/
+alter table blog_post_tags add constraint blog_post_tags_fk2 foreign key (tag_id)
+  references blog_tags (id) enable
+/
+alter table blog_settings add constraint blog_settings_fk1 foreign key (build_option_name)
+  references blog_features (build_option_name) enable
+/
+-- DDL for foreign key indexes
+create index blog_comments_ix1 on blog_comments (post_id)
+/
+create index blog_comments_ix2 on blog_comments (parent_id)
+/
+create index blog_comment_subscribers_ix1 on blog_comment_subscribers (email_id)
+/
+create index blog_features_ix1 on blog_features (build_option_parent)
+/
+create index blog_features_ix2 on blog_features (ref_build_option_name)
+/
+create index blog_init_items_ix1 on blog_init_items (item_name)
+/
+create index blog_posts_ix1 on blog_posts (blogger_id)
+/
+create index blog_posts_ix2 on blog_posts (category_id)
+/
+create index blog_post_tags_ix1 on blog_post_tags (tag_id)
+/
+create index blog_settings_ix1 on blog_settings (build_option_name)
+/
 create or replace package "BLOG_ADMIN"
 authid definer
 as
@@ -701,8 +768,6 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_ADMIN";
 /
-
-
 create or replace package "BLOG_AI"
 authid definer
 as
@@ -761,8 +826,6 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_AI";
 /
-
-
 create or replace package "BLOG_COMMENT"
 authid definer
 as
@@ -897,8 +960,6 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_COMMENT";
 /
-
-
 create or replace package "BLOG_CTX"
 authid definer
 as
@@ -932,8 +993,6 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_CTX";
 /
-
-
 create or replace package "BLOG_FILE"
 authid definer
 as
@@ -991,8 +1050,6 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_FILE";
 /
-
-
 create or replace package "BLOG_HTML"
 authid definer
 as
@@ -1115,8 +1172,6 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_HTML";
 /
-
-
 create or replace package "BLOG_INSTALL"
 authid definer
 as
@@ -1168,8 +1223,6 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_INSTALL";
 /
-
-
 create or replace package "BLOG_MIME"
 authid definer
 as
@@ -1197,8 +1250,6 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_MIME";
 /
-
-
 create or replace package "BLOG_OCI_OS"
 authid definer
 as
@@ -1276,8 +1327,6 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_OCI_OS";
 /
-
-
 create or replace package "BLOG_PLUGIN"
 authid definer
 as
@@ -1323,8 +1372,6 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_PLUGIN";
 /
-
-
 create or replace package "BLOG_URL"
 authid definer
 as
@@ -1493,8 +1540,6 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_URL";
 /
-
-
 create or replace package "BLOG_UTIL"
 authid definer
 as
@@ -1651,8 +1696,6 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_UTIL";
 /
-
-
 create or replace package "BLOG_XML"
 authid definer
 as
@@ -1762,8 +1805,6 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_XML";
 /
-
-
 --------------------------------------------------------
 --  DDL for View BLOG_V_ALL_DYNAMIC_CONTENT
 --------------------------------------------------------
@@ -3865,7 +3906,8 @@ indextype is ctxsys.context parameters(
    stoplist       ctxsys.empty_stoplist
    filter         ctxsys.null_filter
    sync           (on commit)'
-);
+)
+/
 --------------------------------------------------------
 --  Create text index preferences for index BLOG_POSTS_CTX
 --------------------------------------------------------
@@ -3905,7 +3947,8 @@ indextype is ctxsys.context parameters(
    stoplist       ctxsys.empty_stoplist
    filter         ctxsys.null_filter
    sync           (on commit)'
-);
+)
+/
 create or replace package body "BLOG_ADMIN"
 as
 --------------------------------------------------------------------------------
@@ -11427,82 +11470,3 @@ as
 --------------------------------------------------------------------------------
 end "BLOG_XML";
 /
--- DDL for Foreign Keys
-
-  ALTER TABLE "BLOG_COMMENTS" ADD CONSTRAINT "BLOG_COMMENTS_FK1" FOREIGN KEY ("POST_ID")
-	  REFERENCES "BLOG_POSTS" ("ID") ENABLE;
-
-  ALTER TABLE "BLOG_COMMENTS" ADD CONSTRAINT "BLOG_COMMENTS_FK2" FOREIGN KEY ("PARENT_ID")
-	  REFERENCES "BLOG_COMMENTS" ("ID") ENABLE;
-
-  ALTER TABLE "BLOG_COMMENT_FLAGS" ADD CONSTRAINT "BLOG_COMMENT_FLAGS_FK1" FOREIGN KEY ("COMMENT_ID")
-	  REFERENCES "BLOG_COMMENTS" ("ID") ON DELETE CASCADE ENABLE;
-
-  ALTER TABLE "BLOG_COMMENT_SENTIMENTS" ADD CONSTRAINT "BLOG_COMMENT_SENTIMENTS_FK1" FOREIGN KEY ("COMMENT_ID")
-	  REFERENCES "BLOG_COMMENTS" ("ID") ON DELETE CASCADE ENABLE;
-
-  ALTER TABLE "BLOG_COMMENT_SUBSCRIBERS" ADD CONSTRAINT "BLOG_COMMENT_SUBSCRIBERS_FK1" FOREIGN KEY ("POST_ID")
-	  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;
-
-  ALTER TABLE "BLOG_COMMENT_SUBSCRIBERS" ADD CONSTRAINT "BLOG_COMMENT_SUBSCRIBERS_FK2" FOREIGN KEY ("EMAIL_ID")
-	  REFERENCES "BLOG_SUBSCRIBERS_EMAIL" ("ID") ON DELETE CASCADE ENABLE;
-
-  ALTER TABLE "BLOG_FEATURES" ADD CONSTRAINT "BLOG_FEATURES_FK1" FOREIGN KEY ("BUILD_OPTION_PARENT")
-	  REFERENCES "BLOG_FEATURES" ("BUILD_OPTION_NAME") ENABLE;
-
-  ALTER TABLE "BLOG_FEATURES" ADD CONSTRAINT "BLOG_FEATURES_FK2" FOREIGN KEY ("REF_BUILD_OPTION_NAME")
-	  REFERENCES "BLOG_FEATURES" ("BUILD_OPTION_NAME") ENABLE;
-
-  ALTER TABLE "BLOG_INIT_ITEMS" ADD CONSTRAINT "BLOG_INIT_ITEMS_FK1" FOREIGN KEY ("ITEM_NAME")
-	  REFERENCES "BLOG_SETTINGS" ("ATTRIBUTE_NAME") ENABLE;
-
-  ALTER TABLE "BLOG_LINKS" ADD CONSTRAINT "BLOG_LINKS_FK1" FOREIGN KEY ("LINK_GROUP_ID")
-	  REFERENCES "BLOG_LINK_GROUPS" ("ID") ON DELETE CASCADE ENABLE;
-
-  ALTER TABLE "BLOG_POSTS" ADD CONSTRAINT "BLOG_POSTS_FK1" FOREIGN KEY ("BLOGGER_ID")
-	  REFERENCES "BLOG_BLOGGERS" ("ID") ENABLE;
-
-  ALTER TABLE "BLOG_POSTS" ADD CONSTRAINT "BLOG_POSTS_FK2" FOREIGN KEY ("CATEGORY_ID")
-	  REFERENCES "BLOG_CATEGORIES" ("ID") ENABLE;
-
-  ALTER TABLE "BLOG_POST_TAGS" ADD CONSTRAINT "BLOG_POST_TAGS_FK1" FOREIGN KEY ("POST_ID")
-	  REFERENCES "BLOG_POSTS" ("ID") ON DELETE CASCADE ENABLE;
-
-  ALTER TABLE "BLOG_POST_TAGS" ADD CONSTRAINT "BLOG_POST_TAGS_FK2" FOREIGN KEY ("TAG_ID")
-	  REFERENCES "BLOG_TAGS" ("ID") ENABLE;
-
-  ALTER TABLE "BLOG_SETTINGS" ADD CONSTRAINT "BLOG_SETTINGS_FK1" FOREIGN KEY ("BUILD_OPTION_NAME")
-	  REFERENCES "BLOG_FEATURES" ("BUILD_OPTION_NAME") ENABLE;
-
--- DDL for foreign key indexes
-
-  CREATE INDEX "BLOG_COMMENTS_IX1" ON "BLOG_COMMENTS" ("POST_ID")
-  ;
-
-  CREATE INDEX "BLOG_COMMENTS_IX2" ON "BLOG_COMMENTS" ("PARENT_ID")
-  ;
-
-  CREATE INDEX "BLOG_COMMENT_SUBSCRIBERS_IX1" ON "BLOG_COMMENT_SUBSCRIBERS" ("EMAIL_ID")
-  ;
-
-  CREATE INDEX "BLOG_FEATURES_IX1" ON "BLOG_FEATURES" ("BUILD_OPTION_PARENT")
-  ;
-
-  CREATE INDEX "BLOG_FEATURES_IX2" ON "BLOG_FEATURES" ("REF_BUILD_OPTION_NAME")
-  ;
-
-  CREATE INDEX "BLOG_INIT_ITEMS_IX1" ON "BLOG_INIT_ITEMS" ("ITEM_NAME")
-  ;
-
-  CREATE INDEX "BLOG_POSTS_IX1" ON "BLOG_POSTS" ("BLOGGER_ID")
-  ;
-
-  CREATE INDEX "BLOG_POSTS_IX2" ON "BLOG_POSTS" ("CATEGORY_ID")
-  ;
-
-  CREATE INDEX "BLOG_POST_TAGS_IX1" ON "BLOG_POST_TAGS" ("TAG_ID")
-  ;
-
-  CREATE INDEX "BLOG_SETTINGS_IX1" ON "BLOG_SETTINGS" ("BUILD_OPTION_NAME")
-  ;
-

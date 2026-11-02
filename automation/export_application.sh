@@ -29,6 +29,8 @@ if [[ "$mode" != source ]]; then
     python3 "$SCRIPT_DIR/lib/check_deinstall.py" \
         "$SCRIPT_DIR/schema/install.list" "$scriptSourceDir" "$deinstallSqlScript" \
         || die 'Release deinstall SQL is inconsistent with schema sources'
+    python3 "$SCRIPT_DIR/lib/metadata_source.py" check --repo "$repoHome" \
+        || die 'Release metadata is inconsistent with VERSION.txt or missing'
     require_tool zip
     release_version="$(read_release_version)"
     slug="${release_version#Release }"
@@ -113,7 +115,7 @@ SQL
         || die "SQLcl did not confirm validation success: $alias (see log)"
 
     if [[ "$mode" != source ]]; then
-        # Supporting Objects SQL (Git schema/deinstall + BUILD_API metadata) and
+        # Supporting Objects SQL (Git-owned schema, deinstall and metadata) and
         # application static assets are owned by Git, not by an APEXlang export. Detect *any* DEV drift (including
         # binary files and missing/extra files) before building a release.
         python3 "$SCRIPT_DIR/lib/check_preserved_parity.py" "$repo_dir" "$app_dir" \

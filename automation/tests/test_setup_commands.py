@@ -21,7 +21,6 @@ class MakeShortcutTests(unittest.TestCase):
         self.calls = self.repo / "calls.log"
         self.env = dict(os.environ, AUTOMATION_CALLS=str(self.calls))
         self.stub("automation/ci/bootstrap.sh", "ci", failure="FAIL_CI")
-        self.stub("automation/setup_build_api.sh", "build-api", failure="FAIL_BUILD_API")
         self.stub("automation/ci/preflight.sh", "preflight")
         self.stub("automation/check_source.sh", "check-source:$*", failure="FAIL_CHECK_SOURCE")
         self.stub("automation/verify_release.sh", "verify-release:$*", failure="FAIL_VERIFY_RELEASE")
@@ -51,37 +50,26 @@ class MakeShortcutTests(unittest.TestCase):
     def lines(self):
         return self.calls.read_text().splitlines() if self.calls.exists() else []
 
-    def test_setup_requires_explicit_dev_confirmation_before_any_work(self):
-        result = self.run_make("setup")
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn("make setup CONFIRM=YES", result.stderr)
-        self.assertEqual(self.lines(), [])
-
-    def test_one_setup_command_is_sequential_even_with_parallel_make(self):
-        result = self.run_make("-j2", "setup", "CONFIRM=YES")
+    def test_setup_is_local_only_and_works_with_parallel_make(self):
+        result = self.run_make("-j2", "setup")
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(self.lines(), ["ci", "build-api"])
-        self.assertIn("Setup complete", result.stdout)
+        self.assertEqual(self.lines(), ["ci"])
+        self.assertIn("no database changes", result.stdout)
 
-    def test_failed_ci_setup_never_reaches_dev(self):
+    def test_failed_ci_setup_aborts(self):
         env = dict(self.env, FAIL_CI="YES")
-        result = self.run_make("setup", "CONFIRM=YES", env=env)
+        result = self.run_make("setup", env=env)
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(self.lines(), ["ci"])
-        self.assertNotIn("Setup complete", result.stdout)
+        self.assertNotIn("Local setup complete", result.stdout)
 
-    def test_failed_dev_setup_is_reported(self):
-        env = dict(self.env, FAIL_BUILD_API="YES")
-        result = self.run_make("setup", "CONFIRM=YES", env=env)
-        self.assertNotEqual(result.returncode, 0)
-        self.assertEqual(self.lines(), ["ci", "build-api"])
-        self.assertNotIn("Setup complete", result.stdout)
-
-    def test_standalone_setup_targets_still_work(self):
-        for target in ("setup-ci", "setup-build-api"):
-            result = self.run_make(target)
-            self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(self.lines(), ["ci", "build-api"])
+    def test_setup_ci_remains_available_and_build_api_target_is_gone(self):
+        result = self.run_make("setup-ci")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.lines(), ["ci"])
+        obsolete = self.run_make("setup-build-api")
+        self.assertNotEqual(obsolete.returncode, 0)
+        self.assertEqual(self.lines(), ["ci"])
 
     def test_check_is_alias_of_preflight(self):
         result = self.run_make("check")
@@ -109,10 +97,14 @@ class DoctorTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.repo = Path(self.temp.name)
         (self.repo / "automation/ci").mkdir(parents=True)
-        (self.repo / "automation/database").mkdir(parents=True)
         shutil.copy2(SOURCE / "automation/ci/doctor.sh", self.repo / "automation/ci/doctor.sh")
         (self.repo / "automation/variables.sh").write_text("# configuration\n")
-        (self.repo / "automation/database/BUILD_API.sql").write_text("-- package source\n")
+        (self.repo / "automation/lib").mkdir(parents=True)
+        (self.repo / "automation/lib/metadata_source.py").write_text("# validator\n")
+        for alias in ("blog", "blog-admin"):
+            path = self.repo / f"applications/{alias}/supporting-objects/install-scripts/metadata.sql"
+            path.parent.mkdir(parents=True)
+            path.write_text("-- checked-in metadata\n")
         (self.repo / "package-lock.json").write_text("{}\n")
         self.fake_bin = self.repo / "fake-bin"
         self.fake_bin.mkdir()

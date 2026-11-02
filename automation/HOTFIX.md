@@ -1,5 +1,8 @@
 # QA/UAT -> production application hotfix
 
+For routine automation setup, linting and commands, see the
+[automation guide](README.md).
+
 Use this when DEV/TEST runs a newer APEX version than production and the fix has
 been made directly in the QA/UAT applications. QA/UAT exports must be compatible
 with the production APEX release; **this workflow does not check versions**.
