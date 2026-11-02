@@ -234,7 +234,11 @@ run TEST install/upgrade/deinstall checks before releasing.
 ## Normal DEV and release workflow
 
 Use `make source` explicitly to refresh tracked APEXLang from DEV, after
-reviewing possible overwrites. `make sync-dev` imports the tracked APEXLang
+reviewing possible overwrites. Direct invocations of
+`automation/export_application.sh` also require exactly one mode:
+`--source-only` for a source refresh or `--build-only` for release packaging.
+There is no implicit combined mode; `--overwrite` is valid only with
+`--build-only`. `make sync-dev` imports the tracked APEXLang
 into DEV and requires approval; `make prepare-release CONFIRM=YES` sets DEV
 versions from `VERSION.txt`. `make build` checks local/DEV source parity and
 produces a **versioned, protected release candidate** with checksums and a

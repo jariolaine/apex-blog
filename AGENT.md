@@ -50,6 +50,8 @@ make check
 **Read DEV but change local files (run only when relevant; warn about overwritten source):**
 
 - `make source`: export APEXLang from DEV; may overwrite `.apx` changes. Existing local Supporting Objects SQL and static-file bytes are preserved.
+  Direct `automation/export_application.sh` calls require `--source-only` or
+  `--build-only`; invoking it without a mode is an error, never a combined export.
 - `make build`: read-only APEXLang parity/source validation and versioned SQL release ZIPs, manifest, checksums. Existing versions remain protected by default; `make build OVERWRITE=YES` replaces only the current unpromoted local candidate with staged verification and rollback, without changing tracked source. Never overwrite a QA-approved/published candidate.
 
 **Requires explicit human approval BEFORE execution:**

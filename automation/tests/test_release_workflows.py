@@ -10,8 +10,13 @@ from automation.tests.workflow_fixture import WorkflowFixture
 
 class ReleaseWorkflows(WorkflowFixture):
 
-    def test_export_apexlang_and_full_sql_release(self):
-        self.script('export_application.sh')
+    def test_explicit_source_then_build_exports_apexlang_and_sql_release(self):
+        self.script('export_application.sh', '--source-only')
+        self.assertFalse(self.candidate().exists(), 'Source refresh must not publish a release')
+        source = self.repo / 'applications/blog-admin/application.apx'
+        before_build = source.read_bytes()
+        self.script('export_application.sh', '--build-only')
+        self.assertEqual(source.read_bytes(), before_build, 'Build must not refresh tracked source')
         calls = self.calls_data()
         export = '\n'.join(c['sql'] for c in calls)
         self.assertIn('-exptype APEXLANG', export)
@@ -35,7 +40,7 @@ class ReleaseWorkflows(WorkflowFixture):
         css.write_bytes(original + b'\n/* repository edit not imported to DEV */\n')
         app = self.repo/'applications/blog/application.apx'
         original_app = app.read_bytes()
-        out = self.script('export_application.sh', ok=False)
+        out = self.script('export_application.sh', '--build-only', ok=False)
         self.assertIn('Static application files', out.stderr)
         self.assertIn('css/style.css', out.stderr)
         self.assertEqual(css.read_bytes(), original + b'\n/* repository edit not imported to DEV */\n')
@@ -63,7 +68,7 @@ class ReleaseWorkflows(WorkflowFixture):
     def test_release_rejects_supporting_sql_drift_without_publishing(self):
         local = self.repo/'applications/blog/supporting-objects/install-scripts/metadata.sql'
         local.write_text(local.read_text()+'\n-- different from DEV\n')
-        p = self.script('export_application.sh', ok=False)
+        p = self.script('export_application.sh', '--build-only', ok=False)
         self.assertIn('Supporting Objects', p.stderr)
         self.assertFalse((self.candidate()/'SHA256SUMS').exists())
 
@@ -76,7 +81,7 @@ class ReleaseWorkflows(WorkflowFixture):
 
     def test_validation_failure_never_publishes(self):
         self.env['MOCK_FAIL_VALIDATE'] = '1'
-        p = self.script('export_application.sh', ok=False)
+        p = self.script('export_application.sh', '--build-only', ok=False)
         self.assertIn('validation success', p.stderr)
         self.assertFalse((self.candidate()/'SHA256SUMS').exists())
 
@@ -91,7 +96,7 @@ class ReleaseWorkflows(WorkflowFixture):
 
     def test_release_build_requires_dev_version_match(self):
         self.env['MOCK_WRONG_RELEASE_VERSION'] = '1'
-        result = self.script('export_application.sh', ok=False)
+        result = self.script('export_application.sh', '--build-only', ok=False)
         self.assertIn('Release versions differ', result.stderr)
         self.assertFalse((self.candidate()/'SHA256SUMS').exists())
 
@@ -99,7 +104,7 @@ class ReleaseWorkflows(WorkflowFixture):
         for root in (self.repo / 'applications', self.template):
             for alias in ('blog-admin', 'blog'):
                 self.drift_app_version(root / alias / 'application.apx')
-        out = self.script('export_application.sh', ok=False)
+        out = self.script('export_application.sh', '--build-only', ok=False)
         self.assertIn('Release source consistency failed', out.stderr)
         self.assertFalse(self.candidate().exists())
 
@@ -117,11 +122,11 @@ class ReleaseWorkflows(WorkflowFixture):
         (self.repo/'VERSION.txt').write_text("Release 1.2.3.20261101' --\n")
         self.script('supporting_objects.sh', ok=False)
         self.assertFalse(self.calls.exists())
-        self.script('export_application.sh', ok=False)
+        self.script('export_application.sh', '--build-only', ok=False)
         self.assertFalse((self.candidate()/'SHA256SUMS').exists())
 
     def test_versioned_manifest_records_both_apps_and_source_fingerprint(self):
-        self.script('export_application.sh')
+        self.script('export_application.sh', '--build-only')
         candidate = self.candidate()
         manifest = json.loads((candidate / 'manifest.json').read_text())
         self.assertEqual(manifest['release'], (self.repo / 'VERSION.txt').read_text().strip())
@@ -231,6 +236,24 @@ class ReleaseWorkflows(WorkflowFixture):
             fcntl.flock(holder.fileno(), fcntl.LOCK_UN)
         self.assertEqual((self.candidate() / 'manifest.json').read_bytes(), before)
 
+    def test_direct_export_requires_exactly_one_mode_before_contacting_dev(self):
+        source = self.repo / 'applications/blog-admin/application.apx'
+        original = source.read_bytes()
+        for args, error in (
+            ((), 'Usage: export_application.sh'),
+            (('--source-only', '--build-only'), 'Only one export mode'),
+            (('--build-only', '--build-only'), 'Only one export mode'),
+            (('--source-only', '--source-only'), 'Only one export mode'),
+            (('--overwrite',), '--overwrite requires --build-only'),
+            (('--unknown-option',), 'Usage: export_application.sh'),
+        ):
+            with self.subTest(args=args):
+                result = self.script('export_application.sh', *args, ok=False)
+                self.assertIn(error, result.stderr)
+                self.assertFalse(self.calls.exists(), 'Invalid CLI must not invoke SQLcl')
+                self.assertFalse(self.candidate().exists(), 'Invalid CLI must not publish')
+                self.assertEqual(source.read_bytes(), original)
+
     def test_overwrite_flag_requires_explicit_build_mode(self):
         out = self.script('export_application.sh', '--source-only', '--overwrite', ok=False)
         self.assertIn('--overwrite requires --build-only', out.stderr)
@@ -247,7 +270,7 @@ class ReleaseWorkflows(WorkflowFixture):
         (tf / 'terraform.tfvars').write_text('private values')
         (tf / 'terraform.auto.tfvars.json').write_text('{"secret": true}')
         (tf / '.env').write_text('PRIVATE=YES')
-        self.script('export_application.sh')
+        self.script('export_application.sh', '--build-only')
         with ZipFile(self.candidate() / 'apex-blog-stack-latest.zip') as archive:
             names = archive.namelist()
             self.assertFalse(any('.terraform/' in n or n.endswith('.tfstate')
@@ -257,7 +280,7 @@ class ReleaseWorkflows(WorkflowFixture):
             self.assertIn('VERSION.txt', names)
 
     def test_manifest_and_package_tampering_are_detected(self):
-        self.script('export_application.sh')
+        self.script('export_application.sh', '--build-only')
         candidate = self.candidate()
         with (candidate / 'manifest.json').open('a') as stream:
             stream.write('\n')
@@ -265,7 +288,7 @@ class ReleaseWorkflows(WorkflowFixture):
         self.assertIn('checksum mismatch', out.stderr.lower())
 
     def test_candidate_directory_name_must_match_manifest(self):
-        self.script('export_application.sh')
+        self.script('export_application.sh', '--build-only')
         fake = self.repo / 'build/releases/not-the-version'
         shutil.copytree(self.candidate(), fake)
         self.script('verify_release.sh', '--release-dir', str(fake), ok=False)

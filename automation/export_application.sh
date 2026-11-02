@@ -5,26 +5,31 @@ set -Eeuo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 source "$SCRIPT_DIR/lib/common.sh"
 
-mode=all
+# Direct callers must choose one operation; doing both implicitly could
+# refresh tracked APEXLang and publish a release in the same invocation.
+mode=''
 overwrite=false
-mode_option_seen=false
+usage='Usage: export_application.sh (--source-only|--build-only) [--overwrite (requires --build-only)]'
 for opt in "$@"; do
     case "$opt" in
-        --source-only|--build-only)
-            $mode_option_seen && die 'Only one export mode is accepted'
-            mode_option_seen=true
-            if [[ "$opt" == --source-only ]]; then mode=source; else mode=build; fi ;;
+        --source-only)
+            [[ -z "$mode" ]] || die 'Only one export mode is accepted'
+            mode=source ;;
+        --build-only)
+            [[ -z "$mode" ]] || die 'Only one export mode is accepted'
+            mode=build ;;
         --overwrite) $overwrite && die 'Duplicate --overwrite'; overwrite=true ;;
-        *) die 'Usage: export_application.sh [--source-only|--build-only] [--overwrite (requires --build-only)]' ;;
+        *) die "$usage" ;;
     esac
 done
 if $overwrite && [[ "$mode" != build ]]; then
     die '--overwrite requires --build-only; never overwrite a candidate while refreshing APEXLang source'
 fi
+[[ -n "$mode" ]] || die "$usage"
 require_tool "$sqlcl_bin"
 require_tool rsync
 require_tool python3
-if [[ "$mode" != source ]]; then
+if [[ "$mode" == build ]]; then
     # Reject incomplete Git-owned uninstall SQL before contacting DEV or building.
     python3 "$SCRIPT_DIR/lib/check_deinstall.py" \
         "$SCRIPT_DIR/schema/install.list" "$scriptSourceDir" "$deinstallSqlScript" \
@@ -57,7 +62,7 @@ trap 'rm -rf -- "$run_dir"' EXIT
 mkdir -p -- "$run_dir/apexlang" "$run_dir/sql" "$run_dir/logs" "$run_dir/out"
 
 check_environment "$devDbConnName" "$devWorkspace" "$devDbSchema" "$run_dir/logs/check-dev.log"
-if [[ "$mode" != source ]]; then
+if [[ "$mode" == build ]]; then
     check_dev_release_version "$devDbConnName" "$devWorkspace" \
         "${devAppIds[0]}" "${devAppIds[1]}" "$run_dir/logs"
 fi
@@ -114,19 +119,17 @@ SQL
     grep -qi 'Validation successful' "$run_dir/logs/validate-$id.log" \
         || die "SQLcl did not confirm validation success: $alias (see log)"
 
-    if [[ "$mode" != source ]]; then
+    if [[ "$mode" == build ]]; then
         # Supporting Objects SQL (Git-owned schema, deinstall and metadata) and
         # application static assets are owned by Git, not by an APEXlang export. Detect *any* DEV drift (including
         # binary files and missing/extra files) before building a release.
         python3 "$SCRIPT_DIR/lib/check_preserved_parity.py" "$repo_dir" "$app_dir" \
             || die "Locally maintained Supporting Objects / static files differ for $alias. Aborting release."
-        if [[ "$mode" == build ]]; then
-            diff -qr --exclude=deployments "$repo_dir" "$app_dir" >"$run_dir/logs/source-diff-$id.log" \
-                || {
-                    head -n 35 "$run_dir/logs/source-diff-$id.log" >&2
-                    die "APEXlang source $alias differs from DEV. Export source or import local edits first."
-                }
-        fi
+        diff -qr --exclude=deployments "$repo_dir" "$app_dir" >"$run_dir/logs/source-diff-$id.log" \
+            || {
+                head -n 35 "$run_dir/logs/source-diff-$id.log" >&2
+                die "APEXlang source $alias differs from DEV. Export source or import local edits first."
+            }
         cat >"$run_dir/export-sql-${id}.sqlcl" <<SQL
 apex export -applicationid $id -exptype SQL -expsupportingobjects Y -exppubreports -skipExportDate -dir "$run_dir/sql"
 SQL
@@ -138,7 +141,7 @@ SQL
     fi
 done
 
-if [[ "$mode" != build ]]; then
+if [[ "$mode" == source ]]; then
     # Assemble complete APEXlang trees in temporary space. Preserve tracked
     # Supporting Objects SQL and local static assets (CSS, JS, images, etc.).
     # This avoids overwriting files authored in Git with older DEV copies.
@@ -173,20 +176,15 @@ if [[ "$mode" != build ]]; then
 fi
 
 # Strict release readiness is separate from work-in-progress source validation:
-# fail before modifying local APEXLang or publishing any candidate.
-if [[ "$mode" != source ]]; then
-    if [[ "$mode" == build ]]; then
-        consistency_apps="$apexSourceDir"
-    else
-        consistency_apps="$run_dir/merged"
-    fi
+# fail before publishing any candidate, without modifying local APEXLang.
+if [[ "$mode" == build ]]; then
     python3 "$SCRIPT_DIR/lib/check_source_consistency.py" \
-        --repo "$repoHome" --apps-dir "$consistency_apps" \
+        --repo "$repoHome" --apps-dir "$apexSourceDir" \
         --dev-ids "${devAppIds[@]}" --mode release \
         || die 'Release source consistency failed; run prepare-release, supporting and source as appropriate'
 fi
 
-if [[ "$mode" != source ]]; then
+if [[ "$mode" == build ]]; then
     for f in README.md LICENSE.txt VERSION.txt; do
         require_file "$repoHome/$f"
         cp -- "$repoHome/$f" "$run_dir/out/$f"
@@ -210,14 +208,14 @@ if [[ "$mode" != source ]]; then
 fi
 
 # Publish once every requested output has been generated AND validated.
-if [[ "$mode" != build ]]; then
+if [[ "$mode" == source ]]; then
     for alias in "${appAliases[@]}"; do
         log "Synchronizing APEXlang source: applications/$alias"
         rsync -r --checksum --delete "$run_dir/merged/$alias/" "$apexSourceDir/$alias/"
     done
 fi
 
-if [[ "$mode" != source ]]; then
+if [[ "$mode" == build ]]; then
     # Bind packaged SQL, sources and version metadata in one checksummed
     # manifest. An explicit --overwrite only replaces this version's local
     # candidate after the complete replacement is staged and verified.
