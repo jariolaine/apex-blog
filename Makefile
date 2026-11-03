@@ -2,7 +2,7 @@
 # the ignored automation/variables.local.sh file.
 SCRIPTS := automation
 # Hotfix import defaults to running Supporting Objects install/upgrade scripts.
-INSTALL_SUPPORTING_OBJECTS ?= YES
+OBJECTS ?= YES
 .PHONY: help setup setup-ci doctor lint test test-fast check-schema preflight check ci prepare-release supporting source sync-dev build validate qa production test-install test-deinstall test-upgrade hotfix-export hotfix-production check-source check-release verify-release release-check
 
 help:
@@ -41,8 +41,7 @@ help:
 	  'Emergency hotfix:' \
 	  '  make hotfix-export                 Export BOTH QA/UAT apps as SQL (no build)' \
 	  '  make hotfix-production             Import both apps + Supporting Objects (default)' \
-	  '  make hotfix-production INSTALL_SUPPORTING_OBJECTS=NO' \
-	  '                                     Import apps without Supporting Objects'
+	  '  make hotfix-production OBJECTS=NO' Import apps without Supporting Objects'
 
 # The preflight is enforced INSIDE the DEV/QA scripts, so direct invocations
 # cannot bypass it. Do not duplicate it as a Makefile prerequisite.
@@ -140,5 +139,5 @@ hotfix-export:
 	./$(SCRIPTS)/hotfix.sh export
 
 hotfix-production:
-	@case '$(INSTALL_SUPPORTING_OBJECTS)' in YES|NO) ;; *) echo 'INSTALL_SUPPORTING_OBJECTS must be YES or NO' >&2; exit 2 ;; esac
-	./$(SCRIPTS)/hotfix.sh production $(if $(filter NO,$(INSTALL_SUPPORTING_OBJECTS)),--skip-supporting-objects,)
+	@case '$(OBJECTS)' in YES|NO) ;; *) echo 'OBJECTS must be YES or NO' >&2; exit 2 ;; esac
+	./$(SCRIPTS)/hotfix.sh production $(if $(filter NO,$(OBJECTS)),--skip-supporting-objects,)

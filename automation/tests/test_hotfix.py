@@ -112,8 +112,7 @@ class HotfixTests(unittest.TestCase):
         for call in self.calls()[2:4]:
             self.assertIn('set_auto_install_sup_obj(true)', call['sql'])
         result = subprocess.run(
-            ['make', '--no-print-directory', 'hotfix-production',
-             'INSTALL_SUPPORTING_OBJECTS=NO'],
+            ['make', '--no-print-directory', 'hotfix-production', 'OBJECTS=NO'],
             env=self.env, cwd=self.root, text=True, capture_output=True,
             timeout=30,
         )
@@ -122,8 +121,7 @@ class HotfixTests(unittest.TestCase):
             self.assertIn('set_auto_install_sup_obj(false)', call['sql'])
         previous_calls = len(self.calls())
         invalid = subprocess.run(
-            ['make', '--no-print-directory', 'hotfix-production',
-             'INSTALL_SUPPORTING_OBJECTS=MAYBE'],
+            ['make', '--no-print-directory', 'hotfix-production', 'OBJECTS=MAYBE'],
             env=self.env, cwd=self.root, text=True, capture_output=True,
             timeout=30,
         )

@@ -107,7 +107,7 @@ Use `make verify-release` alone when verifying an older candidate.
 | `make test-deinstall` | Runs `test-install` first, then removes both TEST apps and all user objects. |
 | `make qa` | Deploys the selected candidate to QA after mandatory preflight. |
 | `make production CONFIRM=YES` | Promotes the candidate to production; requires approval. |
-| `make hotfix-export` / `make hotfix-production` | Emergency QA/UAT-to-PROD path; installs Supporting Objects by default. Use `INSTALL_SUPPORTING_OBJECTS=NO` to skip their automatic installation. See [HOTFIX.md](HOTFIX.md). |
+| `make hotfix-export` / `make hotfix-production` | Emergency QA/UAT-to-PROD path; installs Supporting Objects by default. Use `OBJECTS=NO` to skip their automatic installation. See [HOTFIX.md](HOTFIX.md). |
 
 Database targets must only be run against verified saved SQLcl connections and
 approved environments. TEST reset/deinstall targets are **destructive** and
@@ -247,8 +247,13 @@ candidates cannot be replaced by default.
 
 The normal release procedure, safe local candidate replacement, selection via
 `RELEASE_DIR=...`, TEST/QA/production promotion, and release publishing are
-specified in [RELEASE_CANDIDATES.md](RELEASE_CANDIDATES.md). Always promote the
-same verified candidate; do not rebuild between TEST, QA and production.
+specified in [RELEASE_CANDIDATES.md](RELEASE_CANDIDATES.md). The export script
+sources `automation/lib/candidate_publish.sh` for early exclusive locking,
+checksum-bound staging, same-filesystem publication, and rollback on failures.
+The helper runs in the exporter shell so its locks and EXIT/signal cleanup
+remain active through final verification. Do not invoke it as a separate
+publisher. Always promote the same verified candidate; do not rebuild between
+TEST, QA and production.
 
 ## Troubleshooting and maintenance
 

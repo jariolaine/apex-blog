@@ -90,6 +90,7 @@ Check the saved SQLcl connection and target schema before any approved database 
 - Installer is the **full SQL export with Supporting Objects**, not APEXLang alone. Install Admin before Public. Preserve the order in `automation/schema/install.list` and `upgrade.list`: every `.pks` must have a matching `.pkb`, and all specs precede bodies. Run `make check-schema` before generation.
 - `make check-source` is safe for work-in-progress; `make check-release` is strict and requires both app versions and current Supporting Objects versions to match VERSION.txt. Historical upgrade SQL retains old version dates.
 - For **normal releases**, use one **unchanged versioned candidate** under `build/releases/<version>/` for TEST, QA, production, and GitHub. Use `RELEASE_DIR=...` to select it; QA also verifies the candidate's source fingerprint. Never rebuild between environments. Follow `automation/RELEASE_CANDIDATES.md`.
+- Candidate publication is implemented in the **sourced** `automation/lib/candidate_publish.sh` helper. Keep its exclusive lock from before DEV export through final verification, and preserve same-shell EXIT/signal rollback (including backup restoration). Do not run the helper in a subprocess.
 
 ## Emergency QA/UAT -> production application hotfix
 
@@ -101,7 +102,7 @@ Only use this path when explicitly requested. Follow `automation/HOTFIX.md`:
   and normal release gates. Supporting Objects are **installed by default** in
   both PROD imports; review possible schema/data changes. To skip their
   automatic installation, use
-  `make hotfix-production INSTALL_SUPPORTING_OBJECTS=NO` (direct script:
+  `make hotfix-production OBJECTS=NO` (direct script:
   `production --skip-supporting-objects`).
 - Do not commit generated `build/hotfix/` files. Developers must carry fixes back into the usual development and source-control process separately.
 

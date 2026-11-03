@@ -14,7 +14,7 @@ make hotfix-export       # QA/UAT -> build/hotfix/f102.sql and f101.sql
 make hotfix-production   # Import both apps + Supporting Objects (default)
 
 # Only replace the applications; do not run Supporting Objects scripts:
-make hotfix-production INSTALL_SUPPORTING_OBJECTS=NO
+make hotfix-production OBJECTS=NO
 ```
 
 Application IDs are taken from `uatAppIds` and `prdAppIds` in
@@ -33,7 +33,7 @@ production schema and data. **Review those scripts and confirm they are safe to
 run on production before importing.** This hotfix path does not check schema
 migration compatibility.
 
-Set `INSTALL_SUPPORTING_OBJECTS=NO` on `make hotfix-production` to set
+Set `OBJECTS=NO` on `make hotfix-production` to set
 `SET_AUTO_INSTALL_SUP_OBJ(FALSE)` for **both** imports. The SQL exports still
 include Supporting Objects, but their automatic installation/upgrade scripts
 are skipped. Direct script invocation supports

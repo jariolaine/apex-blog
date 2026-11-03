@@ -2,6 +2,8 @@
 import fcntl
 import json
 import os
+import shlex
+import sys
 import shutil
 from zipfile import ZipFile
 
@@ -200,6 +202,50 @@ class ReleaseWorkflows(WorkflowFixture):
         self.assertEqual(list(current.parent.glob('.candidate.*')), [])
         self.script('verify_release.sh')
 
+    def test_failed_first_publication_removes_stage_and_unverified_candidate(self):
+        # Failure after staging must not expose a partial first release.
+        mover = self.bin / 'mv'
+        mover.write_text(
+            '#!/usr/bin/env bash\n'
+            'if [[ "$*" == *"/.candidate."* ]]; then\n'
+            '  echo "mock first publication failure" >&2; exit 77\n'
+            'fi\n'
+            'exec /usr/bin/mv "$@"\n', encoding='utf-8',
+        )
+        mover.chmod(0o755)
+        self.env['PATH'] = f"{self.bin}{os.pathsep}{self.env.get('PATH', '')}"
+        out = self.make('build', ok=False)
+        self.assertIn('mock first publication failure', out.stderr)
+        self.assertFalse(self.candidate().exists())
+        self.assertEqual(list(self.candidate().parent.glob('.candidate.*')), [])
+        self.assertEqual(list(self.candidate().parent.glob('.backup.*')), [])
+
+    def test_final_verification_failure_restores_previous_candidate(self):
+        self.make('build')
+        current = self.candidate()
+        original = {f.name: f.read_bytes() for f in current.iterdir() if f.is_file()}
+        python = self.bin / 'python3'
+        python.write_text(
+            '#!/usr/bin/env bash\n'
+            # Reject only published verification; allow manifest creation and
+            # staging verification, to test rollback after a successful rename.
+            'if [[ "$*" == *"release_manifest.py verify --dir "* '
+            '&& "$*" != *"--staging"* ]]; then\n'
+            '  echo "mock final verification failure" >&2; exit 88\n'
+            'fi\n'
+            f'exec {shlex.quote(sys.executable)} "$@"\n', encoding='utf-8',
+        )
+        python.chmod(0o755)
+        self.env['PATH'] = f"{self.bin}{os.pathsep}{self.env.get('PATH', '')}"
+        out = self.make('build', 'OVERWRITE=YES', ok=False)
+        self.assertIn('mock final verification failure', out.stderr)
+        self.assertIn('Restored previous release candidate', out.stderr)
+        self.assertEqual(original, {f.name: f.read_bytes() for f in current.iterdir() if f.is_file()})
+        self.assertEqual(list(current.parent.glob('.candidate.*')), [])
+        self.assertEqual(list(current.parent.glob('.backup.*')), [])
+        self.env['PATH'] = self.env['PATH'].removeprefix(f"{self.bin}{os.pathsep}")
+        self.script('verify_release.sh')
+
     def test_failed_overwrite_during_exports_preserves_old_candidate(self):
         self.make('build')
         before = (self.candidate() / 'manifest.json').read_bytes()
@@ -229,10 +275,12 @@ class ReleaseWorkflows(WorkflowFixture):
         self.make('build')
         lock_file = self.candidate().parent / '.locks' / (self.candidate().name + '.lock')
         before = (self.candidate() / 'manifest.json').read_bytes()
+        sqlcl_calls = len(self.calls_data())
         with lock_file.open('a') as holder:
             fcntl.flock(holder.fileno(), fcntl.LOCK_SH | fcntl.LOCK_NB)
             out = self.make('build', 'OVERWRITE=YES', ok=False)
             self.assertIn('in use by another build or deployment', out.stderr)
+            self.assertEqual(len(self.calls_data()), sqlcl_calls, 'Lock must be checked before DEV export')
             fcntl.flock(holder.fileno(), fcntl.LOCK_UN)
         self.assertEqual((self.candidate() / 'manifest.json').read_bytes(), before)
 
