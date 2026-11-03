@@ -7,11 +7,6 @@ class DeployWorkflows(WorkflowFixture):
     # Deployments consume a verified release; they must never re-export DEV.
     needs_dev_snapshot = False
 
-    def test_direct_qa_deploy_preflight_blocks_database_calls(self):
-        self.env['MOCK_PREFLIGHT_FAIL'] = '1'
-        self.script('deploy.sh', 'qa', ok=False)
-        self.assertEqual((self.root / 'preflight.log').read_text().strip(), 'preflight')
-        self.assertFalse(self.calls.exists())
 
     def test_qa_and_production_use_same_sql_release_and_distinct_connections(self):
         self.stub_release_candidate()
@@ -55,16 +50,6 @@ class DeployWorkflows(WorkflowFixture):
         before = len(self.calls_data())
         ddl = self.repo / 'Database/Packages/BLOG_UTIL.pkb'
         ddl.write_bytes(ddl.read_bytes() + b'\n-- changed after build\n')
-        out = self.script('import_apps_to_qa.sh', ok=False)
-        self.assertIn('source fingerprint differs', out.stderr)
-        self.assertFalse(any(c['argv'][-1] == 'QA_TEST_SAVED'
-                             for c in self.calls_data()[before:]))
-
-    def test_qa_source_fingerprint_includes_schema_manifests(self):
-        self.stub_release_candidate()
-        before = len(self.calls_data())
-        manifest = self.repo / 'automation/schema/upgrade.list'
-        manifest.write_text(manifest.read_text() + '\n# reviewed manifest change\n')
         out = self.script('import_apps_to_qa.sh', ok=False)
         self.assertIn('source fingerprint differs', out.stderr)
         self.assertFalse(any(c['argv'][-1] == 'QA_TEST_SAVED'

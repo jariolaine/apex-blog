@@ -27,17 +27,33 @@ case "${1:-}" in
         log "Both QA/UAT application exports are in $buildDir/hotfix"
         ;;
     production)
-        # By default run the exported Supporting Objects install/upgrade scripts.
-        # The only opt-out is explicit, and is valid only for production import.
+        # Hotfix bypasses the normal CI/release gates, NOT explicit production
+        # approval or verification of the connected schema and workspace.
+        confirmed=false
         install_supporting_objects=true
-        if (( $# != 1 )); then
-            (( $# == 2 )) && [[ "$2" == '--skip-supporting-objects' ]] \
-                || die 'Usage: hotfix.sh production [--skip-supporting-objects]'
-            install_supporting_objects=false
-        fi
+        shift
+        while (( $# )); do
+            case "$1" in
+                --confirm-production)
+                    ! $confirmed || die 'Duplicate --confirm-production'
+                    confirmed=true ;;
+                --skip-supporting-objects)
+                    $install_supporting_objects || die 'Duplicate --skip-supporting-objects'
+                    install_supporting_objects=false ;;
+                *) die 'Usage: hotfix.sh production --confirm-production [--skip-supporting-objects]' ;;
+            esac
+            shift
+        done
+        $confirmed || die 'Production hotfix requires --confirm-production (explicit approval)'
+        [[ -n "$prdDbConnName" && "$prdDbConnName" != "$devDbConnName" &&
+           "$prdDbConnName" != "$uatDbConnName" && "$prdDbConnName" != "$tstDbConnName" ]] \
+            || die 'PROD saved connection must be distinct from DEV, TEST and QA/UAT'
         for id in "${uatAppIds[@]}"; do
             require_file "$buildDir/hotfix/f${id}.sql"
         done
+        require_tool "$sqlcl_bin"
+        check_environment "$prdDbConnName" "$prdWorkspace" "$prdDbSchema" \
+            "$buildDir/hotfix/production-preflight.log"
         log "Production hotfix: automatic Supporting Objects installation = $install_supporting_objects"
         for i in "${!uatAppIds[@]}"; do
             file="$buildDir/hotfix/f${uatAppIds[$i]}.sql"
@@ -61,7 +77,7 @@ SQL
         log 'Both QA/UAT applications imported into production'
         ;;
     *)
-        printf 'Usage: %s export\n       %s production [--skip-supporting-objects]\n' "$0" "$0" >&2
+        printf 'Usage: %s export\n       %s production --confirm-production [--skip-supporting-objects]\n' "$0" "$0" >&2
         exit 2
         ;;
 esac

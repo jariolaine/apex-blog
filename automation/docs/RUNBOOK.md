@@ -13,11 +13,13 @@ make setup     # Local Python/npm tools and Git hooks; no database changes
 make check     # Full local CI gate; no database connection
 ```
 
-`make check` runs lint, schema/source checks, all **mocked** automation tests
-and SQLcl APEXLang validation. It requires local SQLcl (and its supported Java
+`make check` runs lint, schema/source checks, focused **offline release-safety**
+tests and SQLcl APEXLang validation. It requires local SQLcl (and its supported Java
 runtime), but **does not run** a real TEST install, upgrade or deinstall.
-`make test-fast` runs selected unit/regression tests, `make test` runs the full
-offline regression suite, and `make validate` runs APEXLang validation only.
+`make test-fast` runs the small schema/metadata/parity selection; `make test`
+runs all selected offline safety tests, and `make validate` runs APEXLang
+validation only. Generic CI tool behavior is verified by running the real
+tools. See [test scope](../tests/README.md) for the coverage boundaries.
 Pre-commit runs static lint without the Python tests. If setup fails because
 Python cannot create `.venv/`, install the system Python `venv` package (for
 example `python3-venv` on Ubuntu). SQLcl needs a compatible Java runtime;
@@ -78,13 +80,15 @@ versions simply to match the current version.
 4. Run `make source` if DEV has the approved application changes; review the
    APEXLang diff. If reviewed repository changes instead need to go **into**
    DEV, obtain separate approval and run `make sync-dev`, then recheck source.
-5. Run `make check-release`, then `make build`. Build reads DEV, checks
-   APEXLang/static/Supporting Objects parity and release versions, exports
-   full SQL applications and publishes a checksum-valid candidate. It does
-   **not** rewrite tracked APEXLang.
-6. Run `make release-check` on the resulting candidate. This checks strict
-   source versions, manifest and checksums. QA separately enforces matching
-   candidate/source fingerprints.
+5. Run `make candidate`. This sequentially runs the full offline quality
+   gate (`make check`), builds the release (`make build`) and validates its
+   manifest/checksums (`make release-check`). It reads DEV to export full SQL
+   applications and verify APEXLang, static-file and Supporting Objects parity;
+   it **does not** modify DEV or tracked source. A stale Supporting Objects
+   source fails rather than being regenerated automatically.
+6. Review the resulting candidate and its manifest. QA separately enforces
+   matching candidate/source fingerprints. Use `make build` and
+   `make release-check` individually only for troubleshooting.
 
 The candidate directory is `build/releases/<version-without-Release-prefix>/`.
 It contains:
@@ -143,12 +147,30 @@ uploaded outside the local repository. Never manually edit candidate files.
 ## Testing and troubleshooting
 
 The following commands are **real, destructive database acceptance tests**,
-not part of `make test` or `make check`. Verify that the saved TEST connection
-points to a dedicated disposable schema and obtain approval first.
+not part of `make test`, `make check` or GitHub CI. Verify that the saved TEST
+connection points to an approved, dedicated disposable schema first.
+
+The complete acceptance command validates an existing candidate, installs a
+**strictly older** release and upgrades it, then performs another fresh install,
+deinstalls and asserts the disposable TEST schema and both applications are
+gone. It is sequential even when Make uses `-j`. The previous ZIP is mandatory
+for this combined command to prevent a moving GitHub download from silently
+changing the input:
 
 ```bash
-make test-install  RELEASE_DIR=build/releases/26.1.5.20261101
-make test-upgrade  RELEASE_DIR=build/releases/26.1.5.20261101 \
+make test-release CONFIRM=YES \
+  PREVIOUS_ZIP=/path/to/older/apex-blog-latest.zip \
+  RELEASE_DIR=build/releases/26.1.5.20261101
+```
+
+If there is no valid older release ZIP (for example during first-public-release
+preparation), run `make test-deinstall` for fresh installation and cleanup;
+record that upgrade compatibility is **not yet verified**. Individual TEST
+operations remain available for diagnosis:
+
+```bash
+make test-install RELEASE_DIR=build/releases/26.1.5.20261101
+make test-upgrade RELEASE_DIR=build/releases/26.1.5.20261101 \
   PREVIOUS_ZIP=/path/to/older/apex-blog-latest.zip
 make test-deinstall RELEASE_DIR=build/releases/26.1.5.20261101
 ```
@@ -205,24 +227,29 @@ and requires explicit confirmation; it does not re-run the full preflight or
 require Git to remain at the original version. Both import **packaged full SQL
 exports** (Admin first). `make production` is not a rollback command.
 
-For a GitHub release, publish both **prebuilt** ZIPs from the selected
-candidate. Do not recreate ZIPs from later source. The public `-latest` asset
-URLs refer to the repository's published release artifacts.
+For a GitHub release, publish both **prebuilt** ZIPs and `SHA256SUMS` from
+the selected candidate. Preserve `manifest.json` alongside the release assets
+when possible; checksum validation is not a signature. Do not recreate ZIPs
+from later source. Before publishing, record the approved candidate version,
+Git commit/tag, successful TEST/QA acceptance and intended artifacts. The
+public `-latest` asset URLs only work after a GitHub release is published.
 
 ## Emergency hotfix
 
 Use the QA/UAT-to-PROD hotfix **only after explicit production approval**, when
 normal release promotion cannot safely carry a critical fix (for example when
 DEV is already ahead of PROD). The script does **not** run the normal preflight,
-version compatibility checks, candidate checksums, confirmation prompt or
-backup. Its saved SQLcl production connection must be independently verified.
+version compatibility checks, candidate checksums or backup. It requires
+`CONFIRM=YES` (or `--confirm-production` for direct use) and verifies the
+connected PROD schema/workspace before the first import; approval and a
+verified target do not make the bypassed gates safe.
 
 ```bash
 make hotfix-export                            # QA/UAT -> build/hotfix/f<ID>.sql
 # Review both exported SQL files, including their actual Supporting Objects.
-make hotfix-production                       # Imports both; Supporting Objects ON
+make hotfix-production CONFIRM=YES            # Imports both; Supporting Objects ON
 # Only if explicitly approved to skip automatic Supporting Objects installation:
-make hotfix-production OBJECTS=NO
+make hotfix-production CONFIRM=YES OBJECTS=NO
 ```
 
 Both QA/UAT apps are exported with Supporting Objects. By default PROD import
@@ -230,7 +257,7 @@ uses `APEX_APPLICATION_INSTALL.SET_AUTO_INSTALL_SUP_OBJ(TRUE)` for **both**
 apps; it may execute schema/data-changing scripts. `OBJECTS=NO` sets this
 option to `FALSE` for both; the SQL files still contain Supporting Objects.
 The script equivalent is
-`automation/hotfix.sh production --skip-supporting-objects`.
+`automation/hotfix.sh production --confirm-production --skip-supporting-objects`.
 
 `make hotfix-export` replaces the previous pair under `build/hotfix/` only
 when both exports succeed. `make hotfix-production` then uses those **saved**

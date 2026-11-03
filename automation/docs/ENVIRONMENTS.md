@@ -54,7 +54,10 @@ SQLcl/database access process. `make doctor` checks that SQLcl exists; it does
   `make prepare-release CONFIRM=YES` changes DEV application versions;
   `make sync-dev` overwrites DEV application definitions. Both mutations
   require explicit approval. `make build` reads DEV but does not change it.
-- **TEST:** `make test-install` resets the schema, removes prior test apps,
+- **TEST:** `make test-release CONFIRM=YES PREVIOUS_ZIP=...` sequentially
+  tests upgrade, then fresh installation and verified deinstallation. It
+  resets the approved disposable TEST schema and leaves it empty on success.
+  `make test-install` resets the schema, removes prior test apps,
   then installs a release. `make test-upgrade` resets TEST and installs an older
   release before upgrading. `make test-deinstall` runs a fresh install **first**,
   removes Supporting Objects and both applications, and verifies **zero**
@@ -63,7 +66,7 @@ SQLcl/database access process. `make doctor` checks that SQLcl exists; it does
   candidate/source fingerprint before importing. `make hotfix-export` reads
   QA/UAT without creating a normal candidate.
 - **PROD:** `make production CONFIRM=YES` deploys the previously verified
-  candidate, without rebuilding. `make hotfix-production` imports saved QA/UAT
+  candidate, without rebuilding. `make hotfix-production CONFIRM=YES` imports saved QA/UAT
   exports directly and deliberately skips normal quality/release gates.
   Supporting Objects are installed by default; `OBJECTS=NO` disables their
   **automatic** installation.
@@ -73,7 +76,7 @@ SQLcl/database access process. `make doctor` checks that SQLcl exists; it does
 ```text
 Git-owned schema, metadata and APEXLang ↔ DEV (reviewed source synchronization)
                      │
-              make build (DEV read, Git parity)
+          make candidate (checks, DEV export, verify)
                      │
        build/releases/<version>/ (checksummed candidate)
                      │
@@ -88,7 +91,7 @@ TEST/QA/PROD install the **packaged SQL application exports** from the
 selected candidate directory, not a fresh export from DEV. Neither
 `make test` nor `make check` executes these Oracle installation checks.
 
-**STAGING is not implemented in v15.** There is no `stgDbConnName`,
+**STAGING is not implemented.** There is no `stgDbConnName`,
 `make staging` or `deploy.sh stg` path. Do not add an imagined staging step to
 release instructions. The Terraform stack is legacy and is not changed by this
 review; see [Stack README](../../Stack/README.md) for its separate context.

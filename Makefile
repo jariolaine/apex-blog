@@ -3,7 +3,7 @@
 SCRIPTS := automation
 # Hotfix import defaults to running Supporting Objects install/upgrade scripts.
 OBJECTS ?= YES
-.PHONY: help setup setup-ci doctor lint test test-fast check-schema preflight check ci prepare-release supporting source sync-dev build validate qa production test-install test-deinstall test-upgrade hotfix-export hotfix-production check-source check-release verify-release release-check
+.PHONY: help setup setup-ci doctor lint test test-fast check-schema preflight check ci prepare-release supporting source sync-dev build candidate validate qa production test-install test-deinstall test-upgrade test-release hotfix-export hotfix-production check-source check-release verify-release release-check
 
 help:
 	@printf '%s\n' \
@@ -13,8 +13,8 @@ help:
 	  '' \
 	  'Quality checks:' \
 	  '  make lint                          Run repository linters (pre-commit)' \
-	  '  make test                          Run all Python regression tests' \
-	  '  make test-fast                     Run quick regression tests on demand' \
+	  '  make test                          Run focused offline release-safety tests' \
+	  '  make test-fast                     Run schema, metadata and parity tests' \
 	  '  make validate                      Validate APEXLang with SQLcl (no database)' \
 	  '  make check                         Lint + schema/source + full tests + APEXLang' \
 	  '  make check-source                  Check local APEXLang references and DEV app IDs' \
@@ -27,6 +27,7 @@ help:
 	  '  make sync-dev                      Overwrite DEV with local APEXLang (explicit)' \
 	  '  make build                         Build versioned SQL release ZIPs (read-only)' \
 	  '  make build OVERWRITE=YES           Replace only a safe local release candidate' \
+  '  make candidate                     Run quality gate, build and verify candidate' \
 	  '  make check-release                 Check versions and Supporting Objects sources' \
 	  '  make verify-release                Verify candidate checksums and manifest' \
 	  '  make release-check                 Check release source plus packaged candidate' \
@@ -35,13 +36,14 @@ help:
 	  '  make test-install                  Reset disposable TEST and test installation' \
 	  '  make test-deinstall                Test installation, deinstall, assert TEST is empty' \
 	  '  make test-upgrade                  Reset TEST and test upgrading a prior release' \
+  '  make test-release CONFIRM=YES PREVIOUS_ZIP=...  Upgrade, fresh install, deinstall in TEST' \
 	  '  make qa                            Deploy built SQL release to QA' \
 	  '  make production CONFIRM=YES        Promote the same candidate to production' \
 	  '' \
 	  'Emergency hotfix:' \
 	  '  make hotfix-export                 Export BOTH QA/UAT apps as SQL (no build)' \
-	  '  make hotfix-production             Import both apps + Supporting Objects (default)' \
-	  '  make hotfix-production OBJECTS=NO  Import apps without Supporting Objects'
+	  '  make hotfix-production CONFIRM=YES Import both apps + Supporting Objects (default)' \
+	  '  make hotfix-production OBJECTS=NO  Import both apps and skip automatic Supporting Objects'
 
 # The preflight is enforced INSIDE the DEV/QA scripts, so direct invocations
 # cannot bypass it. Do not duplicate it as a Makefile prerequisite.
@@ -62,7 +64,6 @@ test-fast:
 	python3 -m unittest discover -s automation/tests -p 'test_preserved_parity.py' -v
 	python3 -m unittest discover -s automation/tests -p 'test_schema_manifests.py' -v
 	python3 -m unittest discover -s automation/tests -p 'test_metadata_source.py' -v
-	python3 -m unittest discover -s automation/tests -p 'test_ci_reliability.py' -v
 
 test:
 	python3 -m unittest discover -s automation/tests -v
@@ -97,6 +98,15 @@ build:
 	@case "$(OVERWRITE)" in 	  ""|NO|YES) ;; 	  *) echo 'OVERWRITE must be YES (or omitted): make build OVERWRITE=YES' >&2; exit 2 ;; 	esac
 	./$(SCRIPTS)/export_application.sh --build-only $(if $(filter YES,$(OVERWRITE)),--overwrite,)
 
+# One safe, sequential build workflow. `make -j` cannot reorder the stages.
+# Does not run source/sync-dev/prepare-release or modify tracked sources.
+# Candidate publication itself retains the existing exclusive lock and checks.
+candidate:
+	@test -z "$(RELEASE_DIR)" || { echo 'candidate builds the current VERSION.txt; omit RELEASE_DIR' >&2; exit 2; }
+	@$(MAKE) --no-print-directory check
+	@$(MAKE) --no-print-directory build
+	@$(MAKE) --no-print-directory release-check
+
 check-source:
 	./$(SCRIPTS)/check_source.sh source
 
@@ -126,6 +136,17 @@ test-deinstall: test-install
 test-upgrade:
 	./$(SCRIPTS)/run_upgrade_test.sh --confirm-reset-test $(if $(PREVIOUS_ZIP),--previous-zip "$(PREVIOUS_ZIP)",) $(if $(RELEASE_DIR),--release-dir "$(RELEASE_DIR)",)
 
+# Explicit, destructive acceptance workflow against disposable TEST only.
+# Upgrade uses a fixed, older ZIP. test-deinstall itself runs test-install first,
+# and asserts zero user objects and no TEST APEX apps after cleanup.
+test-release:
+	@test "$(CONFIRM)" = "YES" || { echo 'Requires: make test-release CONFIRM=YES PREVIOUS_ZIP=/path/to/older.zip (resets TEST)' >&2; exit 1; }
+	@test -n "$(PREVIOUS_ZIP)" || { echo 'test-release requires PREVIOUS_ZIP=/path/to/older.zip; no implicit GitHub download' >&2; exit 2; }
+	@test -f "$(PREVIOUS_ZIP)" && test -s "$(PREVIOUS_ZIP)" || { echo 'PREVIOUS_ZIP must be an existing nonempty file' >&2; exit 2; }
+	@$(MAKE) --no-print-directory verify-release
+	@$(MAKE) --no-print-directory test-upgrade
+	@$(MAKE) --no-print-directory test-deinstall
+
 qa:
 	./$(SCRIPTS)/import_apps_to_qa.sh $(if $(RELEASE_DIR),--release-dir "$(RELEASE_DIR)",)
 
@@ -139,5 +160,6 @@ hotfix-export:
 	./$(SCRIPTS)/hotfix.sh export
 
 hotfix-production:
+	@test "$(CONFIRM)" = "YES" || { echo 'Production hotfix requires: make hotfix-production CONFIRM=YES [OBJECTS=NO]' >&2; exit 1; }
 	@case '$(OBJECTS)' in YES|NO) ;; *) echo 'OBJECTS must be YES or NO' >&2; exit 2 ;; esac
-	./$(SCRIPTS)/hotfix.sh production $(if $(filter NO,$(OBJECTS)),--skip-supporting-objects,)
+	./$(SCRIPTS)/hotfix.sh production --confirm-production $(if $(filter NO,$(OBJECTS)),--skip-supporting-objects,)

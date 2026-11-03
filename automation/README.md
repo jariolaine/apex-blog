@@ -18,7 +18,7 @@ these automation scripts.
 ```bash
 make doctor        # Read-only; no database connection
 make setup         # Install local tools and Git hooks; no database changes
-make check         # Static checks, full mocked tests, APEXLang validation
+make check         # Static checks, focused safety tests, APEXLang validation
 make supporting    # Regenerate Git-owned Supporting Objects offline; review diff
 ```
 
@@ -34,7 +34,7 @@ updates tracked files; it is not a read-only check.
 | Diagnose local tooling | `make doctor` | [Setup](docs/RUNBOOK.md#local-setup) |
 | Install CI tools and hooks | `make setup` | [Setup](docs/RUNBOOK.md#local-setup) |
 | Static lint only | `make lint` | [CI architecture](docs/ARCHITECTURE.md#quality-gates-and-tests) |
-| Quick / full mocked regression tests | `make test-fast` / `make test` | [Tests](docs/RUNBOOK.md#testing-and-troubleshooting) |
+| Quick / full offline safety tests | `make test-fast` / `make test` | [Test scope](tests/README.md) |
 | Entire local / CI quality gate | `make check` | [CI architecture](docs/ARCHITECTURE.md#quality-gates-and-tests) |
 | Validate APEXLang without a DB login | `make validate` | Requires SQLcl |
 | Validate schema, metadata, deinstall | `make check-schema` | [Schema changes](docs/RUNBOOK.md#schema-changes) |
@@ -43,21 +43,23 @@ updates tracked files; it is not a read-only check.
 | Read APEXLang from DEV | `make source` | [DEV synchronization](docs/RUNBOOK.md#dev-synchronization) |
 | Overwrite DEV applications | `make sync-dev` | **Approval required**; [DEV synchronization](docs/RUNBOOK.md#dev-synchronization) |
 | Update DEV release versions | `make prepare-release CONFIRM=YES` | **Approval required** |
-| Build release candidate | `make build` | [Release preparation](docs/RUNBOOK.md#release-preparation) |
+| Build and verify candidate (recommended) | `make candidate` | Full gate, DEV export and [release checks](docs/RUNBOOK.md#release-preparation) |
+| Build candidate only | `make build` | No full local quality gate; [Release preparation](docs/RUNBOOK.md#release-preparation) |
 | Check strict release source versions | `make check-release` | No DB login |
 | Verify an existing candidate | `make verify-release` | Checks manifest and hashes |
 | Check current source and candidate | `make release-check` | Requires existing candidate |
-| Install, upgrade or deinstall in TEST | `make test-install`, `make test-upgrade`, `make test-deinstall` | **Destructive; approved disposable TEST only**; [Testing](docs/RUNBOOK.md#testing-and-troubleshooting) |
+| Complete TEST acceptance | `make test-release CONFIRM=YES PREVIOUS_ZIP=...` | **Destructive; approved disposable TEST only**; [Testing](docs/RUNBOOK.md#testing-and-troubleshooting) |
+| Individual TEST operations | `make test-install`, `make test-upgrade`, `make test-deinstall` | For diagnostics; reset disposable TEST |
 | Deploy to QA/UAT | `make qa` | **Approval required**, runs full gate |
 | Promote to PROD | `make production CONFIRM=YES` | **Production approval required** |
 | Emergency QA/UAT export | `make hotfix-export` | [Hotfix](docs/RUNBOOK.md#emergency-hotfix) |
-| Emergency PROD import | `make hotfix-production` | **Production approval required**; Supporting Objects enabled by default |
+| Emergency PROD import | `make hotfix-production CONFIRM=YES` | **Production approval and target verification required**; Supporting Objects enabled by default |
 
 For release-specific commands, an existing candidate can be selected using
 `RELEASE_DIR=build/releases/<version>`. For upgrade testing, use
 `PREVIOUS_ZIP=/path/to/older/apex-blog-latest.zip` when the latest published
 release is not older than the candidate. For emergency import only,
-`make hotfix-production OBJECTS=NO` skips **automatic** Supporting Objects
+`make hotfix-production CONFIRM=YES OBJECTS=NO` skips **automatic** Supporting Objects
 installation for both applications.
 
 ## Important safety distinctions
@@ -71,7 +73,7 @@ installation for both applications.
 - **Emergency hotfix:** bypasses normal release checks and may change PROD data
   and schema through Supporting Objects. It is **not** a rollback mechanism.
 - **STAGING:** there is no supported staging connection, Make target or
-  deployment path in v15. The normal pipeline is TEST → QA/UAT → PROD.
+  deployment path. The normal pipeline is TEST → QA/UAT → PROD.
 
 For manually managed infrastructure, see the legacy
 [Stack documentation](../Stack/README.md); Terraform is outside this

@@ -3,8 +3,8 @@
 A SQLcl stand-in records invocation and simulates responses. These are not Oracle
 integration tests: use the disposable TEST database commands before release.
 """
-
 from datetime import datetime, timedelta
+
 import json
 import os
 from pathlib import Path
@@ -167,16 +167,6 @@ class WorkflowFixture(unittest.TestCase):
         ], check=True, capture_output=True, text=True, timeout=20)
         return release
 
-    def drift_app_version(self, app: Path):
-        """Change the fixture's current release date, never an old hardcoded version."""
-        version = (self.repo / 'VERSION.txt').read_text(encoding='utf-8').strip()
-        prefix, date = version.rsplit('.', 1)
-        next_date = (datetime.strptime(date, '%Y%m%d') + timedelta(days=1)).strftime('%Y%m%d')
-        mismatched = f'{prefix}.{next_date}'
-        content = app.read_text(encoding='utf-8')
-        old = f'version: {version}'
-        self.assertIn(old, content, f'Expected current release version in {app}')
-        app.write_text(content.replace(old, f'version: {mismatched}', 1), encoding='utf-8')
 
     def older_version(self):
         version = (self.repo / 'VERSION.txt').read_text(encoding='utf-8').strip()
@@ -192,31 +182,6 @@ class WorkflowFixture(unittest.TestCase):
             archive.writestr('blog-administration-latest.sql', 'prompt previous admin\n')
             archive.writestr('blog-public-pages-latest.sql', 'prompt previous public\n')
 
-    def mock_curl_download(self, version):
-        """Make a local ZIP look like a GitHub download, without using the network."""
-        archive = self.root / 'github-previous.zip'
-        self.previous_zip(archive, version)
-        curl = self.bin / 'curl'
-        curl.write_text(
-            '#!/usr/bin/env bash\n'
-            'set -Eeuo pipefail\n'
-            'printf "%s\\n" "$@" > "$MOCK_CURL_ARGS"\n'
-            '[[ "${MOCK_CURL_FAIL:-0}" != "1" ]] || exit 22\n'
-            'dest=""\n'
-            'while (( $# )); do\n'
-            '  case "$1" in\n'
-            '    --output) dest="$2"; shift 2 ;;\n'
-            '    *) shift ;;\n'
-            '  esac\n'
-            'done\n'
-            '[[ -n "$dest" ]] || exit 2\n'
-            'cp -- "$MOCK_CURL_ZIP" "$dest"\n',
-            encoding='utf-8',
-        )
-        curl.chmod(0o755)
-        self.env['PATH'] = f"{self.bin}{os.pathsep}{self.env.get('PATH', '')}"
-        self.env['MOCK_CURL_ZIP'] = str(archive)
-        self.env['MOCK_CURL_ARGS'] = str(self.root / 'curl-args.txt')
 
     def calls_data(self):
         if not self.calls.exists():

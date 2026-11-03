@@ -53,7 +53,7 @@ jobs:
           echo "$RUNNER_TEMP/sqlcl/bin" >> "$GITHUB_PATH"
       - name: Validate GitHub Actions workflows
         run: bash automation/ci/check_actionlint.sh
-      - name: Lint, complete regression suite, APEXLang validation
+      - name: Lint, offline safety tests, APEXLang validation
         run: |
           set -o pipefail
           make ci 2>&1 | tee "$RUNNER_TEMP/quality.log"

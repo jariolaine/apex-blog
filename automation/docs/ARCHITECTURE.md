@@ -1,7 +1,7 @@
 # Automation architecture
 
-This is the **current v15 implementation**, not a proposal for additional
-environments. See [navigation](NAVIGATION.md) for commands,
+This describes the implemented automation, not a proposal for additional
+environments. See [automation README](../README.md) for commands,
 [environments](ENVIRONMENTS.md) for connection settings and the
 [runbook](RUNBOOK.md) for operational procedures.
 
@@ -38,7 +38,7 @@ exists.
 graph TD
     Git[Git APEXLang, schema manifests and metadata] --> Supporting[make supporting: offline SQL assembly]
     Supporting --> Sync[Review source and synchronize with DEV as authorized]
-    Sync --> Build[make build: verify DEV and Git parity, export SQL]
+    Sync --> Build[make candidate: quality gate, build, verify]
     Build --> Candidate[Versioned candidate: manifest and SHA256SUMS]
     Candidate --> TEST[Disposable TEST acceptance]
     Candidate --> QA[QA/UAT: full preflight and source fingerprint]
@@ -61,6 +61,8 @@ live in `build/releases/.locks/`, are persistent and should **not** be deleted
 manually. A failed interrupted replacement can retain `.backup.*` recovery
 directories. See [safe candidate handling](RUNBOOK.md#candidate-integrity-and-overwrite).
 
+`make candidate` runs `make check`, `make build` and `make release-check`
+sequentially; it never synchronizes or modifies DEV source automatically.
 `make verify-release` checks manifest and checksums. `make release-check`
 combines strict source-version checks and artifact verification; it does **not**
 check the candidate's source fingerprint against the current tree. The QA
@@ -76,15 +78,19 @@ moved forward, subject to approval and compatibility.
 1. `make lint`: pre-commit static lint/format checks (no tests).
 2. `make check-schema`: offline manifest, metadata and deinstall validation.
 3. `make check-source`: work-in-progress-safe local APEXLang reference check.
-4. `make test`: full **mocked** Python automation regression suite **once**.
+4. `make test`: focused application-specific offline safety tests **once**.
 5. `make validate`: SQLcl APEXLang validation **without a DB login**.
 
-`make test-fast` runs selected regression groups on demand; it is not also run
-inside pre-commit. The regression suite uses real Bash/Make commands against
-isolated fixtures and a **mock SQLcl**, so it does not prove that Oracle DDL,
-APEX installation or PL/SQL compilation succeeds. Real acceptance is performed
-separately with `make test-install`, `make test-upgrade` and
-`make test-deinstall` on an approved disposable TEST schema.
+`make test-fast` runs schema, metadata and source-parity tests on demand; it is
+not also run inside pre-commit. The selected workflow tests execute real
+Bash/Make entry points using isolated files and a **mock SQLcl**. Generic CI
+bootstrap and tool behavior is checked by actually running those tools, not by
+Python mock regressions. These tests do not prove Oracle DDL, APEX installation
+or PL/SQL compilation succeeds. See the [test scope](../tests/README.md).
+Real acceptance uses
+`make test-release CONFIRM=YES PREVIOUS_ZIP=...` on an approved disposable
+TEST schema. It invokes upgrade, then fresh-install and deinstall checks;
+individual TEST commands remain available. None runs in CI.
 
 Direct `make sync-dev` and `make qa` enforce the full preflight before
 database mutations. `make build` has its own strict source/version/parity
@@ -105,11 +111,12 @@ require the reported `quality` check in their branch rules/rulesets.
 
 `make hotfix-export` reads both QA/UAT applications into `build/hotfix/f<ID>.sql`
 (Admin first), exporting Supporting Objects with them. A later
-`make hotfix-production` imports **those saved SQL files** into PROD without
-normal release checks or an automatic backup. Supporting Objects install/
+`make hotfix-production CONFIRM=YES` imports **those saved SQL files** into
+PROD without normal release checks or an automatic backup. The script also
+verifies the configured PROD schema/workspace before either import. Supporting Objects install/
 upgrade scripts run by default for both apps; `OBJECTS=NO` skips **automatic**
 installation. The second import can fail after the first has already changed
 PROD. See the [emergency runbook](RUNBOOK.md#emergency-hotfix).
 
-**No staging target or automation exists in v15.** Deployment code supports
+**No staging target or automation is implemented.** Deployment code supports
 QA and production; legacy `Stack/terraform` is not part of this refactor.

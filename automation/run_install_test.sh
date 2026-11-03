@@ -15,7 +15,7 @@ while (( $# )); do
     esac
 done
 $confirmed || die 'Usage: run_install_test.sh --confirm-reset-test [--release-dir PATH]'
-[[ -n "$tstDbConnName" ]] || die 'Set APEX_BLOG_TEST_CONNECTION to a disposable TEST saved SQLcl connection'
+[[ -n "$tstDbConnName" ]] || die 'Set APEX_BLOG_TST_CONNECTION to a disposable TEST saved SQLcl connection'
 [[ "$tstDbConnName" != "$devDbConnName" && "$tstDbConnName" != "$uatDbConnName" && "$tstDbConnName" != "$prdDbConnName" ]] \
     || die 'TEST saved connection must be different from DEV, UAT and production'
 require_tool "$sqlcl_bin"

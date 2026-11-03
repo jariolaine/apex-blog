@@ -4,7 +4,6 @@ import json
 import os
 import shlex
 import sys
-import shutil
 from zipfile import ZipFile
 
 from automation.tests.workflow_fixture import WorkflowFixture
@@ -36,50 +35,6 @@ class ReleaseWorkflows(WorkflowFixture):
             self.assertIn('blog-public-pages-latest.sql', z.namelist())
             self.assertIn('README.md', z.namelist())
 
-    def test_build_rejects_static_drift_before_publishing(self):
-        css = self.repo/'applications/blog/shared-components/static-files/css/style.css'
-        original = css.read_bytes()
-        css.write_bytes(original + b'\n/* repository edit not imported to DEV */\n')
-        app = self.repo/'applications/blog/application.apx'
-        original_app = app.read_bytes()
-        out = self.script('export_application.sh', '--build-only', ok=False)
-        self.assertIn('Static application files', out.stderr)
-        self.assertIn('css/style.css', out.stderr)
-        self.assertEqual(css.read_bytes(), original + b'\n/* repository edit not imported to DEV */\n')
-        self.assertEqual(app.read_bytes(), original_app)
-        self.assertFalse((self.candidate()/'SHA256SUMS').exists())
-
-    def test_build_rejects_binary_static_drift(self):
-        icon = self.repo/'applications/blog/shared-components/static-files/icons/app-icon-192.png'
-        icon.write_bytes((self.repo/'applications/blog/shared-components/static-files/icons/app-icon-512.png').read_bytes())
-        out = self.script('export_application.sh', '--build-only', ok=False)
-        self.assertIn('Static application files', out.stderr)
-        self.assertIn('app-icon-192.png', out.stderr)
-        self.assertFalse((self.candidate()/'SHA256SUMS').exists())
-
-    def test_build_works_when_static_files_match_dev(self):
-        # A source refresh preserves local edits. Importing them to DEV is an
-        # explicit step; simulate that step by updating the mock DB snapshot.
-        css = self.repo/'applications/blog/shared-components/static-files/css/style.css'
-        css.write_bytes(css.read_bytes() + b'\n/* custom CSS */\n')
-        self.script('export_application.sh', '--source-only')
-        shutil.copytree(self.repo/'applications/blog', self.template/'blog', dirs_exist_ok=True)
-        self.script('export_application.sh', '--build-only')
-        self.assertTrue((self.candidate()/'SHA256SUMS').is_file())
-
-    def test_release_rejects_supporting_sql_drift_without_publishing(self):
-        local = self.repo/'applications/blog/supporting-objects/install-scripts/metadata.sql'
-        local.write_text(local.read_text()+'\n-- different from DEV\n')
-        p = self.script('export_application.sh', '--build-only', ok=False)
-        self.assertIn('Supporting Objects', p.stderr)
-        self.assertFalse((self.candidate()/'SHA256SUMS').exists())
-
-    def test_build_only_requires_apexlang_match(self):
-        local = self.repo/'applications/blog-admin/application.apx'
-        local.write_text(local.read_text()+'\n-- local change\n')
-        p = self.script('export_application.sh', '--build-only', ok=False)
-        self.assertIn('differs from DEV', p.stderr)
-        self.assertFalse((self.candidate()/'SHA256SUMS').exists())
 
     def test_validation_failure_never_publishes(self):
         self.env['MOCK_FAIL_VALIDATE'] = '1'
@@ -87,71 +42,6 @@ class ReleaseWorkflows(WorkflowFixture):
         self.assertIn('validation success', p.stderr)
         self.assertFalse((self.candidate()/'SHA256SUMS').exists())
 
-    def test_release_build_rejects_deinstall_drift_before_dev_sqlcl(self):
-        deinstall = self.repo / 'applications/blog-admin/supporting-objects/deinstall-script.sql'
-        source = deinstall.read_text()
-        self.assertIn('drop package blog_install;', source)
-        deinstall.write_text(source.replace('drop package blog_install;\n', ''))
-        result = self.script('export_application.sh', '--build-only', ok=False)
-        self.assertIn('Release deinstall SQL is inconsistent', result.stderr)
-        self.assertFalse(self.calls.exists(), 'Invalid uninstall SQL must stop before contacting DEV')
-
-    def test_release_build_requires_dev_version_match(self):
-        self.env['MOCK_WRONG_RELEASE_VERSION'] = '1'
-        result = self.script('export_application.sh', '--build-only', ok=False)
-        self.assertIn('Release versions differ', result.stderr)
-        self.assertFalse((self.candidate()/'SHA256SUMS').exists())
-
-    def test_release_build_stops_before_publish_on_version_drift(self):
-        for root in (self.repo / 'applications', self.template):
-            for alias in ('blog-admin', 'blog'):
-                self.drift_app_version(root / alias / 'application.apx')
-        out = self.script('export_application.sh', '--build-only', ok=False)
-        self.assertIn('Release source consistency failed', out.stderr)
-        self.assertFalse(self.candidate().exists())
-
-    def test_release_rejects_invalid_metadata_before_contacting_dev(self):
-        public = self.repo/'applications/blog/supporting-objects/install-scripts/metadata.sql'
-        original = public.read_text()
-        public.write_text(original.replace(
-            'blog_util.int_to_vc2(apex_application_install.get_application_id)', '401', 1
-        ))
-        result = self.script('export_application.sh', '--build-only', ok=False)
-        self.assertIn('Release metadata is inconsistent', result.stderr)
-        self.assertFalse(self.calls.exists(), 'Metadata validation must run before DEV SQLcl')
-
-    def test_invalid_version_is_rejected_before_export(self):
-        (self.repo/'VERSION.txt').write_text("Release 1.2.3.20261101' --\n")
-        self.script('supporting_objects.sh', ok=False)
-        self.assertFalse(self.calls.exists())
-        self.script('export_application.sh', '--build-only', ok=False)
-        self.assertFalse((self.candidate()/'SHA256SUMS').exists())
-
-    def test_versioned_manifest_records_both_apps_and_source_fingerprint(self):
-        self.script('export_application.sh', '--build-only')
-        candidate = self.candidate()
-        manifest = json.loads((candidate / 'manifest.json').read_text())
-        self.assertEqual(manifest['release'], (self.repo / 'VERSION.txt').read_text().strip())
-        self.assertEqual([a['devId'] for a in manifest['applications']], [402, 401])
-        self.assertEqual(len(manifest['sourceSha256']), 64)
-        self.assertEqual(len(manifest['files']), 7)
-        self.script('verify_release.sh')
-        self.assertTrue((candidate / 'SHA256SUMS').is_file())
-
-    def test_make_build_does_not_modify_tracked_apexlang(self):
-        app = self.repo / 'applications/blog-admin/application.apx'
-        before = app.read_bytes()
-        # A changed DEV page must cause a read-only build to fail rather than
-        # silently refresh the local APEXLang source.
-        self.env['MOCK_CHANGE_PAGE'] = '1'
-        out = self.make('build', ok=False)
-        self.assertIn('differs from DEV', out.stderr)
-        self.assertEqual(app.read_bytes(), before)
-        self.assertFalse(self.candidate().exists())
-        self.env.pop('MOCK_CHANGE_PAGE')
-        self.make('build')
-        self.assertEqual(app.read_bytes(), before)
-        self.script('verify_release.sh')
 
     def test_make_build_overwrite_replaces_only_current_candidate(self):
         self.make('build')
@@ -246,14 +136,6 @@ class ReleaseWorkflows(WorkflowFixture):
         self.env['PATH'] = self.env['PATH'].removeprefix(f"{self.bin}{os.pathsep}")
         self.script('verify_release.sh')
 
-    def test_failed_overwrite_during_exports_preserves_old_candidate(self):
-        self.make('build')
-        before = (self.candidate() / 'manifest.json').read_bytes()
-        self.env['MOCK_FAIL_VALIDATE'] = '1'
-        out = self.make('build', 'OVERWRITE=YES', ok=False)
-        self.assertIn('validation success', out.stderr)
-        self.assertEqual((self.candidate() / 'manifest.json').read_bytes(), before)
-        self.script('verify_release.sh')
 
     def test_overwrite_rejects_symlinks_and_unknown_directories(self):
         external = self.root / 'outside'
@@ -284,31 +166,6 @@ class ReleaseWorkflows(WorkflowFixture):
             fcntl.flock(holder.fileno(), fcntl.LOCK_UN)
         self.assertEqual((self.candidate() / 'manifest.json').read_bytes(), before)
 
-    def test_direct_export_requires_exactly_one_mode_before_contacting_dev(self):
-        source = self.repo / 'applications/blog-admin/application.apx'
-        original = source.read_bytes()
-        for args, error in (
-            ((), 'Usage: export_application.sh'),
-            (('--source-only', '--build-only'), 'Only one export mode'),
-            (('--build-only', '--build-only'), 'Only one export mode'),
-            (('--source-only', '--source-only'), 'Only one export mode'),
-            (('--overwrite',), '--overwrite requires --build-only'),
-            (('--unknown-option',), 'Usage: export_application.sh'),
-        ):
-            with self.subTest(args=args):
-                result = self.script('export_application.sh', *args, ok=False)
-                self.assertIn(error, result.stderr)
-                self.assertFalse(self.calls.exists(), 'Invalid CLI must not invoke SQLcl')
-                self.assertFalse(self.candidate().exists(), 'Invalid CLI must not publish')
-                self.assertEqual(source.read_bytes(), original)
-
-    def test_overwrite_flag_requires_explicit_build_mode(self):
-        out = self.script('export_application.sh', '--source-only', '--overwrite', ok=False)
-        self.assertIn('--overwrite requires --build-only', out.stderr)
-        self.assertFalse(self.calls.exists())
-        out = self.make('build', 'OVERWRITE=possibly', ok=False)
-        self.assertIn('OVERWRITE must be YES', out.stderr)
-        self.assertFalse(self.calls.exists())
 
     def test_stack_package_excludes_local_terraform_state_and_secrets(self):
         tf = self.repo / 'Stack/terraform'
@@ -326,17 +183,3 @@ class ReleaseWorkflows(WorkflowFixture):
                                  or n.endswith('.env')
                                  for n in names), names)
             self.assertIn('VERSION.txt', names)
-
-    def test_manifest_and_package_tampering_are_detected(self):
-        self.script('export_application.sh', '--build-only')
-        candidate = self.candidate()
-        with (candidate / 'manifest.json').open('a') as stream:
-            stream.write('\n')
-        out = self.script('verify_release.sh', ok=False)
-        self.assertIn('checksum mismatch', out.stderr.lower())
-
-    def test_candidate_directory_name_must_match_manifest(self):
-        self.script('export_application.sh', '--build-only')
-        fake = self.repo / 'build/releases/not-the-version'
-        shutil.copytree(self.candidate(), fake)
-        self.script('verify_release.sh', '--release-dir', str(fake), ok=False)

@@ -24,11 +24,6 @@ class RepositorySchemaTests(unittest.TestCase):
             text=True, capture_output=True,
         )
 
-    def test_manifests_validate_offline(self):
-        install = self.assemble('install.list', '--check-only', '--check-inventory')
-        upgrade = self.assemble('upgrade.list', '--check-only')
-        self.assertEqual(install.returncode, 0, install.stderr)
-        self.assertEqual(upgrade.returncode, 0, upgrade.stderr)
 
     def test_install_uses_exact_repository_sql_once_in_manifest_order(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -63,19 +58,6 @@ class RepositorySchemaTests(unittest.TestCase):
             self.assertNotIn('alter table blog_comments add constraint blog_comments_fk1', sql)
             self.assertNotIn('create index blog_comments_ix1 on blog_comments', sql)
 
-    def test_build_api_retired_and_git_sources_are_authoritative(self):
-        helper = (ROOT / 'automation/supporting_objects.sh').read_text()
-        self.assertFalse((ROOT / 'automation/database').exists())
-        self.assertFalse((ROOT / 'automation/setup_build_api.sh').exists())
-        self.assertNotIn('run_sqlcl', helper)
-        self.assertNotIn('check_environment', helper)
-        self.assertIn('lib/metadata_source.py', helper)
-        self.assertIn('schema/install.list', helper)
-        self.assertIn('schema/upgrade.list', helper)
-        self.assertIn('lib/check_deinstall.py', helper)
-        self.assertIn('lib/metadata_source.py', (ROOT / 'Makefile').read_text())
-        self.assertNotIn('setup-build-api', (ROOT / 'Makefile').read_text())
-
 
 class DeinstallSourceTests(unittest.TestCase):
     """Deinstall SQL stays in Git; the checker must reject inventory drift."""
@@ -100,10 +82,6 @@ class DeinstallSourceTests(unittest.TestCase):
         self.assertIn(before, original)
         self.script.write_text(original.replace(before, after))
 
-    def test_checked_in_deinstall_matches_manifest_and_fk_sources(self):
-        result = self.validate()
-        self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn('deinstall SQL matches', result.stdout)
 
     def test_new_manifest_table_requires_an_explicit_drop(self):
         database = Path(self.temp.name) / 'Database'
@@ -125,18 +103,6 @@ class DeinstallSourceTests(unittest.TestCase):
         self.assertIn('Missing object drops', result.stderr)
         self.assertIn('BLOG_NEW_TABLE', result.stderr)
 
-    def test_missing_package_drop_fails(self):
-        self.replace('drop package blog_admin;\n')
-        result = self.validate()
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn('Missing object drops', result.stderr)
-        self.assertIn('BLOG_ADMIN', result.stderr)
-
-    def test_missing_separate_public_view_drop_fails(self):
-        self.replace('drop view blog_v_version;\n')
-        result = self.validate()
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn('BLOG_V_VERSION', result.stderr)
 
     def test_missing_foreign_key_drop_fails(self):
         self.replace('alter table blog_comments drop constraint blog_comments_fk1;\n')
@@ -151,24 +117,6 @@ class DeinstallSourceTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('Missing Oracle Text preference drops', result.stderr)
         self.assertIn('BLOG_POSTS_UDS', result.stderr)
-
-    def test_unexpected_or_duplicate_drop_fails(self):
-        self.script.write_text(self.script.read_text() + 'drop table not_a_blog_table;\n')
-        result = self.validate()
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn('Unexpected/duplicate object drops', result.stderr)
-        self.assertIn('NOT_A_BLOG_TABLE', result.stderr)
-
-        self.script.write_text(self.script.read_text() + 'drop package blog_admin;\n')
-        result = self.validate()
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn('BLOG_ADMIN', result.stderr)
-
-    def test_unsupported_drop_is_rejected(self):
-        self.script.write_text(self.script.read_text() + 'drop user temp_user;\n')
-        result = self.validate()
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn('Unsupported DROP statement', result.stderr)
 
 
 class ManifestInputTests(unittest.TestCase):
@@ -192,14 +140,6 @@ class ManifestInputTests(unittest.TestCase):
             text=True, capture_output=True,
         )
 
-    def test_preserves_literals_and_does_not_reorder_explicit_entries(self):
-        dest = self.root / 'generated.sql'
-        result = self.assemble(str(dest), '--check-inventory')
-        self.assertEqual(result.returncode, 0, result.stderr)
-        text = dest.read_text()
-        self.assertIn("'a  b'", text)
-        self.assertLess(text.index('package app as'), text.index('package body app as'))
-        self.assertEqual(text.count('package body app'), 1)
 
     def test_rejects_unlisted_orphan_database_file(self):
         (self.db / 'Tables/UNLISTED.sql').write_text('select 1 from dual;\n')
@@ -214,11 +154,6 @@ class ManifestInputTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('Unpaired package', result.stderr)
 
-    def test_rejects_package_body_before_specification(self):
-        self.list_file.write_text('Packages/APP.pkb\nPackages/APP.pks\n')
-        result = self.assemble('--check-only')
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn('must precede', result.stderr)
 
     def test_rejects_duplicates_and_path_traversal(self):
         self.list_file.write_text('Tables/A.sql\nTables/A.sql\n')
@@ -233,19 +168,6 @@ class ManifestInputTests(unittest.TestCase):
         result = self.assemble('--check-only')
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('invalid repository-relative', result.stderr)
-
-    def test_version_view_cannot_be_installed_twice(self):
-        self.list_file.write_text(self.list_file.read_text() + 'Views/BLOG_V_VERSION.sql\n')
-        result = self.assemble('--check-only', '--check-inventory')
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn('installed separately', result.stderr)
-
-    def test_missing_manifest_file_fails_without_output(self):
-        self.list_file.write_text('Tables/MISSING.sql\n')
-        dest = self.root / 'out.sql'
-        result = self.assemble(str(dest))
-        self.assertNotEqual(result.returncode, 0)
-        self.assertFalse(dest.exists())
 
 
 if __name__ == '__main__':

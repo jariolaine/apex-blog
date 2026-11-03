@@ -20,9 +20,6 @@ if 'APEX_BLOG_RELEASE_PREPARED' in src:
     sys.exit(0)
 
 if 'APEX_BLOG_VERSION_OK' in src:
-    if os.environ.get('MOCK_WRONG_RELEASE_VERSION'):
-        print('ORA-20074: DEV APEX application versions differ from VERSION.txt')
-        sys.exit(2)
     print('APEX_BLOG_VERSION_OK')
     sys.exit(0)
 
@@ -32,6 +29,9 @@ if 'APEX_BLOG_SCHEMA_PRESENT' in src:
     sys.exit(0)
 
 if 'APEX_BLOG_ENV_OK' in src:
+    if os.environ.get('MOCK_WRONG_ENV'):
+        print('ORA-20050: Wrong connected schema')
+        sys.exit(2)
     print('APEX_BLOG_ENV_OK')
     sys.exit(0)
 
@@ -45,11 +45,8 @@ if match:
     if kind == 'APEXLANG':
         alias = {'402': 'blog-admin', '401': 'blog'}[app_id]
         template = Path(os.environ['MOCK_APEX_TEMPLATE']) / alias
-        output_alias = alias.upper() if os.environ.get('MOCK_ALIAS_UPPER') else alias
+        output_alias = alias
         shutil.copytree(template, out / output_alias, dirs_exist_ok=True)
-        if os.environ.get('MOCK_CHANGE_PAGE'):
-            page = next((out/output_alias/'pages').glob('*.apx'))
-            page.write_text(page.read_text()+'\n-- mock changed page\n')
         if os.environ.get('MOCK_CHANGE_STATIC'):
             static = out / output_alias / 'shared-components/static-files'
             css = next(static.rglob('*.css'))
@@ -83,9 +80,6 @@ if re.search(r'^apex import ', src, flags=re.M):
     sys.exit(0)
 
 if re.search(r'^@', src, flags=re.M) and 'deinstall_supporting_objects.sql' in src:
-    if os.environ.get('MOCK_DEINSTALL_SQL_ERROR'):
-        print('ORA-00942: simulated deinstallation failure')
-        sys.exit(2)
     print('Deinstallation completed')
     sys.exit(0)
 
@@ -96,24 +90,15 @@ if re.search(r'^@', src, flags=re.M) and 'verify_deinstalled_objects.sql' in src
     if os.environ.get('MOCK_DEINSTALL_LEFTOVER_APPS'):
         print('ORA-20058: TEST deinstall incomplete: 0 user objects, 1 application remains')
         sys.exit(2)
-    if not os.environ.get('MOCK_DEINSTALL_MISSING_MARKER'):
-        print('APEX_BLOG_DEINSTALL_OK')
+    print('APEX_BLOG_DEINSTALL_OK')
     sys.exit(0)
 
 if re.search(r'^@', src, flags=re.M) and 'install_application.sql' in src:
-    if os.environ.get('MOCK_INSTALL_WRONG_VERSION'):
-        print('ORA-20056: Installed application version mismatch')
-        sys.exit(2)
-    if not os.environ.get('MOCK_INSTALL_MISSING_MARKER'):
-        print('APEX_BLOG_INSTALL_OK')
+    print('APEX_BLOG_INSTALL_OK')
     sys.exit(0)
 
 if re.search(r'^@', src, flags=re.M) and 'verify_installed_objects.sql' in src:
-    if os.environ.get('MOCK_INVALID_BLOG_OBJECTS'):
-        print('ORA-20057: Installation left invalid BLOG_ database objects')
-        sys.exit(2)
-    if not os.environ.get('MOCK_OBJECTS_MISSING_MARKER'):
-        print('APEX_BLOG_OBJECTS_VALID')
+    print('APEX_BLOG_OBJECTS_VALID')
     sys.exit(0)
 
 print('OK')

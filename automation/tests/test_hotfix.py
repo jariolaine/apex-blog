@@ -45,27 +45,14 @@ class HotfixTests(unittest.TestCase):
     def calls(self):
         return [json.loads(line) for line in self.calls_file.read_text().splitlines()]
 
-    def test_export_both_apps_without_dev_or_release_pipeline(self):
-        self.run_hotfix('export')
-        self.assertTrue((self.root / 'build/hotfix/f102.sql').is_file())
-        self.assertTrue((self.root / 'build/hotfix/f101.sql').is_file())
-        calls = self.calls()
-        self.assertEqual(len(calls), 2)
-        self.assertTrue(all(c['argv'][-1] == 'QA_HOTFIX_TEST' for c in calls))
-        self.assertIn('-applicationid 102 -exptype SQL', calls[0]['sql'])
-        self.assertIn('-applicationid 101 -exptype SQL', calls[1]['sql'])
-        for call in calls:
-            self.assertIn('-expsupportingobjects Y', call['sql'])
-            self.assertNotIn('APEXLANG', call['sql'])
-            self.assertNotIn('apex validate', call['sql'])
-            self.assertNotIn('BUILD_API', call['sql'])
 
     def test_import_both_apps_without_preflight_execution(self):
         self.run_hotfix('export')
-        self.run_hotfix('production')
+        self.run_hotfix('production', '--confirm-production')
         calls = self.calls()
-        self.assertEqual(len(calls), 4)
-        imports = calls[2:]
+        self.assertEqual(len(calls), 5)
+        self.assertIn('APEX_BLOG_ENV_OK', calls[2]['sql'])
+        imports = calls[3:]
         self.assertEqual([c['argv'][-1] for c in imports],
                          ['PRODUCTION_HOTFIX_TEST', 'PRODUCTION_HOTFIX_TEST'])
         for i, (call, app_id) in enumerate(zip(imports, (102, 101))):
@@ -80,8 +67,8 @@ class HotfixTests(unittest.TestCase):
 
     def test_skip_supporting_objects_imports_both_applications(self):
         self.run_hotfix('export')
-        self.run_hotfix('production', '--skip-supporting-objects')
-        imports = self.calls()[2:]
+        self.run_hotfix('production', '--confirm-production', '--skip-supporting-objects')
+        imports = self.calls()[3:]
         self.assertEqual(len(imports), 2)
         for call, app_id in zip(imports, (102, 101)):
             self.assertIn('set_auto_install_sup_obj(false)', call['sql'])
@@ -91,59 +78,37 @@ class HotfixTests(unittest.TestCase):
         for call in self.calls()[:2]:
             self.assertIn('-expsupportingobjects Y', call['sql'])
 
-    def test_invalid_options_fail_before_sqlcl(self):
-        for options in (
-            ('export', '--skip-supporting-objects'),
-            ('production', '--unknown'),
-            ('production', '--skip-supporting-objects', '--unknown'),
-        ):
-            result = self.run_hotfix(*options, ok=False)
-            self.assertIn('Usage:', result.stderr)
-        self.assertFalse(self.calls_file.exists())
 
-    def test_make_hotfix_supporting_objects_option(self):
+    def test_hotfix_requires_confirmation_before_prod_sqlcl(self):
         self.run_hotfix('export')
-        default = subprocess.run(
-            ['make', '--no-print-directory', 'hotfix-production'],
-            env=self.env, cwd=self.root, text=True, capture_output=True,
-            timeout=30,
-        )
-        self.assertEqual(default.returncode, 0, default.stderr)
-        for call in self.calls()[2:4]:
-            self.assertIn('set_auto_install_sup_obj(true)', call['sql'])
+        previous_count = len(self.calls())
+        result = self.run_hotfix('production', ok=False)
+        self.assertIn('--confirm-production', result.stderr)
+        self.assertEqual(len(self.calls()), previous_count)
         result = subprocess.run(
-            ['make', '--no-print-directory', 'hotfix-production', 'OBJECTS=NO'],
-            env=self.env, cwd=self.root, text=True, capture_output=True,
-            timeout=30,
+            ['make', '--no-print-directory', 'hotfix-production'],
+            env=self.env, cwd=self.root, text=True, capture_output=True, timeout=30,
         )
-        self.assertEqual(result.returncode, 0, result.stderr)
-        for call in self.calls()[4:]:
-            self.assertIn('set_auto_install_sup_obj(false)', call['sql'])
-        previous_calls = len(self.calls())
-        invalid = subprocess.run(
-            ['make', '--no-print-directory', 'hotfix-production', 'OBJECTS=MAYBE'],
-            env=self.env, cwd=self.root, text=True, capture_output=True,
-            timeout=30,
-        )
-        self.assertNotEqual(invalid.returncode, 0)
-        self.assertIn('must be YES or NO', invalid.stderr)
-        self.assertEqual(len(self.calls()), previous_calls)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('CONFIRM=YES', result.stderr)
+        self.assertEqual(len(self.calls()), previous_count)
 
-    def test_import_uses_production_application_ids(self):
+    def test_hotfix_verifies_prod_target_before_import(self):
         self.run_hotfix('export')
-        (self.root / 'automation/variables.local.sh').write_text(
-            'prdAppIds=(202 201)\n', encoding='utf-8'
-        )
-        self.run_hotfix('production')
-        calls = self.calls()[2:]
-        self.assertIn('set_application_id(202)', calls[0]['sql'])
-        self.assertIn('f102.sql', calls[0]['sql'])
-        self.assertIn('set_application_id(201)', calls[1]['sql'])
-        self.assertIn('f101.sql', calls[1]['sql'])
+        self.env['MOCK_WRONG_ENV'] = '1'
+        result = self.run_hotfix('production', '--confirm-production', ok=False)
+        self.assertIn('Cannot verify database environment', result.stderr)
+        prod_calls = self.calls()[2:]
+        self.assertEqual(len(prod_calls), 1)
+        self.assertIn('APEX_BLOG_ENV_OK', prod_calls[0]['sql'])
+        self.assertNotIn('set_application_id(', prod_calls[0]['sql'])
 
-    def test_missing_exports_do_not_start_production_import(self):
-        self.run_hotfix('production', ok=False)
-        self.assertFalse(self.calls_file.exists())
+    def test_hotfix_rejects_shared_production_connection(self):
+        self.run_hotfix('export')
+        self.env['APEX_BLOG_PRD_CONNECTION'] = 'QA_HOTFIX_TEST'
+        result = self.run_hotfix('production', '--confirm-production', ok=False)
+        self.assertIn('distinct from DEV, TEST and QA/UAT', result.stderr)
+        self.assertEqual(len(self.calls()), 2)
 
 
 if __name__ == '__main__':

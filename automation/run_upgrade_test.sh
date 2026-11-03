@@ -23,7 +23,7 @@ $confirmed || die 'Usage: run_upgrade_test.sh --confirm-reset-test [--previous-z
 if [[ -n "$previous_zip" ]]; then
     require_file "$previous_zip"
 fi
-[[ -n "$tstDbConnName" ]] || die 'Set APEX_BLOG_TEST_CONNECTION to a disposable TEST saved connection'
+[[ -n "$tstDbConnName" ]] || die 'Set APEX_BLOG_TST_CONNECTION to a disposable TEST saved connection'
 [[ "$tstDbConnName" != "$devDbConnName" && "$tstDbConnName" != "$uatDbConnName" && "$tstDbConnName" != "$prdDbConnName" ]] \
     || die 'TEST saved connection must differ from DEV, QA and production'
 require_tool "$sqlcl_bin"

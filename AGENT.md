@@ -52,15 +52,17 @@ make check
 - `make source`: export APEXLang from DEV; may overwrite `.apx` changes. Existing local Supporting Objects SQL and static-file bytes are preserved.
   Direct `automation/export_application.sh` calls require `--source-only` or
   `--build-only`; invoking it without a mode is an error, never a combined export.
+- `make candidate`: run full quality checks, build, then release verification sequentially; reads DEV for export but never syncs DEV versions or tracked Git sources.
 - `make build`: read-only APEXLang parity/source validation and versioned SQL release ZIPs, manifest, checksums. Existing versions remain protected by default; `make build OVERWRITE=YES` replaces only the current unpromoted local candidate with staged verification and rollback, without changing tracked source. Never overwrite a QA-approved/published candidate.
 
 **Requires explicit human approval BEFORE execution:**
 
 - `make prepare-release CONFIRM=YES`: changes DEV versions.
 - `make sync-dev`: overwrites both DEV APEX application definitions.
+- `make test-release CONFIRM=YES PREVIOUS_ZIP=...`: sequentially perform verified-candidate upgrade, fresh install and deinstall against approved disposable TEST; require an older ZIP and leave TEST empty on success.
 - `make test-install` / `make test-upgrade` / `make test-deinstall`: reset the **disposable TEST** schema. `test-deinstall` always runs `test-install` first, then removes both TEST apps and Supporting Objects and verifies the schema has **zero** user objects. Run only against an approved disposable TEST schema.
 - `make qa` / `make production CONFIRM=YES`: deploy normal release applications.
-- `make hotfix-production`: directly replace both PROD applications from saved QA/UAT exports; no build or release gates.
+- `make hotfix-production CONFIRM=YES`: directly replace both PROD applications from saved QA/UAT exports; no normal build or release gates, but require production confirmation and schema/workspace verification.
 
 Check the saved SQLcl connection and target schema before any approved database operation. Do not automatically execute SQL that drops or upgrades objects. Never run a command just because it is listed here.
 
@@ -71,11 +73,11 @@ Check the saved SQLcl connection and target schema before any approved database 
   `make setup` (or `make setup-ci`) to create the local `.venv/` and Git hook;
   neither command connects to a database. `make doctor` is a read-only diagnostic.
   Do not require a fixed Node.js major version or global `pre-commit`.
-- Use `make lint` for all linters, `make test` for full automation regression
+- Use `make lint` for linters, `make test` for focused offline release-safety
   tests, and `make preflight` for both plus SQLcl APEXLang validation.
 - Pre-commit hooks run static lint only. GitHub Actions and `make preflight`
-  additionally run offline schema/source checks, full mocked tests (once) and
-  APEXLang validation. Do not suppress failures merely to make a test pass.
+  additionally run offline schema/source checks, selected safety tests (once)
+  and APEXLang validation. Do not suppress failures merely to make a test pass.
 - `make sync-dev` and `make qa` **always** run mandatory preflight inside the
   underlying Bash scripts, including direct invocations. A failed check must
   stop before connecting to DEV/QA. No bypass flag is available.
@@ -98,13 +100,13 @@ Check the saved SQLcl connection and target schema before any approved database 
 Only use this path when explicitly requested. Follow `automation/docs/RUNBOOK.md` (emergency hotfix):
 
 - `make hotfix-export`: export both current QA/UAT applications to `build/hotfix/f<ID>.sql` (overwrites any prior hotfix candidate).
-- `make hotfix-production`: import those two saved SQL files into PROD, Admin first. Request explicit human approval before running.
+- `make hotfix-production CONFIRM=YES`: import those two saved SQL files into PROD, Admin first. Obtain human approval before running; direct script callers must pass `--confirm-production`.
 - This path deliberately skips DEV/TEST, APEXLang export, checksum validation,
   and normal release gates. Supporting Objects are **installed by default** in
   both PROD imports; review possible schema/data changes. To skip their
   automatic installation, use
-  `make hotfix-production OBJECTS=NO` (direct script:
-  `production --skip-supporting-objects`).
+  `make hotfix-production CONFIRM=YES OBJECTS=NO` (direct script:
+  `production --confirm-production --skip-supporting-objects`).
 - Do not commit generated `build/hotfix/` files. Developers must carry fixes back into the usual development and source-control process separately.
 
 ## Finish every task

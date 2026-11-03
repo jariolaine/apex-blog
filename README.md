@@ -27,7 +27,8 @@ user group for application authorization.
 
 ### Download and import
 
-Download the [latest release ZIP](https://github.com/jariolaine/apex-blog/releases/latest/download/apex-blog-latest.zip)
+Once a public release is available, download the
+[latest release ZIP](https://github.com/jariolaine/apex-blog/releases/latest/download/apex-blog-latest.zip)
 and extract it. In the target APEX workspace, open Application Builder and
 import the included full SQL exports **in this order**:
 

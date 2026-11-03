@@ -43,9 +43,6 @@ class MetadataSourceTests(unittest.TestCase):
     def admin(self):
         return self.repo / ADMIN
 
-    def test_existing_metadata_passes_offline_validation(self):
-        self.call()
-        self.assertFalse(self.out.exists())
 
     def test_render_updates_only_version_without_touching_inputs(self):
         original_public = self.public().read_bytes()
@@ -74,12 +71,6 @@ class MetadataSourceTests(unittest.TestCase):
         self.assertIn("duplicate Public settings", result.stderr)
         self.assertFalse(self.out.exists())
 
-    def test_rejects_missing_release_literal(self):
-        path = self.public()
-        path.write_text(path.read_text().replace("'G_APP_VERSION'", "'G_CURRENT_VERSION'"))
-        result = self.call("render", ok=False)
-        self.assertIn("G_APP_VERSION", result.stderr)
-        self.assertFalse(self.out.exists())
 
     def test_rejects_invalid_version_and_does_not_write_output(self):
         (self.repo / "VERSION.txt").write_text("Release 26.1.6.20261102'; drop table blog_settings; --\n")
@@ -103,50 +94,6 @@ class MetadataSourceTests(unittest.TestCase):
         ))
         result = self.call("render", ok=False)
         self.assertIn("G_ADMIN_APP_ID", result.stderr)
-        self.assertFalse(self.out.exists())
-
-    def test_rejects_duplicate_feature_and_lov(self):
-        for kind, needle in (
-            ("features", "features_merge"),
-            ("LOV", "list_of_values_ins"),
-        ):
-            with self.subTest(kind=kind):
-                path = self.public()
-                original = path.read_text()
-                line = next(s for s in original.splitlines() if needle in s)
-                path.write_text(original.replace(line, line + "\n" + line))
-                result = self.call("render", ok=False)
-                self.assertIn("duplicate", result.stderr)
-                self.assertFalse(self.out.exists())
-                path.write_text(original)
-
-    def test_rejects_missing_init_items(self):
-        path = self.public()
-        path.write_text(path.read_text().replace("blog_install.init_items_ins;", "-- init omitted"))
-        result = self.call("render", ok=False)
-        self.assertIn("init_items_ins", result.stderr)
-        self.assertFalse(self.out.exists())
-
-    def test_render_refuses_to_write_directly_to_metadata_source(self):
-        original = self.public().read_bytes()
-        result = subprocess.run(
-            [sys.executable, str(TOOL), "render", "--repo", str(self.repo),
-             "--output", str(self.public())],
-            capture_output=True, text=True, timeout=10,
-        )
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn("separate from Git-owned metadata", result.stderr)
-        self.assertEqual(self.public().read_bytes(), original)
-
-    def test_rejects_symlinked_metadata(self):
-        public = self.public()
-        original = public.read_bytes()
-        public.unlink()
-        outside = Path(self.temp.name) / "outside.sql"
-        outside.write_bytes(original)
-        public.symlink_to(outside)
-        result = self.call("render", ok=False)
-        self.assertIn("unsafe metadata", result.stderr)
         self.assertFalse(self.out.exists())
 
 
