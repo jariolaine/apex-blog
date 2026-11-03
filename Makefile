@@ -41,7 +41,7 @@ help:
 	  'Emergency hotfix:' \
 	  '  make hotfix-export                 Export BOTH QA/UAT apps as SQL (no build)' \
 	  '  make hotfix-production             Import both apps + Supporting Objects (default)' \
-	  '  make hotfix-production OBJECTS=NO' Import apps without Supporting Objects'
+	  '  make hotfix-production OBJECTS=NO  Import apps without Supporting Objects'
 
 # The preflight is enforced INSIDE the DEV/QA scripts, so direct invocations
 # cannot bypass it. Do not duplicate it as a Makefile prerequisite.

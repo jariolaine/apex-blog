@@ -66,7 +66,8 @@ Check the saved SQLcl connection and target schema before any approved database 
 
 ## Mandatory quality checks
 
-- Read `automation/README.md` for tooling setup, CI and lint scope. Use
+- Read `automation/docs/ARCHITECTURE.md` for CI and lint scope and
+  `automation/docs/RUNBOOK.md` for setup. Use
   `make setup` (or `make setup-ci`) to create the local `.venv/` and Git hook;
   neither command connects to a database. `make doctor` is a read-only diagnostic.
   Do not require a fixed Node.js major version or global `pre-commit`.
@@ -89,12 +90,12 @@ Check the saved SQLcl connection and target schema before any approved database 
 - `make build` must fail on Supporting Objects or static-file drift from DEV. Correct the drift deliberately; do not overwrite files or weaken checks to make the build pass.
 - Installer is the **full SQL export with Supporting Objects**, not APEXLang alone. Install Admin before Public. Preserve the order in `automation/schema/install.list` and `upgrade.list`: every `.pks` must have a matching `.pkb`, and all specs precede bodies. Run `make check-schema` before generation.
 - `make check-source` is safe for work-in-progress; `make check-release` is strict and requires both app versions and current Supporting Objects versions to match VERSION.txt. Historical upgrade SQL retains old version dates.
-- For **normal releases**, use one **unchanged versioned candidate** under `build/releases/<version>/` for TEST, QA, production, and GitHub. Use `RELEASE_DIR=...` to select it; QA also verifies the candidate's source fingerprint. Never rebuild between environments. Follow `automation/RELEASE_CANDIDATES.md`.
+- For **normal releases**, use one **unchanged versioned candidate** under `build/releases/<version>/` for TEST, QA, production, and GitHub. Use `RELEASE_DIR=...` to select it; QA also verifies the candidate's source fingerprint. Never rebuild between environments. Follow `automation/docs/RUNBOOK.md` (release preparation, promotion and candidate integrity).
 - Candidate publication is implemented in the **sourced** `automation/lib/candidate_publish.sh` helper. Keep its exclusive lock from before DEV export through final verification, and preserve same-shell EXIT/signal rollback (including backup restoration). Do not run the helper in a subprocess.
 
 ## Emergency QA/UAT -> production application hotfix
 
-Only use this path when explicitly requested. Follow `automation/HOTFIX.md`:
+Only use this path when explicitly requested. Follow `automation/docs/RUNBOOK.md` (emergency hotfix):
 
 - `make hotfix-export`: export both current QA/UAT applications to `build/hotfix/f<ID>.sql` (overwrites any prior hotfix candidate).
 - `make hotfix-production`: import those two saved SQL files into PROD, Admin first. Request explicit human approval before running.

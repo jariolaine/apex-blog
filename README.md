@@ -1,80 +1,67 @@
 # APEX Blog
 
-![Oracle_Database 19c](https://img.shields.io/badge/Oracle_Database-19c-red)
+![Oracle Database 19c](https://img.shields.io/badge/Oracle_Database-19c-red)
 ![Oracle Application Express 26.1](https://img.shields.io/badge/APEX-26.1-blue)
 
 Blog application built with Oracle Application Express (APEX).
 
 ## Install
 
-### System Requirements
+### System requirements
 
-* Oracle database version 19c or later
-* Oracle Application Express version 26.1 or later
+- Oracle Database 19c or later
+- Oracle Application Express 26.1 or later
 
-### Needed Privileges
+The target parsing schema needs these privileges and roles:
 
-Ensure target schema associated to your APEX workspace has following system
-privileges and roles:
+- `CREATE INDEXTYPE`
+- `CREATE PROCEDURE`
+- `CREATE SEQUENCE`
+- `CREATE TABLE`
+- `CREATE TRIGGER`
+- `CREATE VIEW`
+- `CTXAPP`
 
-- CREATE INDEXTYPE
-- CREATE PROCEDURE
-- CREATE SEQUENCE
-- CREATE TABLE
-- CREATE TRIGGER
-- CREATE VIEW
-- CTXAPP
+APEX workspace administrator permissions are required to create the Bloggers
+user group for application authorization.
 
-APEX workspace administrator privileges are required to create a user group for
-authorization.
+### Download and import
 
-### Download
+Download the [latest release ZIP](https://github.com/jariolaine/apex-blog/releases/latest/download/apex-blog-latest.zip)
+and extract it. In the target APEX workspace, open Application Builder and
+import the included full SQL exports **in this order**:
 
-Download [latest version](https://github.com/jariolaine/apex-blog/releases/latest/download/apex-blog-latest.zip)
-and extract zip archive.
+1. `blog-administration-latest.sql` — choose **install Supporting Objects**.
+2. `blog-public-pages-latest.sql` — choose **install Supporting Objects**.
 
-### Import Applications
-
-1. Access your target APEX workspace
-2. Select the Application Builder
-3. Import and install *blog-administration-latest.sql* and select install
-  supporting objects.
-4. Import and install *blog-public-pages-latest.sql* and select install
-  supporting objects.
-
-### Post Install
-
-Create a workspace user group named "Bloggers". Add APEX users to the group who
-are authorized to use the blog admin application.
-
-See how to create a workspace group in the APEX documentation
-[*Using Groups to Manage Application Express Users*](https://docs.oracle.com/en/database/oracle/apex/26.1/aeadm/managing-users-in-a-workspace.html#GUID-0FD7B406-8A83-40C0-A3E7-EF19BBDEA5A4).
+After installation, create an APEX workspace user group named **Bloggers** and
+add users authorized to administer the blog. See Oracle's
+[Using Groups to Manage Application Express Users](https://docs.oracle.com/en/database/oracle/apex/26.1/aeadm/managing-users-in-a-workspace.html#GUID-0FD7B406-8A83-40C0-A3E7-EF19BBDEA5A4).
 
 ## Upgrade
 
-Existing application version must be Release v22.2.1.20230117 or later.
+Upgrades require an existing application version of **Release
+v22.2.1.20230117 or later**. Back up the application parsing schema's **data
+and objects** before upgrading, and review any schema/data migrations for
+your installed version.
 
-Before starting the upgrade, backup the application parsing schema data and
-objects.
-
-### Import Applications
-
-1. Access your target APEX workspace
-2. Select the Application Builder
-3. Import and install *blog-administration-latest.sql* and select upgrade
-   supporting objects.
-4. Import and install *blog-public-pages-latest.sql* and select upgrade
-   supporting objects.
+In the target APEX workspace, import the two files from the new release ZIP
+in the same order: Admin then Public. Select **upgrade Supporting Objects**
+for each import. Verify both applications and their data afterward.
 
 ## Development and automation
 
-The repository keeps application source as APEXLang in `applications/` and
-packages releases as full SQL exports with Supporting Objects. Contributors
-and coding agents should read [AGENT.md](AGENT.md).
+The source checkout tracks the APEX applications as **APEXLang** in
+`applications/`, database SQL in `Database/`, and versioned release automation
+under `automation/`. Development and CI commands are defined in `Makefile`.
 
-Read the **[automation guide](automation/README.md)** for setup,
-configuration, Make targets, schema manifests, CI and troubleshooting.
+For contributors working from the **source repository**, start with
+[`automation/README.md`](automation/README.md) for the command
+map and [`automation/docs/RUNBOOK.md`](automation/docs/RUNBOOK.md) for safe
+operational steps. Coding agents should also read [`AGENT.md`](AGENT.md).
+These source-only files are not included in the downloadable application ZIP;
+the ZIP contains this README and the full installation exports.
 
 ## License
 
-This code is released under [MIT license](LICENSE.txt) by Jari Laine.
+Released under the [MIT license](LICENSE.txt) by Jari Laine.
