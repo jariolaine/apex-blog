@@ -30,14 +30,13 @@ blog_install.features_merge('BLOG_FEATURE_MODAL_PAGES',1,1510,'BLOG_FEATURE_GROU
 blog_install.features_merge('BLOG_FEATURE_SITEMAP',1,1520,'BLOG_FEATURE_GROUP_MISC',null,null,null);
 blog_install.features_merge('BLOG_FEATURE_ATOM',1,1530,'BLOG_FEATURE_GROUP_MISC',null,null,null);
 -- Inserting into BLOG_SETTINGS
-blog_install.settings_merge('G_APP_VERSION',10,0,'STRING','INTERNAL',null,null,null,null,'Release 26.1.5.20261101');
+blog_install.settings_merge('G_APP_VERSION',10,0,'STRING','INTERNAL',null,null,null,null,'Release 26.1.5.20261107');
 blog_install.settings_merge('G_PUB_APP_ID',20,0,'STRING','INTERNAL',null,null,null,null,blog_util.int_to_vc2(apex_application_install.get_application_id));
 blog_install.settings_merge('G_OCI_OS_PROXY_URL',40,1,'URL','INTERNAL',null,null,null,null,null);
 blog_install.settings_merge('G_OCI_OS_NAMESPACE',50,1,'STRING','INTERNAL',null,null,null,null,null);
-blog_install.settings_merge('G_OCI_OS_REGION',60,1,'STRING','INTERNAL',null,null,null,null,null);
-blog_install.settings_merge('G_OCI_OS_BUCKET',70,1,'STRING','INTERNAL',null,null,null,null,null);
-blog_install.settings_merge('G_OCI_OS_BUCKET_URL',80,1,'URL','INTERNAL',null,null,null,null,null);
-blog_install.settings_merge('G_OCI_LANG_AI_COMPARTMENT_OCID',90,1,'STRING','INTERNAL',null,null,null,null,null);
+blog_install.settings_merge('G_OCI_OS_BUCKET',60,1,'STRING','INTERNAL',null,null,null,null,null);
+blog_install.settings_merge('G_OCI_OS_BUCKET_URL',70,1,'URL','INTERNAL',null,null,null,null,null);
+blog_install.settings_merge('G_OCI_LANG_AI_COMPARTMENT_OCID',80,1,'STRING','INTERNAL',null,null,null,null,null);
 blog_install.settings_merge('P0_BLOG_APP_NAME',1110,0,'STRING','BLOG_SETTING_GROUP_GENERAL',null,null,null,null,'My Blog');
 blog_install.settings_merge('P0_BLOG_APP_DESC',1120,0,'STRING','BLOG_SETTING_GROUP_GENERAL',null,null,null,null,'About Almost Everything');
 blog_install.settings_merge('G_APP_EMAIL',1130,1,'EMAIL','BLOG_SETTING_GROUP_GENERAL',null,null,null,null,null);
@@ -54,7 +53,6 @@ blog_install.settings_merge('G_MAX_AGE_SITEMAP',1610,0,'INTEGER','BLOG_SETTING_G
 blog_install.settings_merge('G_MAX_AGE_RSS',1710,0,'INTEGER','BLOG_SETTING_GROUP_RSS',0,31536000,null,null,'3600');
 blog_install.settings_merge('G_MAX_AGE_RSS_XSL',1720,0,'INTEGER','BLOG_SETTING_GROUP_RSS',0,31536000,null,null,'604800');
 blog_install.settings_merge('G_RSS_URL',1730,1,'URL','BLOG_SETTING_GROUP_RSS',null,null,null,null,null);
-blog_install.settings_merge('G_RSS_XSL_URL',1740,1,'URL','BLOG_SETTING_GROUP_RSS',null,null,null,null,null);
 blog_install.settings_merge('G_CANONICAL_HOST',1810,1,'URL','BLOG_SETTING_GROUP_SEO',null,null,null,null,null);
 -- Inserting into BLOG_LIST_OF_VALUES
 blog_install.list_of_values_ins(1,10,'COMMENT_FLAG','NEW','BLOG_LOV_COMMENT_FLAG_NEW');
@@ -80,4 +78,3 @@ blog_install.list_of_values_ins(1,20,'YES_NO','1','BLOG_LOV_YES_NO_YES');
 blog_install.init_items_ins;
 end;
 /
-

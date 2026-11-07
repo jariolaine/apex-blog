@@ -414,31 +414,6 @@ as
   end get_atom;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function get_rss_xsl(
-    p_application in varchar2 default null
-  ) return varchar2
-  as
-    l_xsl_url varchar2(4000);
-  begin
-
-    -- Fetch XSL URL override from settings
-    l_xsl_url := blog_util.get_attribute_value( 'G_RSS_XSL_URL' );
-    -- If there isn't override use default XSL
-    if l_xsl_url is null
-    then
-      l_xsl_url :=
-        get_process(
-          p_application => p_application
-        , p_process     => 'rss.xsl'
-        )
-      ;
-    end if;
-
-    return l_xsl_url;
-
-  end get_rss_xsl;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
   function get_sitemap_index(
     p_application     in varchar2 default null
   ) return varchar2

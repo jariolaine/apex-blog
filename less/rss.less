@@ -1,0 +1,83 @@
+//out:../applications/blog/shared-components/static-files/css/
+
+@import url('core/_variables.less');
+
+@namespace content "http://purl.org/rss/1.0/modules/content/";
+@namespace dc "http://purl.org/dc/elements/1.1/";
+
+/**************************************
+- RSS
+**************************************/
+
+rss {
+  display: block;
+  font-size: 62.5%;
+  font-family: sans-serif;
+}
+
+channel {
+  display: block;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  font-size: 1.4rem;
+  line-height: 2rem;
+  background-color: #fdfdfd;
+  color: #242424;
+  margin: 16px;
+
+  /* Nested Media Query */
+  @media (min-width: 800px) {
+    margin: 16px auto;
+    max-width: 760px;
+    padding: 0px 16px;
+  }
+
+  > title {
+    display: block;
+    font-size: 2.4rem;
+    font-weight: bold;
+    margin-bottom: 16px;
+  }
+
+  > description {
+    display: block;
+    margin-bottom: 32px;
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+
+  /* Unused Channel Metadata */
+  > link,
+  > language,
+  > copyright,
+  > lastBuildDate,
+  > generator {
+    display: none;
+  }
+}
+
+item {
+  display: block;
+  margin-bottom: 32px;
+
+  > title {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 1.17em;
+  }
+
+  > description {
+    display: block;
+    margin-top: 0;
+  }
+
+  /* Unused Item Metadata */
+  > category,
+  > link,
+  > guid,
+  > pubDate,
+  > content|encoded,
+  > dc|creator {
+    display: none;
+  }
+}

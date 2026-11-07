@@ -883,6 +883,7 @@ as
 --  01.04.2024   Jari Laine     Changed private constants to a JSON object.
 --  23.07.2024   Jari Laine     Added new function get_file.
 --  01.02.2025   Jari Laine     Added new procedure set_canonical_host and package initialization code.
+--  07.11.2026   Jari Laine     Removed RSS XLST support.
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -992,12 +993,6 @@ as
 -- packages blog_html, blog_xml
 -- Blog Administration > Lists > Public Application Links
   function get_atom(
-    p_application     in varchar2 default null
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
--- packages blog_xml
-  function get_rss_xsl(
     p_application     in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
@@ -1185,48 +1180,49 @@ as
 --
 --  CHANGE LOG
 --  ============================================================================
---    DATE        AUTHOR        DESCRIPTION
---    ----------  ------------  ------------------------------------------------
---    07.05.2019  Jari Laine    Created package.
---    08.01.2020  Jari Laine    Removed categories sitemap.
---                              Modified to use ORDS and blog version 4.
---    09.04.2020  Jari Laine    Updated to utilize blog_url function parameter p_canonical.
---    17.05.2020  Jari Laine    Removed private function get_app_alias and constant c_pub_app_id.
---                              Moved private function get_ords_service to the blog_ords package.
---    23.05.2020  Jari Laine    Changed sitemap_main to use the blog_pages table.
---                              Removed ORDS dependency.
---                              Added procedures:
---                                sitemap_categories
---                                sitemap_archives
---                                sitemap_tags
---    30.10.2021  Jari Laine    Modified sitemap_main to use the apex_application_pages view.
---    13.11.2021  Jari Laine    Changes to the rss procedure.
---    30.12.2021  Jari Laine    Modified rss_xsl; CSS file name moved to application settings.
---    05.01.2021  Jari Laine    Added parameter p_css_file to rss_xsl.
---    13.03.2022  Jari Laine    Added parameter p_process_name to sitemap_index.
---                              Removed build option check from XML query in sitemap_index.
---    19.04.2022  Jari Laine    Updates related to blog_util.download_file.
---    26.04.2022  Jari Laine    Added <lastmod> element to XML output for:
---                                sitemap_categories
---                                sitemap_archives
---                                sitemap_tags
---    28.04.2020  Jari Laine    Changes to rss_xsl.
---    29.11.2022  Jari Laine    Removed parameter p_lang from rss.
---                              Added exception handler to raise HTTP errors in relevant procedures.
---                              Minor refinements.
---    19.01.2023  Jari Laine    Removed parameter p_ws_images from rss_xsl.
---                              Removed parameter p_page_group from sitemap_main.
---                              Replaced private constants with global ones from blog_util:
---                                g_nls_date_lang
---                                g_iso_8601_date
---                                g_rfc_2822_date
---    30.07.2023  Jari Laine    Replaced apex_util.get_build_option_status with apex_application_admin.get_build_option_status.
---    12.11.2023  Jari Laine    Updates to rss and rss_xsl.
---    13.11.2023  Jari Laine    Added a new procedure: atom.
---    10.03.2024  Jari Laine    Enhanced rss_xsl to handle application file absolute URLs.
---    01.04.2024  Jari Laine    Added parameter p_page_group to sitemap_main.
---                              Updated package constants.
---                              Introduced new constant: c_headers
+--  DATE        AUTHOR        DESCRIPTION
+--  ----------  ------------  ------------------------------------------------
+--  07.05.2019  Jari Laine    Created package.
+--  08.01.2020  Jari Laine    Removed categories sitemap.
+--                            Modified to use ORDS and blog version 4.
+--  09.04.2020  Jari Laine    Updated to utilize blog_url function parameter p_canonical.
+--  17.05.2020  Jari Laine    Removed private function get_app_alias and constant c_pub_app_id.
+--                            Moved private function get_ords_service to the blog_ords package.
+--  23.05.2020  Jari Laine    Changed sitemap_main to use the blog_pages table.
+--                            Removed ORDS dependency.
+--                            Added procedures:
+--                              sitemap_categories
+--                              sitemap_archives
+--                              sitemap_tags
+--  30.10.2021  Jari Laine    Modified sitemap_main to use the apex_application_pages view.
+--  13.11.2021  Jari Laine    Changes to the rss procedure.
+--  30.12.2021  Jari Laine    Modified rss_xsl; CSS file name moved to application settings.
+--  05.01.2021  Jari Laine    Added parameter p_css_file to rss_xsl.
+--  13.03.2022  Jari Laine    Added parameter p_process_name to sitemap_index.
+--                            Removed build option check from XML query in sitemap_index.
+--  19.04.2022  Jari Laine    Updates related to blog_util.download_file.
+--  26.04.2022  Jari Laine    Added <lastmod> element to XML output for:
+--                              sitemap_categories
+--                              sitemap_archives
+--                              sitemap_tags
+--  28.04.2020  Jari Laine    Changes to rss_xsl.
+--  29.11.2022  Jari Laine    Removed parameter p_lang from rss.
+--                            Added exception handler to raise HTTP errors in relevant procedures.
+--                            Minor refinements.
+--  19.01.2023  Jari Laine    Removed parameter p_ws_images from rss_xsl.
+--                            Removed parameter p_page_group from sitemap_main.
+--                            Replaced private constants with global ones from blog_util:
+--                              g_nls_date_lang
+--                              g_iso_8601_date
+--                              g_rfc_2822_date
+--  30.07.2023  Jari Laine    Replaced apex_util.get_build_option_status with apex_application_admin.get_build_option_status.
+--  12.11.2023  Jari Laine    Updates to rss and rss_xsl.
+--  13.11.2023  Jari Laine    Added a new procedure: atom.
+--  10.03.2024  Jari Laine    Enhanced rss_xsl to handle application file absolute URLs.
+--  01.04.2024  Jari Laine    Added parameter p_page_group to sitemap_main.
+--                            Updated package constants.
+--                            Introduced new constant: c_headers
+--  07.11.2026  Jari Laine    Removed RSS XLST support.
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -1234,7 +1230,8 @@ as
 --  public app page 1003 Ajax Callback process "rss.xml"
   procedure rss(
     p_app_name      in varchar2,
-    p_app_desc      in varchar2
+    p_app_desc      in varchar2,
+    p_css_file      in varchar2 default null
   );
 --------------------------------------------------------------------------------
 -- Called from:
@@ -1242,12 +1239,6 @@ as
   procedure atom(
     p_app_name      in varchar2,
     p_app_desc      in varchar2
-  );
---------------------------------------------------------------------------------
--- Called from:
---  public app page 1003 Ajax Callback process "rss.xsl"
-  procedure rss_xsl(
-    p_css_file      in varchar2
   );
 --------------------------------------------------------------------------------
 -- Called from:
@@ -7460,7 +7451,6 @@ as
     param_t( 'remote_server_static_id' ) := 'BLOG_OBJECT_STORAGE';
     param_t( 'bucket_param_name' ) := 'G_OCI_OS_BUCKET';
     param_t( 'namespace_param_name' ) := 'G_OCI_OS_NAMESPACE';
-    param_t( 'region_param_name' ) := 'G_OCI_OS_REGION';
     param_t( 'bucket_url_param_name' ) := 'G_OCI_OS_BUCKET_URL';
     param_t( 'bucket' ) := blog_util.get_attribute_value( param_t( 'bucket_param_name' ) );
     param_t( 'namespace' ) := blog_util.get_attribute_value( param_t( 'namespace_param_name' ) );
@@ -7484,7 +7474,6 @@ as
     apex_debug.info( 'Object storage remote server static id: %s', param_t( 'remote_server_static_id' ) );
     apex_debug.info( 'Object storage bucket parameter name: %s', param_t( 'bucket_param_name' ) );
     apex_debug.info( 'Object storage namespace parameter name: %s', param_t( 'namespace_param_name' ) );
-    apex_debug.info( 'Object storage region parameter name: %s', param_t( 'region_param_name' ) );
     apex_debug.info( 'Object storage bucket url parameter name: %s', param_t( 'bucket_url_param_name' ) );
     apex_debug.info( 'Object storage bucket: %s', param_t( 'bucket' ) );
     apex_debug.info( 'Object storage namespace: %s', param_t( 'namespace' ) );
@@ -7902,7 +7891,9 @@ as
     , p_parameters          => l_del_params
     );
 
-    l_response_body := apex_exec.get_parameter_clob( l_del_params, 'response_body' );
+    l_response_body :=
+      apex_exec.get_parameter_clob( l_del_params, 'response_body' )
+    ;
 
     -- process response headers
     -- debug request headers if error
@@ -8098,8 +8089,10 @@ as
     apex_debug.info( 'Fetch object storage namespace returns: %s', l_response_body );
 
     -- check reponse status
-    if not apex_web_service.g_status_code = 200
+    if apex_web_service.g_status_code = 200
     then
+      l_namespace := trim( both '"' from l_response_body );
+    else
 
       process_headers(
         p_is_error => true
@@ -8115,8 +8108,6 @@ as
       );
 
     end if;
-
-    l_namespace := trim( both '"' from l_response_body );
 
     -- return namespace
     return l_namespace;
@@ -8142,7 +8133,7 @@ as
     p_build_status  in varchar2
   )
   as
-    c_bucket_url_template constant varchar2(64) := 'https://%0.objectstorage.%1.oci.customer-oci.com/n/%0/b/%2/o/';
+    c_bucket_url_template constant varchar2(64) := '%s/n/%s/b/%s/o/';
 
     l_attributes   apex_t_varchar2;
 
@@ -8166,18 +8157,6 @@ as
 
       apex_string.plist_push( l_attributes, param_t( 'bucket_param_name' ), p_bucket_name );
 
-      l_region :=
-        substr(
-          param_t( 'base_url' )
-        , instr( param_t( 'base_url' ), '.', 1, 1 ) + 1
-        , instr( param_t( 'base_url' ), '.', 1, 2 ) - 1 - instr( param_t( 'base_url' ), '.', 1, 1 )
-        )
-      ;
-
-      apex_debug.info( 'Set object storage region: %s', l_region );
-
-      apex_string.plist_push( l_attributes, param_t( 'region_param_name' ), l_region );
-
       l_base_url := rtrim( p_base_url, '/' ) || '/';
 
       apex_debug.info( 'Set object storage remote server %s: %s', param_t( 'remote_server_static_id' ), l_base_url );
@@ -8189,26 +8168,30 @@ as
 
       l_namespace := get_namespace;
 
-      apex_debug.info( 'Set object storage  namespace: %s', l_namespace );
+      if not apex_error.have_errors_occurred
+      then
 
-      apex_string.plist_push( l_attributes, param_t( 'namespace_param_name' ), l_namespace );
+        apex_debug.info( 'Set object storage  namespace: %s', l_namespace );
 
-      l_bucket_url :=
-        apex_string.format(
-          p_message => c_bucket_url_template
-        , p0 => l_namespace
-        , p1 => l_region
-        , p2 => p_bucket_name
-        )
-      ;
+        apex_string.plist_push( l_attributes, param_t( 'namespace_param_name' ), l_namespace );
 
-      apex_debug.info( 'Set object storage bucket URL: %s', l_bucket_url );
+        l_bucket_url :=
+          apex_string.format(
+            p_message => c_bucket_url_template
+          , p0 => l_base_url
+          , p1 => l_namespace
+          , p2 => p_bucket_name
+          )
+        ;
 
-      apex_string.plist_push( l_attributes, param_t( 'bucket_url_param_name' ), l_bucket_url );
+        apex_debug.info( 'Set object storage bucket URL: %s', l_bucket_url );
 
-      blog_admin.set_attribute_value(
-        p_attribute_list  => l_attributes
-      );
+        apex_string.plist_push( l_attributes, param_t( 'bucket_url_param_name' ), l_bucket_url );
+
+        blog_admin.set_attribute_value(
+          p_attribute_list  => l_attributes
+        );
+      end if;
 
     end if;
 
@@ -9259,31 +9242,6 @@ as
   end get_atom;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  function get_rss_xsl(
-    p_application in varchar2 default null
-  ) return varchar2
-  as
-    l_xsl_url varchar2(4000);
-  begin
-
-    -- Fetch XSL URL override from settings
-    l_xsl_url := blog_util.get_attribute_value( 'G_RSS_XSL_URL' );
-    -- If there isn't override use default XSL
-    if l_xsl_url is null
-    then
-      l_xsl_url :=
-        get_process(
-          p_application => p_application
-        , p_process     => 'rss.xsl'
-        )
-      ;
-    end if;
-
-    return l_xsl_url;
-
-  end get_rss_xsl;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
   function get_sitemap_index(
     p_application     in varchar2 default null
   ) return varchar2
@@ -10072,7 +10030,8 @@ as
 --------------------------------------------------------------------------------
   procedure rss(
     p_app_name  in varchar2,
-    p_app_desc  in varchar2
+    p_app_desc  in varchar2,
+    p_css_file  in varchar2
   )
   as
     l_xml           xmltype;
@@ -10080,7 +10039,7 @@ as
     l_lang          varchar2(256);
     l_app_id        varchar2(256);
     l_rss_url       varchar2(4000);
-    l_xsl_url       varchar2(4000);
+    l_css_url       varchar2(4000);
     l_home_url      varchar2(4000);
     l_app_name      varchar2(4000);
     l_app_desc      varchar2(4000);
@@ -10111,17 +10070,25 @@ as
        p_page       => 'HOME'
       ,p_canonical  => 'YES'
     );
-    -- rss transformations (XSLT)
-    l_xsl_url := blog_url.get_rss_xsl;
+
+
+    -- Generate relaive URL for CSS file
+    if p_css_file not like 'http%'
+    then
+      l_css_url := apex_util.host_url( 'APEX_PATH' );
+      l_css_url := substr( l_css_url, instr( l_css_url, '/', 1, 3 ) );
+    end if;
+
+    l_css_url := l_css_url || p_css_file;
 
     -- generate RSS
     select xmlserialize(
       content xmlconcat(
-        case when l_xsl_url is not null
+        case when l_css_url is not null
           then xmlpi( "xml-stylesheet",
             apex_string.format(
-               p_message => 'type="text/xsl" href="%s" media="screen"'
-              ,p0 => l_xsl_url
+               p_message => 'type="text/css" href="%s"'
+              ,p0 => l_css_url
             )
           )
         end,
@@ -10353,104 +10320,6 @@ as
     raise;
 
   end atom;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure rss_xsl(
-    p_css_file in varchar2
-  )
-  as
-    l_xml           xmltype;
-    l_xsl           blob;
-    l_css_url       varchar2(1024);
-    l_cache_control varchar2(256);
-  begin
-
-    -- Generate relaive URL for CSS file
-    if p_css_file not like 'http%'
-    then
-      l_css_url := apex_util.host_url( 'APEX_PATH' );
-      l_css_url := substr( l_css_url, instr( l_css_url, '/', 1, 3 ) );
-    end if;
-
-    l_css_url := l_css_url || p_css_file;
-
-    l_xml :=
-      xmltype(
-        apex_string.format(
-          p_message => '
-            <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/">
-              <!-- This causes the HTML doctype (<!doctype hmlt>) to be rendered. -->
-              <xsl:output method="html" doctype-system="about:legacy-compat" indent="yes" />
-              <!-- Start matching at the Channel node within the XML RSS feed. -->
-              <xsl:template match="/rss/channel">
-                <html lang="%s">
-                <head>
-                  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                  <title>
-                    <xsl:value-of select="title" />
-                  </title>
-                  <link rel="stylesheet" type="text/css" href="%s" />
-                </head>
-                <body>
-                  <h1><a class="blog-rss--title" href="{ link }"><xsl:value-of select="title" /></a></h1>
-                  <h2 class="blog-rss--description"><xsl:value-of select="description" /></h2>
-                  <xsl:for-each select="./item">
-                    <article class="blog-rss--post">
-                      <header>
-                        <h3 class="blog-rss--postHeader"><a href="{ link }"><xsl:value-of select="title" /></a></h3>
-                      </header>
-                      <p class="blog-rss--postBody"><xsl:value-of select="description" /></p>
-                    </article>
-                  </xsl:for-each>
-                </body>
-                </html>
-              </xsl:template>
-            </xsl:stylesheet>'
-          ,p0 => apex_application.g_browser_language
-          ,p1 => l_css_url
-        )
-      )
-    ;
-
-    select
-      xmlserialize(
-        content l_xml as blob encoding c_char_set indent size = 2
-      ) xsl
-    into l_xsl
-    from dual
-    ;
-
-    l_cache_control :=
-      apex_string.format(
-         p_message => 'max-age=%s'
-        ,p0 => blog_util.get_attribute_value( 'G_MAX_AGE_RSS_XSL' )
-      )
-    ;
-
-    blog_util.download_file(
-       p_blob_content   => l_xsl
-      ,p_mime_type      => c_mime_xml
-      ,p_header_names   => c_headers
-      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="rss.xsl"', null )
-      ,p_charset        => c_char_set
-    );
-
-  -- handle errors
-  exception
-  when others
-  then
-
-    apex_debug.error(
-       p_message => '%s Error: %s'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => sqlerrm
-    );
-
-    -- show http error
-    blog_util.raise_http_error( 400 );
-    raise;
-
-  end rss_xsl;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure sitemap_index(

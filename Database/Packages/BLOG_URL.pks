@@ -31,6 +31,7 @@ as
 --  01.04.2024   Jari Laine     Changed private constants to a JSON object.
 --  23.07.2024   Jari Laine     Added new function get_file.
 --  01.02.2025   Jari Laine     Added new procedure set_canonical_host and package initialization code.
+--  07.11.2026   Jari Laine     Removed RSS XLST support.
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -140,12 +141,6 @@ as
 -- packages blog_html, blog_xml
 -- Blog Administration > Lists > Public Application Links
   function get_atom(
-    p_application     in varchar2 default null
-  ) return varchar2;
---------------------------------------------------------------------------------
--- Called from:
--- packages blog_xml
-  function get_rss_xsl(
     p_application     in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------

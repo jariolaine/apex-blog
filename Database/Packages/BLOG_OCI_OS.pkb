@@ -27,7 +27,6 @@ as
     param_t( 'remote_server_static_id' ) := 'BLOG_OBJECT_STORAGE';
     param_t( 'bucket_param_name' ) := 'G_OCI_OS_BUCKET';
     param_t( 'namespace_param_name' ) := 'G_OCI_OS_NAMESPACE';
-    param_t( 'region_param_name' ) := 'G_OCI_OS_REGION';
     param_t( 'bucket_url_param_name' ) := 'G_OCI_OS_BUCKET_URL';
     param_t( 'bucket' ) := blog_util.get_attribute_value( param_t( 'bucket_param_name' ) );
     param_t( 'namespace' ) := blog_util.get_attribute_value( param_t( 'namespace_param_name' ) );
@@ -51,7 +50,6 @@ as
     apex_debug.info( 'Object storage remote server static id: %s', param_t( 'remote_server_static_id' ) );
     apex_debug.info( 'Object storage bucket parameter name: %s', param_t( 'bucket_param_name' ) );
     apex_debug.info( 'Object storage namespace parameter name: %s', param_t( 'namespace_param_name' ) );
-    apex_debug.info( 'Object storage region parameter name: %s', param_t( 'region_param_name' ) );
     apex_debug.info( 'Object storage bucket url parameter name: %s', param_t( 'bucket_url_param_name' ) );
     apex_debug.info( 'Object storage bucket: %s', param_t( 'bucket' ) );
     apex_debug.info( 'Object storage namespace: %s', param_t( 'namespace' ) );
@@ -469,7 +467,9 @@ as
     , p_parameters          => l_del_params
     );
 
-    l_response_body := apex_exec.get_parameter_clob( l_del_params, 'response_body' );
+    l_response_body :=
+      apex_exec.get_parameter_clob( l_del_params, 'response_body' )
+    ;
 
     -- process response headers
     -- debug request headers if error
@@ -665,8 +665,10 @@ as
     apex_debug.info( 'Fetch object storage namespace returns: %s', l_response_body );
 
     -- check reponse status
-    if not apex_web_service.g_status_code = 200
+    if apex_web_service.g_status_code = 200
     then
+      l_namespace := trim( both '"' from l_response_body );
+    else
 
       process_headers(
         p_is_error => true
@@ -682,8 +684,6 @@ as
       );
 
     end if;
-
-    l_namespace := trim( both '"' from l_response_body );
 
     -- return namespace
     return l_namespace;
@@ -709,7 +709,7 @@ as
     p_build_status  in varchar2
   )
   as
-    c_bucket_url_template constant varchar2(64) := 'https://%0.objectstorage.%1.oci.customer-oci.com/n/%0/b/%2/o/';
+    c_bucket_url_template constant varchar2(64) := '%s/n/%s/b/%s/o/';
 
     l_attributes   apex_t_varchar2;
 
@@ -733,18 +733,6 @@ as
 
       apex_string.plist_push( l_attributes, param_t( 'bucket_param_name' ), p_bucket_name );
 
-      l_region :=
-        substr(
-          param_t( 'base_url' )
-        , instr( param_t( 'base_url' ), '.', 1, 1 ) + 1
-        , instr( param_t( 'base_url' ), '.', 1, 2 ) - 1 - instr( param_t( 'base_url' ), '.', 1, 1 )
-        )
-      ;
-
-      apex_debug.info( 'Set object storage region: %s', l_region );
-
-      apex_string.plist_push( l_attributes, param_t( 'region_param_name' ), l_region );
-
       l_base_url := rtrim( p_base_url, '/' ) || '/';
 
       apex_debug.info( 'Set object storage remote server %s: %s', param_t( 'remote_server_static_id' ), l_base_url );
@@ -756,26 +744,30 @@ as
 
       l_namespace := get_namespace;
 
-      apex_debug.info( 'Set object storage  namespace: %s', l_namespace );
+      if not apex_error.have_errors_occurred
+      then
 
-      apex_string.plist_push( l_attributes, param_t( 'namespace_param_name' ), l_namespace );
+        apex_debug.info( 'Set object storage  namespace: %s', l_namespace );
 
-      l_bucket_url :=
-        apex_string.format(
-          p_message => c_bucket_url_template
-        , p0 => l_namespace
-        , p1 => l_region
-        , p2 => p_bucket_name
-        )
-      ;
+        apex_string.plist_push( l_attributes, param_t( 'namespace_param_name' ), l_namespace );
 
-      apex_debug.info( 'Set object storage bucket URL: %s', l_bucket_url );
+        l_bucket_url :=
+          apex_string.format(
+            p_message => c_bucket_url_template
+          , p0 => l_base_url
+          , p1 => l_namespace
+          , p2 => p_bucket_name
+          )
+        ;
 
-      apex_string.plist_push( l_attributes, param_t( 'bucket_url_param_name' ), l_bucket_url );
+        apex_debug.info( 'Set object storage bucket URL: %s', l_bucket_url );
 
-      blog_admin.set_attribute_value(
-        p_attribute_list  => l_attributes
-      );
+        apex_string.plist_push( l_attributes, param_t( 'bucket_url_param_name' ), l_bucket_url );
+
+        blog_admin.set_attribute_value(
+          p_attribute_list  => l_attributes
+        );
+      end if;
 
     end if;
 

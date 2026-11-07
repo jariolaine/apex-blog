@@ -13,7 +13,6 @@ buildOption blog-authentication-apex (
 buildOption blog-authentication-google (
     name: BLOG_AUTHENTICATION_GOOGLE
     status {
-        status: include
         defaultOnExport: exclude
         onUpgradeKeepStatus: true
     }

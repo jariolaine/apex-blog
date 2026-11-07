@@ -15,14 +15,14 @@ help:
 	  '  make lint                          Run repository linters (pre-commit)' \
 	  '  make test                          Run focused offline release-safety tests' \
 	  '  make test-fast                     Run schema, metadata and parity tests' \
-	  '  make validate                      Validate APEXLang with SQLcl (no database)' \
+	  '  make validate                      Validate APEXLang with SQLcl' \
 	  '  make check                         Lint + schema/source + full tests + APEXLang' \
 	  '  make check-source                  Check local APEXLang references and DEV app IDs' \
-	  '  make check-schema                  Validate manifests, metadata and deinstall SQL (offline)' \
+	  '  make check-schema                  Validate manifests, metadata and deinstall SQL' \
 	  '' \
 	  'Development and releases:' \
 	  '  make prepare-release               Set DEV versions from VERSION.txt' \
-	  '  make supporting                    Assemble schema and metadata from Git (offline)' \
+	  '  make supporting                    Assemble schema and metadata from Git' \
 	  '  make source                        Export APEXLang from DEV to applications/' \
 	  '  make sync-dev                      Overwrite DEV with local APEXLang' \
 	  '  make build                         Prepare DEV, export, check, publish, test TEST (OVERWRITE=YES; PREVIOUS_ZIP=path optional)' \

@@ -21,7 +21,8 @@ as
 --------------------------------------------------------------------------------
   procedure rss(
     p_app_name  in varchar2,
-    p_app_desc  in varchar2
+    p_app_desc  in varchar2,
+    p_css_file  in varchar2
   )
   as
     l_xml           xmltype;
@@ -29,7 +30,7 @@ as
     l_lang          varchar2(256);
     l_app_id        varchar2(256);
     l_rss_url       varchar2(4000);
-    l_xsl_url       varchar2(4000);
+    l_css_url       varchar2(4000);
     l_home_url      varchar2(4000);
     l_app_name      varchar2(4000);
     l_app_desc      varchar2(4000);
@@ -60,17 +61,25 @@ as
        p_page       => 'HOME'
       ,p_canonical  => 'YES'
     );
-    -- rss transformations (XSLT)
-    l_xsl_url := blog_url.get_rss_xsl;
+
+
+    -- Generate relaive URL for CSS file
+    if p_css_file not like 'http%'
+    then
+      l_css_url := apex_util.host_url( 'APEX_PATH' );
+      l_css_url := substr( l_css_url, instr( l_css_url, '/', 1, 3 ) );
+    end if;
+
+    l_css_url := l_css_url || p_css_file;
 
     -- generate RSS
     select xmlserialize(
       content xmlconcat(
-        case when l_xsl_url is not null
+        case when l_css_url is not null
           then xmlpi( "xml-stylesheet",
             apex_string.format(
-               p_message => 'type="text/xsl" href="%s" media="screen"'
-              ,p0 => l_xsl_url
+               p_message => 'type="text/css" href="%s"'
+              ,p0 => l_css_url
             )
           )
         end,
@@ -302,104 +311,6 @@ as
     raise;
 
   end atom;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure rss_xsl(
-    p_css_file in varchar2
-  )
-  as
-    l_xml           xmltype;
-    l_xsl           blob;
-    l_css_url       varchar2(1024);
-    l_cache_control varchar2(256);
-  begin
-
-    -- Generate relaive URL for CSS file
-    if p_css_file not like 'http%'
-    then
-      l_css_url := apex_util.host_url( 'APEX_PATH' );
-      l_css_url := substr( l_css_url, instr( l_css_url, '/', 1, 3 ) );
-    end if;
-
-    l_css_url := l_css_url || p_css_file;
-
-    l_xml :=
-      xmltype(
-        apex_string.format(
-          p_message => '
-            <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/">
-              <!-- This causes the HTML doctype (<!doctype hmlt>) to be rendered. -->
-              <xsl:output method="html" doctype-system="about:legacy-compat" indent="yes" />
-              <!-- Start matching at the Channel node within the XML RSS feed. -->
-              <xsl:template match="/rss/channel">
-                <html lang="%s">
-                <head>
-                  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                  <title>
-                    <xsl:value-of select="title" />
-                  </title>
-                  <link rel="stylesheet" type="text/css" href="%s" />
-                </head>
-                <body>
-                  <h1><a class="blog-rss--title" href="{ link }"><xsl:value-of select="title" /></a></h1>
-                  <h2 class="blog-rss--description"><xsl:value-of select="description" /></h2>
-                  <xsl:for-each select="./item">
-                    <article class="blog-rss--post">
-                      <header>
-                        <h3 class="blog-rss--postHeader"><a href="{ link }"><xsl:value-of select="title" /></a></h3>
-                      </header>
-                      <p class="blog-rss--postBody"><xsl:value-of select="description" /></p>
-                    </article>
-                  </xsl:for-each>
-                </body>
-                </html>
-              </xsl:template>
-            </xsl:stylesheet>'
-          ,p0 => apex_application.g_browser_language
-          ,p1 => l_css_url
-        )
-      )
-    ;
-
-    select
-      xmlserialize(
-        content l_xml as blob encoding c_char_set indent size = 2
-      ) xsl
-    into l_xsl
-    from dual
-    ;
-
-    l_cache_control :=
-      apex_string.format(
-         p_message => 'max-age=%s'
-        ,p0 => blog_util.get_attribute_value( 'G_MAX_AGE_RSS_XSL' )
-      )
-    ;
-
-    blog_util.download_file(
-       p_blob_content   => l_xsl
-      ,p_mime_type      => c_mime_xml
-      ,p_header_names   => c_headers
-      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="rss.xsl"', null )
-      ,p_charset        => c_char_set
-    );
-
-  -- handle errors
-  exception
-  when others
-  then
-
-    apex_debug.error(
-       p_message => '%s Error: %s'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => sqlerrm
-    );
-
-    -- show http error
-    blog_util.raise_http_error( 400 );
-    raise;
-
-  end rss_xsl;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure sitemap_index(

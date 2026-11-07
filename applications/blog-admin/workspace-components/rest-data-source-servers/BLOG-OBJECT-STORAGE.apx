@@ -1,7 +1,7 @@
 restDataSourceServer BLOG_OBJECT_STORAGE (
     name: Blog Object Storage
     endpointUrl {
-        url: https://objectstorage.eu-frankfurt-1.oraclecloud.com/
+        url: https://frdt4eogdtjk.objectstorage.eu-frankfurt-1.oci.customer-oci.com/
     }
     advanced {
         promptOnInstall: true

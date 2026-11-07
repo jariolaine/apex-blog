@@ -93,6 +93,7 @@ page 1003 (
                 blog_xml.rss(
                   p_app_name  => :P0_BLOG_APP_NAME
                 , p_app_desc  => :P0_BLOG_APP_DESC
+                , p_css_file  => :APP_FILES || 'css/rss.min.css'
                 );
                 
                 
@@ -104,29 +105,6 @@ page 1003 (
         }
         advanced {
             executionMappingIdentifier: 63036620652126597
-        }
-        config {
-            buildOption: @blog-feature-rss
-        }
-    )
-
-    process rss-xsl (
-        name: rss.xsl
-        type: executeCode
-        source {
-            plsqlCode:
-                ```plsql
-                blog_xml.rss_xsl(
-                  p_css_file => :APP_FILES || 'css/rss-xsl.min.css'
-                );
-                ```
-        }
-        execution {
-            sequence: 30
-            point: ajaxCallback
-        }
-        advanced {
-            executionMappingIdentifier: 63037094013126597
         }
         config {
             buildOption: @blog-feature-rss

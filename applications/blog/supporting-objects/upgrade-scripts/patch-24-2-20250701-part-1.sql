@@ -117,6 +117,14 @@ update blog_settings
 where attribute_name = 'BLOG_APP_DESC'
 /
 
+-- Delete from BLOG_SETTINGS
+delete from blog_settings
+where attribute_name = 'G_RSS_XSL_URL'
+/
+delete from blog_settings
+where attribute_name = 'G_OCI_OS_REGION'
+/
+
 -- Set user date format preferences
 begin
   for c1 in(

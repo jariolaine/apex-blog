@@ -659,13 +659,6 @@ textMessage BLOG_HELP_G_RSS_URL (
     }
 )
 
-textMessage BLOG_HELP_G_RSS_XSL_URL (
-    message {
-        text: RSS feed custom XSL transformations (XSLT) URL for public application default RSS feed.
-        language: en
-    }
-)
-
 textMessage BLOG_HELP_P0_BLOG_APP_DATE_FORMAT (
     message {
         text: Public pages date format. Changes to this settings only take effect in new sessions of the public application.
@@ -1166,13 +1159,6 @@ textMessage BLOG_SETTING_G_MAX_AGE_SITEMAP (
 textMessage BLOG_SETTING_G_RSS_URL (
     message {
         text: Custom RSS feed URL
-        language: en
-    }
-)
-
-textMessage BLOG_SETTING_G_RSS_XSL_URL (
-    message {
-        text: RSS feed custom XSL URL
         language: en
     }
 )

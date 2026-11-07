@@ -1,9 +1,9 @@
-file "css/rss-xsl.css" (
+file "css/rss.css" (
     mimeType: text/css
     charSet: utf-8
 )
 
-file "css/rss-xsl.min.css" (
+file "css/rss.min.css" (
     mimeType: text/css
     charSet: utf-8
 )
