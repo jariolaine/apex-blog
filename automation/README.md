@@ -1,80 +1,63 @@
-# Automation documentation
+# APEX Blog automation
 
-Start here for APEX Blog development, CI, release preparation and deployment.
-Run Make commands from the **repository root**. The source repository is the
-reference for automation; the downloadable application ZIP does not contain
-these automation scripts.
+Run commands from the repository root. **`make help` is the authoritative command
+reference**; this page intentionally lists only the everyday workflows. When a
+Make target changes, update its help text and the relevant runbook procedure,
+not a separate copy of every command in every document.
 
-| Document | Purpose |
-| --- | --- |
-| **[Runbook](docs/RUNBOOK.md)** | Step-by-step setup, source/build workflows, TEST acceptance, promotion, hotfix and troubleshooting |
-| **[Architecture](docs/ARCHITECTURE.md)** | Source ownership, scripts, CI gates, test limitations and release-candidate safeguards |
-| **[Environments](docs/ENVIRONMENTS.md)** | DEV, disposable TEST, QA/UAT, PROD; SQLcl connections and local overrides |
-| [Project README](../README.md) | End-user installation and upgrade instructions |
-| [Agent guidance](../AGENT.md) | Repository-specific coding-agent safety and review rules |
-
-## Quick start
+## Everyday workflow
 
 ```bash
-make doctor        # Read-only; no database connection
-make setup         # Install local tools and Git hooks; no database changes
-make check         # Static checks, focused safety tests, APEXLang validation
-make supporting    # Regenerate Git-owned Supporting Objects offline; review diff
+make doctor        # Check local tools (does not test database connections)
+make setup         # Install local CI tools and Git hooks (RESET=YES to reinstall)
+make check         # Lint, schema/source, Python and APEXLang checks (no DB)
+make build         # Prepare DEV, build and verify SQL, then accept in TEST
 ```
 
-`make check` is **not** an Oracle installation test. It needs local SQLcl for
-APEXLang validation but does not connect to a database. `make supporting`
-updates tracked files; it is not a read-only check.
+`make build` is the **only** release-build command. It regenerates Git-owned
+Supporting Objects SQL, updates DEV application versions from `VERSION.txt`,
+exports and compares both DEV applications to Git, runs the full offline quality
+gate, packages/verifies the release, then performs upgrade, fresh-install and
+deinstallation acceptance against **disposable TEST**. It modifies DEV versions,
+tracked Supporting Objects and TEST. **Check both database connections before
+running it.** The GitHub latest published release is the default upgrade input;
+`PREVIOUS_ZIP=path` optionally selects a strictly older release ZIP.
 
-## Which command should I run?
+If DEV and Git differ, build stops instead of automatically invoking `make source`
+(DEV → Git) or `make sync-dev` (Git → DEV). Resolve the difference deliberately,
+review the changes and retry. A candidate may already exist if TEST acceptance
+fails; it is **not accepted**, and must not be promoted. After fixing the TEST
+problem, `make test-release` can retest that existing candidate without
+rebuilding.
 
-| Goal | Command | Details |
-| --- | --- | --- |
-| Show supported commands | `make help` | Makefile is authoritative |
-| Diagnose local tooling | `make doctor` | [Setup](docs/RUNBOOK.md#local-setup) |
-| Install CI tools and hooks | `make setup` | [Setup](docs/RUNBOOK.md#local-setup) |
-| Static lint only | `make lint` | [CI architecture](docs/ARCHITECTURE.md#quality-gates-and-tests) |
-| Quick / full offline safety tests | `make test-fast` / `make test` | [Test scope](tests/README.md) |
-| Entire local / CI quality gate | `make check` | [CI architecture](docs/ARCHITECTURE.md#quality-gates-and-tests) |
-| Validate APEXLang without a DB login | `make validate` | Requires SQLcl |
-| Validate schema, metadata, deinstall | `make check-schema` | [Schema changes](docs/RUNBOOK.md#schema-changes) |
-| Check APEXLang source references | `make check-source` | Work-in-progress-safe, offline |
-| Generate Supporting Objects | `make supporting` | Offline; changes tracked files |
-| Read APEXLang from DEV | `make source` | [DEV synchronization](docs/RUNBOOK.md#dev-synchronization) |
-| Overwrite DEV applications | `make sync-dev` | **Approval required**; [DEV synchronization](docs/RUNBOOK.md#dev-synchronization) |
-| Update DEV release versions | `make prepare-release CONFIRM=YES` | **Approval required** |
-| Build and verify candidate (recommended) | `make candidate` | Full gate, DEV export and [release checks](docs/RUNBOOK.md#release-preparation) |
-| Build candidate only | `make build` | No full local quality gate; [Release preparation](docs/RUNBOOK.md#release-preparation) |
-| Check strict release source versions | `make check-release` | No DB login |
-| Verify an existing candidate | `make verify-release` | Checks manifest and hashes |
-| Check current source and candidate | `make release-check` | Requires existing candidate |
-| Complete TEST acceptance | `make test-release CONFIRM=YES PREVIOUS_ZIP=...` | **Destructive; approved disposable TEST only**; [Testing](docs/RUNBOOK.md#testing-and-troubleshooting) |
-| Individual TEST operations | `make test-install`, `make test-upgrade`, `make test-deinstall` | For diagnostics; reset disposable TEST |
-| Deploy to QA/UAT | `make qa` | **Approval required**, runs full gate |
-| Promote to PROD | `make production CONFIRM=YES` | **Production approval required** |
-| Emergency QA/UAT export | `make hotfix-export` | [Hotfix](docs/RUNBOOK.md#emergency-hotfix) |
-| Emergency PROD import | `make hotfix-production CONFIRM=YES` | **Production approval and target verification required**; Supporting Objects enabled by default |
+A candidate is versioned under `build/releases/<version>/` and cannot be silently
+replaced. `make build OVERWRITE=YES` is only for an **unpromoted, local**
+candidate; never overwrite a tested, approved or publicly released version.
+`make verify-release` checks an existing candidate without rebuilding it.
 
-For release-specific commands, an existing candidate can be selected using
-`RELEASE_DIR=build/releases/<version>`. For upgrade testing, use
-`PREVIOUS_ZIP=/path/to/older/apex-blog-latest.zip` when the latest published
-release is not older than the candidate. For emergency import only,
-`make hotfix-production CONFIRM=YES OBJECTS=NO` skips **automatic** Supporting Objects
-installation for both applications.
+## Release acceptance and deployment
 
-## Important safety distinctions
+`make build` includes `make test-release`. To repeat acceptance independently,
+run `make test-release` (with optional `PREVIOUS_ZIP=path`). An older ZIP must
+exist and be strictly older than the candidate; otherwise the upgrade fails
+before resetting TEST. If no older public release exists, use
+`make test-deinstall` for install/deinstall checks and record that a complete
+end-to-end build cannot yet pass the upgrade acceptance step.
 
-- **Local only:** `make doctor`, `make lint`, `make test`, `make check`,
-  `make check-schema`, `make validate`, `make verify-release` do not mutate Oracle.
-- **Changes source files:** `make supporting`, `make source`. Review their Git
-  diffs; `make source` reads DEV and can overwrite local APEXLang changes.
-- **Changes Oracle:** `make prepare-release`, `make sync-dev`, TEST operations,
-  QA/production deployment and emergency hotfixes require an approved target.
-- **Emergency hotfix:** bypasses normal release checks and may change PROD data
-  and schema through Supporting Objects. It is **not** a rollback mechanism.
-- **STAGING:** there is no supported staging connection, Make target or
-  deployment path. The normal pipeline is TEST → QA/UAT → PROD.
+Promote the **same tested candidate**, only after environment-specific approval,
+using `make qa` and `make production`. The emergency hotfix path is
+separate and bypasses the normal release pipeline; see the runbook.
 
-For manually managed infrastructure, see the legacy
-[Stack documentation](../Stack/README.md); Terraform is outside this
-application automation documentation change.
+## Detailed reference
+
+- [Runbook](docs/RUNBOOK.md) — DEV synchronization, preparing releases,
+  destructive TEST operations, promotion, hotfix and recovery
+- [Architecture](docs/ARCHITECTURE.md) — Git-owned inputs, artifact integrity,
+  implementation and CI checks
+- [Environments](docs/ENVIRONMENTS.md) — saved connections and environment guards
+- [Project README](../README.md) — end-user installation and upgrade
+- [Agent safety rules](../AGENT.md) — instructions for coding agents
+
+The source repository owns the automation. Downloadable application ZIPs contain
+full SQL application exports, not the automation scripts. Legacy Terraform is
+maintained separately and is not part of this workflow refactor.

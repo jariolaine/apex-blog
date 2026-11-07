@@ -6,13 +6,12 @@ class SourceWorkflows(WorkflowFixture):
 
     def test_dev_import_preflight_blocks_database_calls(self):
         self.env['MOCK_PREFLIGHT_FAIL'] = '1'
-        self.script('import_apps_to_dev.sh', '--confirm-dev-import', ok=False)
+        self.script('import_apps_to_dev.sh', ok=False)
         self.assertEqual((self.root / 'preflight.log').read_text().strip(), 'preflight')
         self.assertFalse(self.calls.exists())
 
-    def test_dev_import_requires_confirmation_and_validates_both(self):
-        self.script('import_apps_to_dev.sh', ok=False)
-        self.script('import_apps_to_dev.sh', '--confirm-dev-import')
+    def test_dev_import_validates_both_applications(self):
+        self.script('import_apps_to_dev.sh')
         commands = self.calls_data()
         imports = [c for c in commands if 'apex import -input ' in c['sql']]
         self.assertEqual(len(imports), 2)

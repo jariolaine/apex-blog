@@ -6,10 +6,19 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 REPO_DIR="$(cd -- "$SCRIPT_DIR/../.." && pwd -P)"
 cd "$REPO_DIR"
 
-if [[ $# -gt 1 || ( $# -eq 1 && "$1" != '--no-hooks' ) ]]; then
-  printf 'Usage: bash automation/ci/bootstrap.sh [--no-hooks]\n' >&2
-  exit 2
-fi
+# Reset only repository-local tool installs; leave Git, the npm lockfile,
+# configuration, and any shared user-level pre-commit cache alone.
+reset_tools=false
+install_hooks=true
+for option in "$@"; do
+  case "$option" in
+    --reset) reset_tools=true ;;
+    --no-hooks) install_hooks=false ;;
+    *)
+      printf 'Usage: bash automation/ci/bootstrap.sh [--reset] [--no-hooks]\n' >&2
+      exit 2 ;;
+  esac
+done
 
 for command_name in python3 node npm; do
   if ! command -v "$command_name" >/dev/null 2>&1; then
@@ -17,6 +26,11 @@ for command_name in python3 node npm; do
     exit 1
   fi
 done
+
+if [[ "$reset_tools" == true ]]; then
+  printf '[apex-blog] Resetting local tool installs (.venv/ and node_modules/).\n' >&2
+  rm -rf -- "$REPO_DIR/.venv" "$REPO_DIR/node_modules"
+fi
 
 if [[ ! -x .venv/bin/python ]]; then
   if ! python3 -m venv .venv; then
@@ -45,7 +59,7 @@ fi
 # No system-wide installation, Go toolchain, or Docker daemon is required.
 bash automation/ci/install_actionlint.sh
 
-if [[ "${1:-}" != '--no-hooks' ]]; then
+if [[ "$install_hooks" == true ]]; then
   if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     printf '[apex-blog] No Git working tree; run setup-ci from a Git checkout.\n' >&2
     exit 1

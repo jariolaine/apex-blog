@@ -52,5 +52,5 @@ for i in "${!source_files[@]}"; do
 done
 rsync --checksum -- "$pubVwBlogVersionSource" "$pubVwBlogVersionTarget"
 
-log 'Supporting Objects updated from Git (no database access)'
-log 'NEXT: refresh APEXLang source, review and import into DEV, then build'
+log 'Supporting Objects updated from Git'
+log 'Review tracked Supporting Objects changes before release or DEV source synchronization'

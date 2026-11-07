@@ -3,12 +3,12 @@
 SCRIPTS := automation
 # Hotfix import defaults to running Supporting Objects install/upgrade scripts.
 OBJECTS ?= YES
-.PHONY: help setup setup-ci doctor lint test test-fast check-schema preflight check ci prepare-release supporting source sync-dev build candidate validate qa production test-install test-deinstall test-upgrade test-release hotfix-export hotfix-production check-source check-release verify-release release-check
+.PHONY: help setup setup-ci doctor lint test test-fast check-schema preflight check ci prepare-release supporting source sync-dev build validate qa production test-install test-deinstall test-upgrade test-release hotfix-export hotfix-production check-source check-release verify-release release-check
 
 help:
 	@printf '%s\n' \
 	  'Setup and diagnostics:' \
-	  '  make setup                         Install local CI tools and Git hook' \
+	  '  make setup                         Install local CI tools and Git hook (RESET=YES reinstalls from scratch)' \
 	  '  make doctor                        Read-only checks of local tools and setup' \
 	  '' \
 	  'Quality checks:' \
@@ -21,29 +21,26 @@ help:
 	  '  make check-schema                  Validate manifests, metadata and deinstall SQL (offline)' \
 	  '' \
 	  'Development and releases:' \
-	  '  make prepare-release CONFIRM=YES   Set DEV versions from VERSION.txt' \
+	  '  make prepare-release               Set DEV versions from VERSION.txt' \
 	  '  make supporting                    Assemble schema and metadata from Git (offline)' \
 	  '  make source                        Export APEXLang from DEV to applications/' \
-	  '  make sync-dev                      Overwrite DEV with local APEXLang (explicit)' \
-	  '  make build                         Build versioned SQL release ZIPs (read-only)' \
-	  '  make build OVERWRITE=YES           Replace only a safe local release candidate' \
-  '  make candidate                     Run quality gate, build and verify candidate' \
+	  '  make sync-dev                      Overwrite DEV with local APEXLang' \
+	  '  make build                         Prepare DEV, export, check, publish, test TEST (OVERWRITE=YES; PREVIOUS_ZIP=path optional)' \
 	  '  make check-release                 Check versions and Supporting Objects sources' \
-	  '  make verify-release                Verify candidate checksums and manifest' \
-	  '  make release-check                 Check release source plus packaged candidate' \
+	  '  make verify-release                Verify manifest and checksums (RELEASE_DIR=path optional)' \
+	  '  make release-check                 Verify source and candidate (RELEASE_DIR=path optional)' \
 	  '' \
 	  'Installation and deployment:' \
-	  '  make test-install                  Reset disposable TEST and test installation' \
-	  '  make test-deinstall                Test installation, deinstall, assert TEST is empty' \
-	  '  make test-upgrade                  Reset TEST and test upgrading a prior release' \
-  '  make test-release CONFIRM=YES PREVIOUS_ZIP=...  Upgrade, fresh install, deinstall in TEST' \
-	  '  make qa                            Deploy built SQL release to QA' \
-	  '  make production CONFIRM=YES        Promote the same candidate to production' \
+	  '  make test-install                  Fresh TEST install (RELEASE_DIR=path optional)' \
+	  '  make test-deinstall                Install, deinstall, verify empty TEST (RELEASE_DIR=path optional)' \
+	  '  make test-upgrade                  Upgrade TEST from GitHub latest (PREVIOUS_ZIP=path, RELEASE_DIR=path optional)' \
+	  '  make test-release                  TEST acceptance from GitHub latest (PREVIOUS_ZIP=path, RELEASE_DIR=path optional)' \
+	  '  make qa                            Deploy to QA (RELEASE_DIR=path optional)' \
+	  '  make production                    Deploy to PROD (RELEASE_DIR=path optional)' \
 	  '' \
 	  'Emergency hotfix:' \
 	  '  make hotfix-export                 Export BOTH QA/UAT apps as SQL (no build)' \
-	  '  make hotfix-production CONFIRM=YES Import both apps + Supporting Objects (default)' \
-	  '  make hotfix-production OBJECTS=NO  Import both apps and skip automatic Supporting Objects'
+	  '  make hotfix-production             Import both apps; OBJECTS=NO skips Supporting Objects (default YES)'
 
 # The preflight is enforced INSIDE the DEV/QA scripts, so direct invocations
 # cannot bypass it. Do not duplicate it as a Makefile prerequisite.
@@ -52,7 +49,8 @@ setup: setup-ci
 	@printf '[apex-blog] Local setup complete (no database changes).\n'
 
 setup-ci:
-	bash ./automation/ci/bootstrap.sh
+	@case "$(RESET)" in ""|NO|YES) ;; *) echo 'RESET must be YES (or omitted): make setup RESET=YES' >&2; exit 2 ;; esac
+	bash ./automation/ci/bootstrap.sh $(if $(filter YES,$(RESET)),--reset,)
 
 doctor:
 	bash ./automation/ci/doctor.sh
@@ -82,8 +80,7 @@ check: preflight
 ci: preflight
 
 prepare-release:
-	@test "$(CONFIRM)" = "YES" || (echo 'Requires: make prepare-release CONFIRM=YES' >&2; exit 1)
-	./$(SCRIPTS)/prepare_release.sh --confirm-dev-update
+	./$(SCRIPTS)/prepare_release.sh
 
 supporting:
 	./$(SCRIPTS)/supporting_objects.sh
@@ -92,20 +89,23 @@ source:
 	./$(SCRIPTS)/export_application.sh --source-only
 
 sync-dev:
-	./$(SCRIPTS)/import_apps_to_dev.sh --confirm-dev-import
+	./$(SCRIPTS)/import_apps_to_dev.sh
 
+# One release command. Supporting Objects generation may update tracked SQL;
+# version preparation changes DEV; TEST acceptance resets disposable TEST.
+# Never run source and sync-dev automatically: they replace source in opposite
+# directions. The exporter refuses DEV/Git drift instead of choosing a winner.
+# Its full quality gate runs AFTER temporary DEV exports but BEFORE publication.
+# Recursive Make stages stay sequential, including when the caller uses -j.
 build:
-	@case "$(OVERWRITE)" in 	  ""|NO|YES) ;; 	  *) echo 'OVERWRITE must be YES (or omitted): make build OVERWRITE=YES' >&2; exit 2 ;; 	esac
+	@case "$(OVERWRITE)" in ""|NO|YES) ;; *) echo 'OVERWRITE must be YES (or omitted): make build OVERWRITE=YES' >&2; exit 2 ;; esac
+	@test -z "$(RELEASE_DIR)" || { echo 'build uses current VERSION.txt; omit RELEASE_DIR' >&2; exit 2; }
+	@$(MAKE) --no-print-directory supporting OVERWRITE=NO
+	@$(MAKE) --no-print-directory prepare-release OVERWRITE=NO
 	./$(SCRIPTS)/export_application.sh --build-only $(if $(filter YES,$(OVERWRITE)),--overwrite,)
-
-# One safe, sequential build workflow. `make -j` cannot reorder the stages.
-# Does not run source/sync-dev/prepare-release or modify tracked sources.
-# Candidate publication itself retains the existing exclusive lock and checks.
-candidate:
-	@test -z "$(RELEASE_DIR)" || { echo 'candidate builds the current VERSION.txt; omit RELEASE_DIR' >&2; exit 2; }
-	@$(MAKE) --no-print-directory check
-	@$(MAKE) --no-print-directory build
 	@$(MAKE) --no-print-directory release-check
+	@$(MAKE) --no-print-directory test-release
+	@printf '[apex-blog] Build complete: verified candidate passed TEST upgrade, install and deinstall.\n'
 
 check-source:
 	./$(SCRIPTS)/check_source.sh source
@@ -126,23 +126,20 @@ validate:
 	./$(SCRIPTS)/validate_apexlang.sh
 
 test-install:
-	./$(SCRIPTS)/run_install_test.sh --confirm-reset-test $(if $(RELEASE_DIR),--release-dir "$(RELEASE_DIR)",)
+	./$(SCRIPTS)/run_install_test.sh $(if $(RELEASE_DIR),--release-dir "$(RELEASE_DIR)",)
 
 # Always run a fresh install first. The prerequisite is sequential, even with -j.
 # RELEASE_DIR also applies to test-install when supplied on the command line.
 test-deinstall: test-install
-	./$(SCRIPTS)/run_deinstall_test.sh --confirm-test-deinstall
+	./$(SCRIPTS)/run_deinstall_test.sh
 
 test-upgrade:
-	./$(SCRIPTS)/run_upgrade_test.sh --confirm-reset-test $(if $(PREVIOUS_ZIP),--previous-zip "$(PREVIOUS_ZIP)",) $(if $(RELEASE_DIR),--release-dir "$(RELEASE_DIR)",)
+	./$(SCRIPTS)/run_upgrade_test.sh $(if $(PREVIOUS_ZIP),--previous-zip "$(PREVIOUS_ZIP)",) $(if $(RELEASE_DIR),--release-dir "$(RELEASE_DIR)",)
 
-# Explicit, destructive acceptance workflow against disposable TEST only.
-# Upgrade uses a fixed, older ZIP. test-deinstall itself runs test-install first,
-# and asserts zero user objects and no TEST APEX apps after cleanup.
+# Combined TEST acceptance uses GitHub latest by default, or PREVIOUS_ZIP.
+# The upgrade script verifies that it is older than the candidate before TEST reset.
+# Database target identity and saved connection separation are checked by the scripts.
 test-release:
-	@test "$(CONFIRM)" = "YES" || { echo 'Requires: make test-release CONFIRM=YES PREVIOUS_ZIP=/path/to/older.zip (resets TEST)' >&2; exit 1; }
-	@test -n "$(PREVIOUS_ZIP)" || { echo 'test-release requires PREVIOUS_ZIP=/path/to/older.zip; no implicit GitHub download' >&2; exit 2; }
-	@test -f "$(PREVIOUS_ZIP)" && test -s "$(PREVIOUS_ZIP)" || { echo 'PREVIOUS_ZIP must be an existing nonempty file' >&2; exit 2; }
 	@$(MAKE) --no-print-directory verify-release
 	@$(MAKE) --no-print-directory test-upgrade
 	@$(MAKE) --no-print-directory test-deinstall
@@ -151,8 +148,7 @@ qa:
 	./$(SCRIPTS)/import_apps_to_qa.sh $(if $(RELEASE_DIR),--release-dir "$(RELEASE_DIR)",)
 
 production:
-	@test "$(CONFIRM)" = "YES" || (echo 'Production requires: make production CONFIRM=YES' >&2; exit 1)
-	./$(SCRIPTS)/import_apps_to_pro.sh --confirm-production $(if $(RELEASE_DIR),--release-dir "$(RELEASE_DIR)",)
+	./$(SCRIPTS)/import_apps_to_pro.sh $(if $(RELEASE_DIR),--release-dir "$(RELEASE_DIR)",)
 
 # Emergency QA/UAT -> production path. Installs Supporting Objects by default;
 # no DEV/TEST, release files, APEXLang, or normal preflight gate.
@@ -160,6 +156,5 @@ hotfix-export:
 	./$(SCRIPTS)/hotfix.sh export
 
 hotfix-production:
-	@test "$(CONFIRM)" = "YES" || { echo 'Production hotfix requires: make hotfix-production CONFIRM=YES [OBJECTS=NO]' >&2; exit 1; }
 	@case '$(OBJECTS)' in YES|NO) ;; *) echo 'OBJECTS must be YES or NO' >&2; exit 2 ;; esac
-	./$(SCRIPTS)/hotfix.sh production --confirm-production $(if $(filter NO,$(OBJECTS)),--skip-supporting-objects,)
+	./$(SCRIPTS)/hotfix.sh production $(if $(filter NO,$(OBJECTS)),--skip-supporting-objects,)

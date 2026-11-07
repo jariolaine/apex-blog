@@ -10,14 +10,17 @@ class TestDatabaseWorkflows(WorkflowFixture):
 
     def test_test_connection_required_and_correct_target(self):
         self.stub_release_candidate()
-        self.script('run_install_test.sh', ok=False)
-        self.script('run_install_test.sh', '--confirm-reset-test')
+        self.env['APEX_BLOG_TST_CONNECTION'] = 'PROD_TEST_SAVED'
+        denied = self.script('run_install_test.sh', ok=False)
+        self.assertIn('must be different from DEV, UAT and production', denied.stderr)
+        self.env['APEX_BLOG_TST_CONNECTION'] = 'DISPOSABLE_TEST_SAVED'
+        self.script('run_install_test.sh')
         commands = self.calls_data()
         tests = [c for c in commands if c['argv'][-1] == 'DISPOSABLE_TEST_SAVED']
         self.assertTrue(any('remove_application.sql' in c['sql'] for c in tests))
         self.assertEqual(sum('install_application.sql' in c['sql'] for c in tests), 2)
         self.env['APEX_BLOG_TST_CONNECTION'] = 'PROD_TEST_SAVED'
-        self.script('run_install_test.sh', '--confirm-reset-test', ok=False)
+        self.script('run_install_test.sh', ok=False)
 
 
     def test_deinstall_runs_install_first_and_verifies_everything_is_removed(self):
@@ -68,7 +71,7 @@ class TestDatabaseWorkflows(WorkflowFixture):
         previous = self.root/'previous.zip'
         self.previous_zip(previous, self.older_version())
         # Explicit PREVIOUS_ZIP must bypass the GitHub download altogether.
-        self.script('run_upgrade_test.sh', '--confirm-reset-test', '--previous-zip', str(previous))
+        self.script('run_upgrade_test.sh', '--previous-zip', str(previous))
         commands = self.calls_data()
         tests = [c for c in commands if c['argv'][-1] == 'DISPOSABLE_TEST_SAVED']
         installs = [c['sql'] for c in tests if 'install_application.sql' in c['sql']]
@@ -89,7 +92,7 @@ class TestDatabaseWorkflows(WorkflowFixture):
                                ('missing', None), ('malformed', 'Release wrong')):
             previous = self.root / f'{label}.zip'
             self.previous_zip(previous, version)
-            out = self.script('run_upgrade_test.sh', '--confirm-reset-test',
+            out = self.script('run_upgrade_test.sh',
                               '--previous-zip', str(previous), ok=False)
             self.assertIn('Previous release ZIP', out.stderr)
             self.assertFalse(any(c['argv'][-1] == 'DISPOSABLE_TEST_SAVED'

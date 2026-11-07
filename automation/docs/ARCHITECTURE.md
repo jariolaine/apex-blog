@@ -36,12 +36,11 @@ exists.
 
 ```mermaid
 graph TD
-    Git[Git APEXLang, schema manifests and metadata] --> Supporting[make supporting: offline SQL assembly]
-    Supporting --> Sync[Review source and synchronize with DEV as authorized]
-    Sync --> Build[make candidate: quality gate, build, verify]
+    Git[Git APEXLang, schema manifests and metadata] --> Sync[Review source and synchronize with DEV as authorized]
+    Sync --> Build[make build: Supporting Objects, DEV version, export and full checks]
     Build --> Candidate[Versioned candidate: manifest and SHA256SUMS]
-    Candidate --> TEST[Disposable TEST acceptance]
-    Candidate --> QA[QA/UAT: full preflight and source fingerprint]
+    Candidate --> TEST[Disposable TEST upgrade, install and deinstall]
+    TEST --> QA[QA/UAT: full preflight and source fingerprint]
     QA --> PROD[PROD: approved promotion of the same candidate]
 ```
 
@@ -61,8 +60,14 @@ live in `build/releases/.locks/`, are persistent and should **not** be deleted
 manually. A failed interrupted replacement can retain `.backup.*` recovery
 directories. See [safe candidate handling](RUNBOOK.md#candidate-integrity-and-overwrite).
 
-`make candidate` runs `make check`, `make build` and `make release-check`
-sequentially; it never synchronizes or modifies DEV source automatically.
+`make build` assembles Git-owned Supporting Objects SQL, updates DEV versions,
+exports both applications to temporary space and compares them with Git. Only
+then does the exporter run the full `make check` gate (including all Python
+tests), **before publication**. The build verifies the candidate and runs real
+TEST acceptance; it fails if either gate fails. Stages remain sequential even
+under parallel Make. It never runs `source` or `sync-dev` automatically, and
+never silently resolves DEV/Git differences. Generated Supporting Objects may
+change tracked SQL; check the diff.
 `make verify-release` checks manifest and checksums. `make release-check`
 combines strict source-version checks and artifact verification; it does **not**
 check the candidate's source fingerprint against the current tree. The QA
@@ -86,15 +91,16 @@ not also run inside pre-commit. The selected workflow tests execute real
 Bash/Make entry points using isolated files and a **mock SQLcl**. Generic CI
 bootstrap and tool behavior is checked by actually running those tools, not by
 Python mock regressions. These tests do not prove Oracle DDL, APEX installation
-or PL/SQL compilation succeeds. See the [test scope](../tests/README.md).
-Real acceptance uses
-`make test-release CONFIRM=YES PREVIOUS_ZIP=...` on an approved disposable
-TEST schema. It invokes upgrade, then fresh-install and deinstall checks;
+or PL/SQL compilation succeeds. See [offline safety tests](RUNBOOK.md#offline-safety-tests).
+Real acceptance runs inside `make build` via `make test-release`, and can
+also be repeated separately against an existing candidate in disposable TEST. It downloads the
+latest published GitHub release unless `PREVIOUS_ZIP=path` is supplied, and
+invokes upgrade, then fresh-install and deinstall checks;
 individual TEST commands remain available. None runs in CI.
 
 Direct `make sync-dev` and `make qa` enforce the full preflight before
 database mutations. `make build` has its own strict source/version/parity
-checks. Production promotion verifies its candidate and requires confirmation;
+checks. Production promotion verifies its candidate and connected target;
 it does **not** rerun the entire preflight. The emergency hotfix bypasses the
 normal candidate, version, checksum and preflight gates altogether.
 
@@ -111,7 +117,7 @@ require the reported `quality` check in their branch rules/rulesets.
 
 `make hotfix-export` reads both QA/UAT applications into `build/hotfix/f<ID>.sql`
 (Admin first), exporting Supporting Objects with them. A later
-`make hotfix-production CONFIRM=YES` imports **those saved SQL files** into
+`make hotfix-production` imports **those saved SQL files** into
 PROD without normal release checks or an automatic backup. The script also
 verifies the configured PROD schema/workspace before either import. Supporting Objects install/
 upgrade scripts run by default for both apps; `OBJECTS=NO` skips **automatic**

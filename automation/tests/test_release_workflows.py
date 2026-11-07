@@ -41,10 +41,16 @@ class ReleaseWorkflows(WorkflowFixture):
         p = self.script('export_application.sh', '--build-only', ok=False)
         self.assertIn('validation success', p.stderr)
         self.assertFalse((self.candidate()/'SHA256SUMS').exists())
+        self.env.pop('MOCK_FAIL_VALIDATE')
+        self.env['MOCK_PREFLIGHT_FAIL'] = '1'
+        p = self.script('export_application.sh', '--build-only', ok=False)
+        self.assertIn('full offline quality gate', p.stderr)
+        self.assertTrue((self.root / 'preflight.log').is_file())
+        self.assertFalse(self.candidate().exists(), 'Failed gate must not publish candidate')
 
 
-    def test_make_build_overwrite_replaces_only_current_candidate(self):
-        self.make('build')
+    def test_candidate_overwrite_replaces_only_current_candidate(self):
+        self.script('export_application.sh', '--build-only')
         current = self.candidate()
         old_manifest = (current / 'manifest.json').read_bytes()
         previous = current.parent / '26.1.5.20250101'
@@ -57,9 +63,9 @@ class ReleaseWorkflows(WorkflowFixture):
         mirror = self.template / 'blog-admin/pages' / page.name
         for f in (page, mirror):
             f.write_bytes(f.read_bytes() + b'\n-- reviewed change\n')
-        denied = self.make('build', ok=False)
+        denied = self.script('export_application.sh', '--build-only', ok=False)
         self.assertIn('already exists', denied.stderr)
-        self.make('build', 'OVERWRITE=YES')
+        self.script('export_application.sh', '--build-only', '--overwrite')
         self.assertNotEqual((current / 'manifest.json').read_bytes(), old_manifest)
         self.assertEqual((previous / 'keep.txt').read_text(), 'keep previous version')
         self.assertEqual(log_file.read_text(), 'keep deployment log')
@@ -70,7 +76,7 @@ class ReleaseWorkflows(WorkflowFixture):
         self.script('import_apps_to_qa.sh')
 
     def test_overwrite_failure_restores_previous_verified_candidate(self):
-        self.make('build')
+        self.script('export_application.sh', '--build-only')
         current = self.candidate()
         before = {f.name: f.read_bytes() for f in current.iterdir() if f.is_file()}
         mover = self.bin / 'mv'
@@ -84,7 +90,7 @@ class ReleaseWorkflows(WorkflowFixture):
         mover.chmod(0o755)
         self.env['PATH'] = f"{self.bin}{os.pathsep}{self.env.get('PATH', '')}"
         self.env['MOCK_FAIL_STAGE_PUBLISH'] = '1'
-        out = self.make('build', 'OVERWRITE=YES', ok=False)
+        out = self.script('export_application.sh', '--build-only', '--overwrite', ok=False)
         self.assertIn('mock publish failure', out.stderr)
         self.assertIn('Restored previous release candidate', out.stderr)
         self.assertEqual(before, {f.name: f.read_bytes() for f in current.iterdir() if f.is_file()})
@@ -104,14 +110,14 @@ class ReleaseWorkflows(WorkflowFixture):
         )
         mover.chmod(0o755)
         self.env['PATH'] = f"{self.bin}{os.pathsep}{self.env.get('PATH', '')}"
-        out = self.make('build', ok=False)
+        out = self.script('export_application.sh', '--build-only', ok=False)
         self.assertIn('mock first publication failure', out.stderr)
         self.assertFalse(self.candidate().exists())
         self.assertEqual(list(self.candidate().parent.glob('.candidate.*')), [])
         self.assertEqual(list(self.candidate().parent.glob('.backup.*')), [])
 
     def test_final_verification_failure_restores_previous_candidate(self):
-        self.make('build')
+        self.script('export_application.sh', '--build-only')
         current = self.candidate()
         original = {f.name: f.read_bytes() for f in current.iterdir() if f.is_file()}
         python = self.bin / 'python3'
@@ -127,7 +133,7 @@ class ReleaseWorkflows(WorkflowFixture):
         )
         python.chmod(0o755)
         self.env['PATH'] = f"{self.bin}{os.pathsep}{self.env.get('PATH', '')}"
-        out = self.make('build', 'OVERWRITE=YES', ok=False)
+        out = self.script('export_application.sh', '--build-only', '--overwrite', ok=False)
         self.assertIn('mock final verification failure', out.stderr)
         self.assertIn('Restored previous release candidate', out.stderr)
         self.assertEqual(original, {f.name: f.read_bytes() for f in current.iterdir() if f.is_file()})
@@ -143,24 +149,24 @@ class ReleaseWorkflows(WorkflowFixture):
         (external / 'dont-delete.txt').write_text('important')
         self.candidate().parent.mkdir(parents=True, exist_ok=True)
         self.candidate().symlink_to(external, target_is_directory=True)
-        out = self.make('build', 'OVERWRITE=YES', ok=False)
+        out = self.script('export_application.sh', '--build-only', '--overwrite', ok=False)
         self.assertIn('Unsafe release candidate target', out.stderr)
         self.assertEqual((external / 'dont-delete.txt').read_text(), 'important')
         self.candidate().unlink()
         self.candidate().mkdir()
         (self.candidate() / 'notes.txt').write_text('not a candidate')
-        out = self.make('build', 'OVERWRITE=YES', ok=False)
+        out = self.script('export_application.sh', '--build-only', '--overwrite', ok=False)
         self.assertIn('unrecognized release directory', out.stderr)
         self.assertEqual((self.candidate() / 'notes.txt').read_text(), 'not a candidate')
 
     def test_overwrite_rejected_while_candidate_is_locked(self):
-        self.make('build')
+        self.script('export_application.sh', '--build-only')
         lock_file = self.candidate().parent / '.locks' / (self.candidate().name + '.lock')
         before = (self.candidate() / 'manifest.json').read_bytes()
         sqlcl_calls = len(self.calls_data())
         with lock_file.open('a') as holder:
             fcntl.flock(holder.fileno(), fcntl.LOCK_SH | fcntl.LOCK_NB)
-            out = self.make('build', 'OVERWRITE=YES', ok=False)
+            out = self.script('export_application.sh', '--build-only', '--overwrite', ok=False)
             self.assertIn('in use by another build or deployment', out.stderr)
             self.assertEqual(len(self.calls_data()), sqlcl_calls, 'Lock must be checked before DEV export')
             fcntl.flock(holder.fileno(), fcntl.LOCK_UN)

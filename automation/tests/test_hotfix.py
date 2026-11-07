@@ -48,7 +48,7 @@ class HotfixTests(unittest.TestCase):
 
     def test_import_both_apps_without_preflight_execution(self):
         self.run_hotfix('export')
-        self.run_hotfix('production', '--confirm-production')
+        self.run_hotfix('production')
         calls = self.calls()
         self.assertEqual(len(calls), 5)
         self.assertIn('APEX_BLOG_ENV_OK', calls[2]['sql'])
@@ -67,7 +67,7 @@ class HotfixTests(unittest.TestCase):
 
     def test_skip_supporting_objects_imports_both_applications(self):
         self.run_hotfix('export')
-        self.run_hotfix('production', '--confirm-production', '--skip-supporting-objects')
+        self.run_hotfix('production', '--skip-supporting-objects')
         imports = self.calls()[3:]
         self.assertEqual(len(imports), 2)
         for call, app_id in zip(imports, (102, 101)):
@@ -78,25 +78,10 @@ class HotfixTests(unittest.TestCase):
         for call in self.calls()[:2]:
             self.assertIn('-expsupportingobjects Y', call['sql'])
 
-
-    def test_hotfix_requires_confirmation_before_prod_sqlcl(self):
-        self.run_hotfix('export')
-        previous_count = len(self.calls())
-        result = self.run_hotfix('production', ok=False)
-        self.assertIn('--confirm-production', result.stderr)
-        self.assertEqual(len(self.calls()), previous_count)
-        result = subprocess.run(
-            ['make', '--no-print-directory', 'hotfix-production'],
-            env=self.env, cwd=self.root, text=True, capture_output=True, timeout=30,
-        )
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn('CONFIRM=YES', result.stderr)
-        self.assertEqual(len(self.calls()), previous_count)
-
     def test_hotfix_verifies_prod_target_before_import(self):
         self.run_hotfix('export')
         self.env['MOCK_WRONG_ENV'] = '1'
-        result = self.run_hotfix('production', '--confirm-production', ok=False)
+        result = self.run_hotfix('production', ok=False)
         self.assertIn('Cannot verify database environment', result.stderr)
         prod_calls = self.calls()[2:]
         self.assertEqual(len(prod_calls), 1)
@@ -106,7 +91,7 @@ class HotfixTests(unittest.TestCase):
     def test_hotfix_rejects_shared_production_connection(self):
         self.run_hotfix('export')
         self.env['APEX_BLOG_PRD_CONNECTION'] = 'QA_HOTFIX_TEST'
-        result = self.run_hotfix('production', '--confirm-production', ok=False)
+        result = self.run_hotfix('production', ok=False)
         self.assertIn('distinct from DEV, TEST and QA/UAT', result.stderr)
         self.assertEqual(len(self.calls()), 2)
 

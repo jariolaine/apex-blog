@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Export APEXlang source (not split SQL) and SQL-format packaged release files.
-# See AGENT.md for workflow, safety and synchronization guidance.
+# --build-only checks exported DEV source against Git and runs offline preflight
+# before publication. See AGENT.md for synchronization safeguards.
 set -Eeuo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 source "$SCRIPT_DIR/lib/common.sh"
@@ -118,7 +119,8 @@ SQL
         diff -qr --exclude=deployments "$repo_dir" "$app_dir" >"$run_dir/logs/source-diff-$id.log" \
             || {
                 head -n 35 "$run_dir/logs/source-diff-$id.log" >&2
-                die "APEXlang source $alias differs from DEV. Export source or import local edits first."
+                log 'Resolve the conflict explicitly: make source (DEV -> Git, review diff) or make sync-dev (Git -> DEV).'
+                die "APEXLang $alias differs from DEV; build never overwrites source automatically"
             }
         cat >"$run_dir/export-sql-${id}.sqlcl" <<SQL
 apex export -applicationid $id -exptype SQL -expsupportingobjects Y -exppubreports -skipExportDate -dir "$run_dir/sql"
@@ -171,7 +173,12 @@ if [[ "$mode" == build ]]; then
     python3 "$SCRIPT_DIR/lib/check_source_consistency.py" \
         --repo "$repoHome" --apps-dir "$apexSourceDir" \
         --dev-ids "${devAppIds[@]}" --mode release \
-        || die 'Release source consistency failed; run prepare-release, supporting and source as appropriate'
+        || die 'Release source consistency failed; reconcile Git and DEV deliberately before building'
+    # Both APEXLang applications and SQL exports now exist in temporary space.
+    # Check the actual exported state, before creating/publishing a candidate.
+    # This also protects direct --build-only calls (not only make build).
+    log 'DEV exports match Git; running full offline quality gate before publication'
+    "$SCRIPT_DIR/ci/preflight.sh"
 fi
 
 if [[ "$mode" == build ]]; then

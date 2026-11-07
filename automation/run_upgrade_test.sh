@@ -4,12 +4,10 @@ set -Eeuo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 source "$SCRIPT_DIR/lib/common.sh"
 
-confirmed=false
 previous_zip=''
 release_dir="$(current_release_dir)"
 while (( $# )); do
     case "$1" in
-        --confirm-reset-test) confirmed=true; shift ;;
         --release-dir)
             (( $# >= 2 )) || die '--release-dir requires a directory'
             release_dir="$2"; shift 2 ;;
@@ -19,7 +17,6 @@ while (( $# )); do
         *) die "Unknown option: $1" ;;
     esac
 done
-$confirmed || die 'Usage: run_upgrade_test.sh --confirm-reset-test [--previous-zip PATH] [--release-dir PATH]'
 if [[ -n "$previous_zip" ]]; then
     require_file "$previous_zip"
 fi

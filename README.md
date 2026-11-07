@@ -1,9 +1,6 @@
 # APEX Blog
 
-![Oracle Database 19c](https://img.shields.io/badge/Oracle_Database-19c-red)
-![Oracle Application Express 26.1](https://img.shields.io/badge/APEX-26.1-blue)
-
-Blog application built with Oracle Application Express (APEX).
+Blog application built with Oracle APEX.
 
 ## Install
 

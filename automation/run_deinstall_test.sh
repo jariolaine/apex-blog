@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
 # Destructive deinstallation test against dedicated, disposable TEST ONLY.
-# The Makefile runs test-install first; direct callers must explicitly confirm.
+# Use make test-deinstall to run the required fresh install before cleanup.
 set -Eeuo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 source "$SCRIPT_DIR/lib/common.sh"
 
-[[ "${1:-}" == '--confirm-test-deinstall' && $# -eq 1 ]] \
-    || die 'Usage: run_deinstall_test.sh --confirm-test-deinstall (run make test-deinstall to install first)'
+(( $# == 0 )) || die 'Usage: run_deinstall_test.sh (use make test-deinstall to install first)'
 [[ -n "$tstDbConnName" ]] || die 'Set APEX_BLOG_TST_CONNECTION to a disposable TEST saved SQLcl connection'
 [[ "$tstDbConnName" != "$devDbConnName" && "$tstDbConnName" != "$uatDbConnName" && "$tstDbConnName" != "$prdDbConnName" ]] \
     || die 'TEST saved connection must be different from DEV, UAT and production'

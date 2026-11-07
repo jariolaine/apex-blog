@@ -102,7 +102,13 @@ class WorkflowFixture(unittest.TestCase):
         if self.needs_dev_snapshot:
             shutil.copytree(self.repo/'applications', self.template)
         self.calls = self.root / 'calls.jsonl'
-        self.env = dict(os.environ,
+        # Parent `make build OVERWRITE=YES` passes flags to child Make processes.
+        # Isolate this fixture so only flags explicitly passed by a test apply.
+        base_env = os.environ.copy()
+        for name in ('MAKEFLAGS', 'MAKEOVERRIDES', 'MFLAGS', 'GNUMAKEFLAGS',
+                     'MAKELEVEL', 'OVERWRITE', 'RELEASE_DIR'):
+            base_env.pop(name, None)
+        self.env = dict(base_env,
                         SQLCL_BIN=str(self.mock),
                         MOCK_SQLCL_LOG=str(self.calls),
                         MOCK_APEX_TEMPLATE=str(self.template),

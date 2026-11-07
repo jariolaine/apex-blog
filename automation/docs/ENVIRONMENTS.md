@@ -51,11 +51,14 @@ SQLcl/database access process. `make doctor` checks that SQLcl exists; it does
 ## Which environments are modified?
 
 - **DEV:** `make source` reads the two applications and refreshes local APEXLang.
-  `make prepare-release CONFIRM=YES` changes DEV application versions;
-  `make sync-dev` overwrites DEV application definitions. Both mutations
-  require explicit approval. `make build` reads DEV but does not change it.
-- **TEST:** `make test-release CONFIRM=YES PREVIOUS_ZIP=...` sequentially
-  tests upgrade, then fresh installation and verified deinstallation. It
+  `make prepare-release` changes DEV application versions;
+  `make sync-dev` overwrites DEV application definitions. `make build`
+  updates DEV versions via `prepare-release`, but never automatically imports
+  APEXLang changes. Review both connections before running a build.
+- **TEST:** `make build` invokes `make test-release`, which sequentially tests
+  upgrade from the latest
+  published GitHub release (or `PREVIOUS_ZIP=path`), then fresh installation
+  and verified deinstallation. It
   resets the approved disposable TEST schema and leaves it empty on success.
   `make test-install` resets the schema, removes prior test apps,
   then installs a release. `make test-upgrade` resets TEST and installs an older
@@ -65,8 +68,8 @@ SQLcl/database access process. `make doctor` checks that SQLcl exists; it does
 - **QA/UAT:** `make qa` enforces preflight and verifies both the release and
   candidate/source fingerprint before importing. `make hotfix-export` reads
   QA/UAT without creating a normal candidate.
-- **PROD:** `make production CONFIRM=YES` deploys the previously verified
-  candidate, without rebuilding. `make hotfix-production CONFIRM=YES` imports saved QA/UAT
+- **PROD:** `make production` deploys the previously verified
+  candidate, without rebuilding. `make hotfix-production` imports saved QA/UAT
   exports directly and deliberately skips normal quality/release gates.
   Supporting Objects are installed by default; `OBJECTS=NO` disables their
   **automatic** installation.
@@ -76,11 +79,11 @@ SQLcl/database access process. `make doctor` checks that SQLcl exists; it does
 ```text
 Git-owned schema, metadata and APEXLang ↔ DEV (reviewed source synchronization)
                      │
-          make candidate (checks, DEV export, verify)
-                     │
-       build/releases/<version>/ (checksummed candidate)
+   make build: generate SQL, prepare DEV versions,
+      export, check, publish and verify candidate
                      │
        TEST install / upgrade / deinstall acceptance
+           (part of make build)
                      │
            QA/UAT (same candidate)
                      │

@@ -3,18 +3,15 @@
 set -Eeuo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 source "$SCRIPT_DIR/lib/common.sh"
-confirmed=false
 release_dir="$(current_release_dir)"
 while (( $# )); do
     case "$1" in
-        --confirm-reset-test) confirmed=true; shift ;;
         --release-dir)
             (( $# >= 2 )) || die '--release-dir requires a directory'
             release_dir="$2"; shift 2 ;;
         *) die "Unknown option: $1" ;;
     esac
 done
-$confirmed || die 'Usage: run_install_test.sh --confirm-reset-test [--release-dir PATH]'
 [[ -n "$tstDbConnName" ]] || die 'Set APEX_BLOG_TST_CONNECTION to a disposable TEST saved SQLcl connection'
 [[ "$tstDbConnName" != "$devDbConnName" && "$tstDbConnName" != "$uatDbConnName" && "$tstDbConnName" != "$prdDbConnName" ]] \
     || die 'TEST saved connection must be different from DEV, UAT and production'

@@ -4,16 +4,14 @@ set -Eeuo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 source "$SCRIPT_DIR/lib/common.sh"
 
-[[ $# -ge 1 ]] || die 'Usage: deploy.sh qa|production [--release-dir PATH] [--confirm-production]'
+[[ $# -ge 1 ]] || die 'Usage: deploy.sh qa|production [--release-dir PATH]'
 environment="$1"; shift
 release_dir="$(current_release_dir)"
-confirmed=false
 while (( $# )); do
     case "$1" in
         --release-dir)
             (( $# >= 2 )) || die '--release-dir needs a path'
             release_dir="$2"; shift 2 ;;
-        --confirm-production) confirmed=true; shift ;;
         *) die "Unknown option: $1" ;;
     esac
 done
@@ -25,7 +23,9 @@ case "$environment" in
         conn="$uatDbConnName"; ws="$uatWorkspace"; schema="$uatDbSchema"
         ids=("${uatAppIds[@]}") ;;
     production|prod)
-        $confirmed || die 'Production requires --confirm-production'
+        [[ -n "$prdDbConnName" && "$prdDbConnName" != "$devDbConnName" &&
+           "$prdDbConnName" != "$uatDbConnName" && "$prdDbConnName" != "$tstDbConnName" ]] \
+            || die 'PROD saved connection must be distinct from DEV, TEST and QA/UAT'
         conn="$prdDbConnName"; ws="$prdWorkspace"; schema="$prdDbSchema"
         ids=("${prdAppIds[@]}") ;;
     *) die 'Environment must be qa or production' ;;

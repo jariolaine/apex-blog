@@ -11,8 +11,11 @@ class DeployWorkflows(WorkflowFixture):
     def test_qa_and_production_use_same_sql_release_and_distinct_connections(self):
         self.stub_release_candidate()
         self.script('import_apps_to_qa.sh')
-        self.script('import_apps_to_pro.sh', ok=False)
-        self.script('import_apps_to_pro.sh', '--confirm-production')
+        self.env['APEX_BLOG_PRD_CONNECTION'] = 'QA_TEST_SAVED'
+        denied = self.script('import_apps_to_pro.sh', ok=False)
+        self.assertIn('PROD saved connection must be distinct', denied.stderr)
+        self.env['APEX_BLOG_PRD_CONNECTION'] = 'PROD_TEST_SAVED'
+        self.script('import_apps_to_pro.sh')
         commands = self.calls_data()
         qa = [c for c in commands if c['argv'][-1] == 'QA_TEST_SAVED']
         prod = [c for c in commands if c['argv'][-1] == 'PROD_TEST_SAVED']
@@ -40,7 +43,7 @@ class DeployWorkflows(WorkflowFixture):
         self.script('import_apps_to_qa.sh')
         ddl = self.repo / 'Database/Packages/BLOG_UTIL.pkb'
         ddl.write_bytes(ddl.read_bytes() + b'\n-- WIP DEV modification\n')
-        self.script('import_apps_to_pro.sh', '--confirm-production', '--release-dir', str(candidate))
+        self.script('import_apps_to_pro.sh', '--release-dir', str(candidate))
         self.assertEqual(sum('install_application.sql' in c['sql']
                              for c in self.calls_data() if c['argv'][-1] == 'PROD_TEST_SAVED'), 2)
         self.assertFalse((candidate / 'deploy-logs').exists())

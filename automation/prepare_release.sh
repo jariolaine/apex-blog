@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
-# Explicitly synchronize DEV APEX app versions and BLOG_SETTINGS with VERSION.txt.
+# Synchronize DEV APEX app versions and BLOG_SETTINGS with VERSION.txt.
 set -Eeuo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 source "$SCRIPT_DIR/lib/common.sh"
-[[ "${1:-}" == '--confirm-dev-update' && "$#" == 1 ]] \
-    || die 'Usage: prepare_release.sh --confirm-dev-update'
+(( $# == 0 )) || die 'Usage: prepare_release.sh'
 require_tool "$sqlcl_bin"
 version="$(read_release_version)"
 [[ "${devAppIds[0]}" =~ ^[0-9]+$ && "${devAppIds[1]}" =~ ^[0-9]+$ ]] || die 'Invalid DEV application IDs'
@@ -36,4 +35,4 @@ grep -q '^APEX_BLOG_RELEASE_PREPARED' "$run_dir/prepare.log" \
     || die 'Release preparation success marker missing'
 check_dev_release_version "$devDbConnName" "$devWorkspace" \
     "${devAppIds[0]}" "${devAppIds[1]}" "$run_dir"
-log 'DEV versions prepared and verified; run make supporting / make source'
+log 'DEV versions prepared and verified'

@@ -96,7 +96,7 @@ end;
 /
 SQL
     run_sqlcl "$conn" "$logs/check-release-version.log" "$sql_file" \
-        || die 'Release versions differ; run make prepare-release CONFIRM=YES after review'
+        || die 'Release versions differ; run make prepare-release after review'
     grep -q '^APEX_BLOG_VERSION_OK' "$logs/check-release-version.log" \
         || die 'SQLcl did not confirm DEV release versions'
 }

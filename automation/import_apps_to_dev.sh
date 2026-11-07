@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
-# Explicitly import repository APEXlang into DEV to synchronize Supporting
+# Import repository APEXlang into DEV to synchronize Supporting
 # Objects definitions before producing an installable SQL export.
 set -Eeuo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 source "$SCRIPT_DIR/lib/common.sh"
-[[ "${1:-}" == '--confirm-dev-import' && $# -eq 1 ]] \
-    || die 'Usage: import_apps_to_dev.sh --confirm-dev-import (overwrites DEV applications)'
+(( $# == 0 )) || die 'Usage: import_apps_to_dev.sh (overwrites DEV applications)'
 # Always validate before SQLcl or any DEV change, even if invoked directly.
 "$SCRIPT_DIR/ci/preflight.sh"
 # Keep the dev import independent of release-version preparation. Only local

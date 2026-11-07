@@ -44,7 +44,7 @@ make check
 
 **Local-only setup and source generation (no database connection):**
 
-- `make setup`: install local CI tools and Git hook. No DEV confirmation needed.
+- `make setup`: install local CI tools and Git hook. No database changes.
 - `make supporting`: assemble database objects, foreign keys and indexes from Git; validate checked-in metadata and render its `G_APP_VERSION` value from `VERSION.txt`. It never overwrites the tracked deinstall script. Inspect the resulting diff.
 
 **Read DEV but change local files (run only when relevant; warn about overwritten source):**
@@ -52,17 +52,28 @@ make check
 - `make source`: export APEXLang from DEV; may overwrite `.apx` changes. Existing local Supporting Objects SQL and static-file bytes are preserved.
   Direct `automation/export_application.sh` calls require `--source-only` or
   `--build-only`; invoking it without a mode is an error, never a combined export.
-- `make candidate`: run full quality checks, build, then release verification sequentially; reads DEV for export but never syncs DEV versions or tracked Git sources.
-- `make build`: read-only APEXLang parity/source validation and versioned SQL release ZIPs, manifest, checksums. Existing versions remain protected by default; `make build OVERWRITE=YES` replaces only the current unpromoted local candidate with staged verification and rollback, without changing tracked source. Never overwrite a QA-approved/published candidate.
+
+**End-to-end release (requires explicit human approval before execution):**
+
+- `make build`: generate Supporting Objects (may modify tracked SQL), update DEV
+  application versions, export both apps to temporary space, compare with Git,
+  run `make check` **after export and before publication**, package/verify the
+  candidate, and reset disposable TEST for real upgrade/install/deinstall.
+  `PREVIOUS_ZIP=path` is optional; the default is GitHub's latest release.
+  **Never run this command without authorization for DEV and TEST.** It never
+  executes `make source` or `make sync-dev` automatically. A failing TEST gate
+  leaves an unapproved local candidate; rerun `make test-release` before approval.
+  `make build OVERWRITE=YES` can replace an eligible unpromoted local candidate;
+  never overwrite a QA-approved/published version.
 
 **Requires explicit human approval BEFORE execution:**
 
-- `make prepare-release CONFIRM=YES`: changes DEV versions.
+- `make prepare-release`: changes DEV versions.
 - `make sync-dev`: overwrites both DEV APEX application definitions.
-- `make test-release CONFIRM=YES PREVIOUS_ZIP=...`: sequentially perform verified-candidate upgrade, fresh install and deinstall against approved disposable TEST; require an older ZIP and leave TEST empty on success.
+- `make test-release`: repeat verified-candidate upgrade, fresh install and deinstall against approved disposable TEST. By default download GitHub's latest published release; `PREVIOUS_ZIP=path` selects another older ZIP. Reject equal/newer releases before resetting TEST; leave TEST empty on success.
 - `make test-install` / `make test-upgrade` / `make test-deinstall`: reset the **disposable TEST** schema. `test-deinstall` always runs `test-install` first, then removes both TEST apps and Supporting Objects and verifies the schema has **zero** user objects. Run only against an approved disposable TEST schema.
-- `make qa` / `make production CONFIRM=YES`: deploy normal release applications.
-- `make hotfix-production CONFIRM=YES`: directly replace both PROD applications from saved QA/UAT exports; no normal build or release gates, but require production confirmation and schema/workspace verification.
+- `make qa` / `make production`: deploy normal release applications.
+- `make hotfix-production`: directly replace both PROD applications from saved QA/UAT exports; no normal build or release gates, but require prior authorization and schema/workspace verification.
 
 Check the saved SQLcl connection and target schema before any approved database operation. Do not automatically execute SQL that drops or upgrades objects. Never run a command just because it is listed here.
 
@@ -74,7 +85,7 @@ Check the saved SQLcl connection and target schema before any approved database 
   neither command connects to a database. `make doctor` is a read-only diagnostic.
   Do not require a fixed Node.js major version or global `pre-commit`.
 - Use `make lint` for linters, `make test` for focused offline release-safety
-  tests, and `make preflight` for both plus SQLcl APEXLang validation.
+  tests, and `make check` for the full quality gate including SQLcl APEXLang validation.
 - Pre-commit hooks run static lint only. GitHub Actions and `make preflight`
   additionally run offline schema/source checks, selected safety tests (once)
   and APEXLang validation. Do not suppress failures merely to make a test pass.
@@ -100,13 +111,13 @@ Check the saved SQLcl connection and target schema before any approved database 
 Only use this path when explicitly requested. Follow `automation/docs/RUNBOOK.md` (emergency hotfix):
 
 - `make hotfix-export`: export both current QA/UAT applications to `build/hotfix/f<ID>.sql` (overwrites any prior hotfix candidate).
-- `make hotfix-production CONFIRM=YES`: import those two saved SQL files into PROD, Admin first. Obtain human approval before running; direct script callers must pass `--confirm-production`.
+- `make hotfix-production`: import those two saved SQL files into PROD, Admin first. Obtain human approval before running; both Make and direct script calls verify the configured PROD target.
 - This path deliberately skips DEV/TEST, APEXLang export, checksum validation,
   and normal release gates. Supporting Objects are **installed by default** in
   both PROD imports; review possible schema/data changes. To skip their
   automatic installation, use
-  `make hotfix-production CONFIRM=YES OBJECTS=NO` (direct script:
-  `production --confirm-production --skip-supporting-objects`).
+  `make hotfix-production OBJECTS=NO` (direct script:
+  `production --skip-supporting-objects`).
 - Do not commit generated `build/hotfix/` files. Developers must carry fixes back into the usual development and source-control process separately.
 
 ## Finish every task
