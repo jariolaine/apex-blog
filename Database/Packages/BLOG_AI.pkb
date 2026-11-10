@@ -37,17 +37,16 @@ as
     apex_debug.info( 'Generative AI build option name: %s', param_t( 'gen_ai_build_option' ) );
     apex_debug.info( 'Generative AI generate message: %s', param_t( 'gen_ai_generate_msg' ) );
     apex_debug.info( 'Generative AI generate prompt message: %s', param_t( 'gen_ai_generate_prompt_msg' ) );
-    apex_debug.info( 'Language AI comparment parameter name : %s', param_t( 'lang_ai_compartment_param_name' ) );
-    apex_debug.info( 'Language AI comparment OCID : %s', param_t( 'lang_ai_compartment_ocid') );
+    apex_debug.info( 'Language AI compartment parameter name : %s', param_t( 'lang_ai_compartment_param_name' ) );
+    apex_debug.info( 'Language AI compartment OCID : %s', param_t( 'lang_ai_compartment_ocid') );
 
   end init_params;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure get_sentiments
   as
-    l_compartnet_id varchar2(256);
-    l_document      clob;
-    l_params        apex_exec.t_parameters;
+    l_document  clob;
+    l_params    apex_exec.t_parameters;
   begin
 
     -- Loop through comments that have not yet been analyzed
@@ -56,7 +55,9 @@ as
         select
           id
         , v1.body_html
-        , mod( rownum, floor( count(1) over() / 5 ) ) as batch_group
+        , mod(
+            rownum, greatest( floor( count(1) over() / 5 ), 1 )
+          ) as batch_group
         from blog_v_all_comments v1
         where 1 = 1
           and sentiment is null
@@ -64,8 +65,8 @@ as
       select
         json_arrayagg(
           json_object(
-            'key'   is blog_util.int_to_vc2( q1.id ),
-            'text'  is blog_comment.plain_text( q1.body_html )
+            'key'   value blog_util.int_to_vc2( q1.id ),
+            'text'  value blog_comment.plain_text( q1.body_html )
           ) returning clob
         ) as document
       from q1
@@ -73,6 +74,7 @@ as
         q1.batch_group
     ) loop
 
+      l_params := apex_exec.t_parameters();
       -- Set attributes for the language AI request
       apex_exec.add_parameter( l_params, 'compartmentId', param_t( 'lang_ai_compartment_ocid') );
       apex_exec.add_parameter( l_params, 'documents', c1.document );
@@ -82,7 +84,7 @@ as
 
       -- Call language AI to analyze sentiment
       apex_exec.execute_rest_source(
-        p_static_id           => param_t( 'lang_ai_module_static_id' ),
+        p_static_id           => param_t( 'lang_ai_static_id' ),
         p_operation_static_id => 'batch_document',
         p_parameters          => l_params
       );
@@ -125,7 +127,7 @@ as
     l_base_url    varchar2(2000);
   begin
 
-    apex_debug.info( 'Set buid option %s status: %s', param_t( 'lang_ai_build_option' ), p_build_status );
+    apex_debug.info( 'Set build option %s status: %s', param_t( 'lang_ai_build_option' ), p_build_status );
     -- Set build option status for the language AI feature
     blog_admin.update_feature(
       p_build_option_name => param_t( 'lang_ai_build_option' )
@@ -168,10 +170,10 @@ as
     p_ai_attributes   in varchar2
   )
   as
-    l_base_url    varchar2(2000);
+    l_base_url varchar2(2000);
   begin
 
-    apex_debug.info( 'Set buid option %s status: %s', param_t( 'gen_ai_build_option' ), p_build_status );
+    apex_debug.info( 'Set build option %s status: %s', param_t( 'gen_ai_build_option' ), p_build_status );
     -- Set build option status for the generative AI feature
     blog_admin.update_feature(
       p_build_option_name => param_t( 'gen_ai_build_option' )
@@ -198,7 +200,7 @@ as
       -- Update remote server
       apex_application_admin.set_remote_server(
         p_static_id       => param_t( 'gen_ai_static_id' )
-      , p_base_url        => p_base_url
+      , p_base_url        => l_base_url
       , p_ai_model_name   => p_ai_model_name
       , p_ai_http_headers => p_ai_http_headers
       , p_ai_attributes   => p_ai_attributes
@@ -263,7 +265,7 @@ as
   )
   as
     l_comment_id      number;
-    l_sentiment_json  varchar2(32700);
+    l_sentiment_json  clob;
     l_json_documents  json_array_t;
     l_json_document   json_object_t;
   begin
@@ -316,6 +318,14 @@ as
     l_json_document := json_object_t.parse( p_documents );
     -- Retrieve the "documents" array
     l_json_documents := l_json_document.get_array( 'documents' );
+
+    if l_json_documents is null
+    or l_json_documents.get_size() = 0
+    then
+      apex_debug.warn( 'No languages detected in response, defaulting to en' );
+      return;
+    end if;
+
     -- Extract the first document
     l_json_document := json_object_t( l_json_documents.get(0) );
     -- Retrieve the "languages" array
@@ -349,6 +359,12 @@ as
     l_json_document := json_object_t.parse( p_documents );
     -- Retrieve the "documents" array
     l_json_documents := l_json_document.get_array( 'documents' );
+
+    if l_json_documents is null or l_json_documents.get_size() = 0 then
+      p_translation := null;
+      return;
+    end if;
+
     -- Extract the translated text from the first document
     l_json_document := json_object_t( l_json_documents.get(0) );
     p_translation := l_json_document.get_string( 'translatedText' );

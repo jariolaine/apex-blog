@@ -48,20 +48,19 @@ as
     l_rss_url   := blog_url.get_rss;
     -- blog name
     l_app_name := coalesce(
-       p_app_name
-      ,blog_util.get_attribute_value( 'P0_BLOG_APP_NAME' )
+      p_app_name
+    , blog_util.get_attribute_value( 'P0_BLOG_APP_NAME' )
     );
     -- rss feed description
     l_app_desc  := coalesce(
-       p_app_desc
-      ,blog_util.get_attribute_value( 'P0_BLOG_APP_DESC' )
+      p_app_desc
+    , blog_util.get_attribute_value( 'P0_BLOG_APP_DESC' )
     );
     -- blog home page absulute URL
     l_home_url  := blog_url.get_tab(
-       p_page       => 'HOME'
-      ,p_canonical  => 'YES'
+      p_page      => 'HOME'
+    , p_canonical => 'YES'
     );
-
 
     -- Generate relaive URL for CSS file
     if p_css_file not like 'http%'
@@ -73,89 +72,90 @@ as
     l_css_url := l_css_url || p_css_file;
 
     -- generate RSS
-    select xmlserialize(
-      content xmlconcat(
-        case when l_css_url is not null
-          then xmlpi( "xml-stylesheet",
-            apex_string.format(
-               p_message => 'type="text/css" href="%s"'
-              ,p0 => l_css_url
-            )
-          )
-        end,
-        xmlelement(
-          "rss", xmlattributes(
-             l_rss_version                              as "version"
-            ,'http://purl.org/dc/elements/1.1/'         as "xmlns:dc"
-            ,'http://purl.org/rss/1.0/modules/content/' as "xmlns:content"
-            ,'http://www.w3.org/2005/Atom'              as "xmlns:atom"
-          )
-          ,xmlelement(
-            "channel"
-            ,xmlelement(
-              "atom:link"
-              ,xmlattributes(
-                'self'                as "rel"
-                ,l_rss_url            as "href"
-                ,blog_util.g_mime_rss as "type"
+    select
+      xmlserialize(
+        content xmlconcat(
+          case when l_css_url is not null
+            then xmlpi( "xml-stylesheet",
+              apex_string.format(
+                p_message => 'type="text/css" href="%s"'
+              , p0 => l_css_url
               )
             )
-            ,xmlforest(
-              l_app_name  as "title"
-              ,l_home_url as "link"
-              ,l_app_desc as "description"
-              ,l_lang     as "language"
+          end
+        , xmlelement(
+            "rss", xmlattributes(
+              l_rss_version                               as "version"
+            , 'http://purl.org/dc/elements/1.1/'          as "xmlns:dc"
+            , 'http://purl.org/rss/1.0/modules/content/'  as "xmlns:content"
+            , 'http://www.w3.org/2005/Atom'               as "xmlns:atom"
             )
-            ,xmlagg(
-              xmlelement(
-                "item"
-                ,xmlelement( "title",           posts.post_title )
-                ,xmlelement( "dc:creator",      posts.blogger_name )
-                ,xmlelement( "category",        posts.category_title )
-                ,xmlelement( "link",            posts.absolute_url )
-                ,xmlelement( "description",     posts.post_desc )
-                ,xmlelement( "content:encoded", xmlcdata( posts.body_html ) )
-                ,xmlelement( "pubDate",
-                  to_char(
-                    sys_extract_utc( posts.published_on )
-                    ,blog_util.g_rfc_2822_date
-                    ,blog_util.g_nls_date_lang
-                  )
+            ,xmlelement(
+              "channel"
+            , xmlelement(
+                "atom:link"
+              , xmlattributes(
+                  'self'                as "rel"
+                , l_rss_url             as "href"
+                , blog_util.g_mime_rss  as "type"
                 )
-                ,xmlelement( "guid", xmlattributes( 'false' as "isPermaLink" ), posts.post_id )
-              ) order by posts.published_on desc
+              )
+              ,xmlforest(
+                l_app_name  as "title"
+              , l_home_url  as "link"
+              , l_app_desc  as "description"
+              , l_lang      as "language"
+              )
+            , xmlagg(
+                xmlelement(
+                  "item"
+                , xmlelement( "title",           posts.post_title )
+                , xmlelement( "dc:creator",      posts.blogger_name )
+                , xmlelement( "category",        posts.category_title )
+                , xmlelement( "link",            posts.absolute_url )
+                , xmlelement( "description",     posts.post_desc )
+                , xmlelement( "content:encoded", xmlcdata( posts.body_html ) )
+                , xmlelement( "pubDate",
+                    to_char(
+                      sys_extract_utc( posts.published_on )
+                    , blog_util.g_rfc_2822_date
+                    , blog_util.g_nls_date_lang
+                    )
+                  )
+                , xmlelement( "guid", xmlattributes( 'false' as "isPermaLink" ), posts.post_id )
+                ) order by posts.published_on desc
+              )
             )
           )
         )
-      )
-      as blob encoding c_char_set indent size = 2
-    )
-    ,max( posts.published_on ) as max_published
+        as blob encoding c_char_set indent size = 2
+      ) as rss_xml
+    , max( posts.published_on ) as max_published
     into l_rss, l_max_published
     from blog_v_posts_last20 posts
     ;
 
     l_cache_control :=
       apex_string.format(
-         p_message => 'max-age=%s'
-        ,p0 => blog_util.get_attribute_value( 'G_MAX_AGE_RSS' )
+        p_message => 'max-age=%s'
+      , p0 => blog_util.get_attribute_value( 'G_MAX_AGE_RSS' )
       )
     ;
 
     l_last_modified :=
       to_char(
-         sys_extract_utc( l_max_published )
-        ,blog_util.g_rfc_2822_date
-        ,blog_util.g_nls_date_lang
+        sys_extract_utc( l_max_published )
+      , blog_util.g_rfc_2822_date
+      , blog_util.g_nls_date_lang
       )
     ;
 
     blog_util.download_file(
-       p_blob_content   => l_rss
-      ,p_mime_type      => c_mime_xml
-      ,p_header_names   => c_headers
-      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="rss.xml"', l_last_modified  )
-      ,p_charset        => c_char_set
+      p_blob_content   => l_rss
+    , p_mime_type      => c_mime_xml
+    , p_header_names   => c_headers
+    , p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="rss.xml"', l_last_modified  )
+    , p_charset        => c_char_set
     );
 
   -- handle errors
@@ -164,9 +164,9 @@ as
   then
 
     apex_debug.error(
-       p_message => '%s Error: %s'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => sqlerrm
+      p_message => '%s Error: %s'
+    , p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+    , p1 => sqlerrm
     );
 
     -- show http error

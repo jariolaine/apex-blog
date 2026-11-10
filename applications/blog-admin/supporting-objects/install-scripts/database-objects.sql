@@ -4894,17 +4894,16 @@ as
     apex_debug.info( 'Generative AI build option name: %s', param_t( 'gen_ai_build_option' ) );
     apex_debug.info( 'Generative AI generate message: %s', param_t( 'gen_ai_generate_msg' ) );
     apex_debug.info( 'Generative AI generate prompt message: %s', param_t( 'gen_ai_generate_prompt_msg' ) );
-    apex_debug.info( 'Language AI comparment parameter name : %s', param_t( 'lang_ai_compartment_param_name' ) );
-    apex_debug.info( 'Language AI comparment OCID : %s', param_t( 'lang_ai_compartment_ocid') );
+    apex_debug.info( 'Language AI compartment parameter name : %s', param_t( 'lang_ai_compartment_param_name' ) );
+    apex_debug.info( 'Language AI compartment OCID : %s', param_t( 'lang_ai_compartment_ocid') );
 
   end init_params;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   procedure get_sentiments
   as
-    l_compartnet_id varchar2(256);
-    l_document      clob;
-    l_params        apex_exec.t_parameters;
+    l_document  clob;
+    l_params    apex_exec.t_parameters;
   begin
 
     -- Loop through comments that have not yet been analyzed
@@ -4913,7 +4912,9 @@ as
         select
           id
         , v1.body_html
-        , mod( rownum, floor( count(1) over() / 5 ) ) as batch_group
+        , mod(
+            rownum, greatest( floor( count(1) over() / 5 ), 1 )
+          ) as batch_group
         from blog_v_all_comments v1
         where 1 = 1
           and sentiment is null
@@ -4921,8 +4922,8 @@ as
       select
         json_arrayagg(
           json_object(
-            'key'   is blog_util.int_to_vc2( q1.id ),
-            'text'  is blog_comment.plain_text( q1.body_html )
+            'key'   value blog_util.int_to_vc2( q1.id ),
+            'text'  value blog_comment.plain_text( q1.body_html )
           ) returning clob
         ) as document
       from q1
@@ -4930,6 +4931,7 @@ as
         q1.batch_group
     ) loop
 
+      l_params := apex_exec.t_parameters();
       -- Set attributes for the language AI request
       apex_exec.add_parameter( l_params, 'compartmentId', param_t( 'lang_ai_compartment_ocid') );
       apex_exec.add_parameter( l_params, 'documents', c1.document );
@@ -4939,7 +4941,7 @@ as
 
       -- Call language AI to analyze sentiment
       apex_exec.execute_rest_source(
-        p_static_id           => param_t( 'lang_ai_module_static_id' ),
+        p_static_id           => param_t( 'lang_ai_static_id' ),
         p_operation_static_id => 'batch_document',
         p_parameters          => l_params
       );
@@ -4982,7 +4984,7 @@ as
     l_base_url    varchar2(2000);
   begin
 
-    apex_debug.info( 'Set buid option %s status: %s', param_t( 'lang_ai_build_option' ), p_build_status );
+    apex_debug.info( 'Set build option %s status: %s', param_t( 'lang_ai_build_option' ), p_build_status );
     -- Set build option status for the language AI feature
     blog_admin.update_feature(
       p_build_option_name => param_t( 'lang_ai_build_option' )
@@ -5025,10 +5027,10 @@ as
     p_ai_attributes   in varchar2
   )
   as
-    l_base_url    varchar2(2000);
+    l_base_url varchar2(2000);
   begin
 
-    apex_debug.info( 'Set buid option %s status: %s', param_t( 'gen_ai_build_option' ), p_build_status );
+    apex_debug.info( 'Set build option %s status: %s', param_t( 'gen_ai_build_option' ), p_build_status );
     -- Set build option status for the generative AI feature
     blog_admin.update_feature(
       p_build_option_name => param_t( 'gen_ai_build_option' )
@@ -5055,7 +5057,7 @@ as
       -- Update remote server
       apex_application_admin.set_remote_server(
         p_static_id       => param_t( 'gen_ai_static_id' )
-      , p_base_url        => p_base_url
+      , p_base_url        => l_base_url
       , p_ai_model_name   => p_ai_model_name
       , p_ai_http_headers => p_ai_http_headers
       , p_ai_attributes   => p_ai_attributes
@@ -5120,7 +5122,7 @@ as
   )
   as
     l_comment_id      number;
-    l_sentiment_json  varchar2(32700);
+    l_sentiment_json  clob;
     l_json_documents  json_array_t;
     l_json_document   json_object_t;
   begin
@@ -5173,6 +5175,14 @@ as
     l_json_document := json_object_t.parse( p_documents );
     -- Retrieve the "documents" array
     l_json_documents := l_json_document.get_array( 'documents' );
+
+    if l_json_documents is null
+    or l_json_documents.get_size() = 0
+    then
+      apex_debug.warn( 'No languages detected in response, defaulting to en' );
+      return;
+    end if;
+
     -- Extract the first document
     l_json_document := json_object_t( l_json_documents.get(0) );
     -- Retrieve the "languages" array
@@ -5206,6 +5216,12 @@ as
     l_json_document := json_object_t.parse( p_documents );
     -- Retrieve the "documents" array
     l_json_documents := l_json_document.get_array( 'documents' );
+
+    if l_json_documents is null or l_json_documents.get_size() = 0 then
+      p_translation := null;
+      return;
+    end if;
+
     -- Extract the translated text from the first document
     l_json_document := json_object_t( l_json_documents.get(0) );
     p_translation := l_json_document.get_string( 'translatedText' );
@@ -10649,20 +10665,19 @@ as
     l_rss_url   := blog_url.get_rss;
     -- blog name
     l_app_name := coalesce(
-       p_app_name
-      ,blog_util.get_attribute_value( 'P0_BLOG_APP_NAME' )
+      p_app_name
+    , blog_util.get_attribute_value( 'P0_BLOG_APP_NAME' )
     );
     -- rss feed description
     l_app_desc  := coalesce(
-       p_app_desc
-      ,blog_util.get_attribute_value( 'P0_BLOG_APP_DESC' )
+      p_app_desc
+    , blog_util.get_attribute_value( 'P0_BLOG_APP_DESC' )
     );
     -- blog home page absulute URL
     l_home_url  := blog_url.get_tab(
-       p_page       => 'HOME'
-      ,p_canonical  => 'YES'
+      p_page      => 'HOME'
+    , p_canonical => 'YES'
     );
-
 
     -- Generate relaive URL for CSS file
     if p_css_file not like 'http%'
@@ -10674,89 +10689,90 @@ as
     l_css_url := l_css_url || p_css_file;
 
     -- generate RSS
-    select xmlserialize(
-      content xmlconcat(
-        case when l_css_url is not null
-          then xmlpi( "xml-stylesheet",
-            apex_string.format(
-               p_message => 'type="text/css" href="%s"'
-              ,p0 => l_css_url
-            )
-          )
-        end,
-        xmlelement(
-          "rss", xmlattributes(
-             l_rss_version                              as "version"
-            ,'http://purl.org/dc/elements/1.1/'         as "xmlns:dc"
-            ,'http://purl.org/rss/1.0/modules/content/' as "xmlns:content"
-            ,'http://www.w3.org/2005/Atom'              as "xmlns:atom"
-          )
-          ,xmlelement(
-            "channel"
-            ,xmlelement(
-              "atom:link"
-              ,xmlattributes(
-                'self'                as "rel"
-                ,l_rss_url            as "href"
-                ,blog_util.g_mime_rss as "type"
+    select
+      xmlserialize(
+        content xmlconcat(
+          case when l_css_url is not null
+            then xmlpi( "xml-stylesheet",
+              apex_string.format(
+                p_message => 'type="text/css" href="%s"'
+              , p0 => l_css_url
               )
             )
-            ,xmlforest(
-              l_app_name  as "title"
-              ,l_home_url as "link"
-              ,l_app_desc as "description"
-              ,l_lang     as "language"
+          end
+        , xmlelement(
+            "rss", xmlattributes(
+              l_rss_version                               as "version"
+            , 'http://purl.org/dc/elements/1.1/'          as "xmlns:dc"
+            , 'http://purl.org/rss/1.0/modules/content/'  as "xmlns:content"
+            , 'http://www.w3.org/2005/Atom'               as "xmlns:atom"
             )
-            ,xmlagg(
-              xmlelement(
-                "item"
-                ,xmlelement( "title",           posts.post_title )
-                ,xmlelement( "dc:creator",      posts.blogger_name )
-                ,xmlelement( "category",        posts.category_title )
-                ,xmlelement( "link",            posts.absolute_url )
-                ,xmlelement( "description",     posts.post_desc )
-                ,xmlelement( "content:encoded", xmlcdata( posts.body_html ) )
-                ,xmlelement( "pubDate",
-                  to_char(
-                    sys_extract_utc( posts.published_on )
-                    ,blog_util.g_rfc_2822_date
-                    ,blog_util.g_nls_date_lang
-                  )
+            ,xmlelement(
+              "channel"
+            , xmlelement(
+                "atom:link"
+              , xmlattributes(
+                  'self'                as "rel"
+                , l_rss_url             as "href"
+                , blog_util.g_mime_rss  as "type"
                 )
-                ,xmlelement( "guid", xmlattributes( 'false' as "isPermaLink" ), posts.post_id )
-              ) order by posts.published_on desc
+              )
+              ,xmlforest(
+                l_app_name  as "title"
+              , l_home_url  as "link"
+              , l_app_desc  as "description"
+              , l_lang      as "language"
+              )
+            , xmlagg(
+                xmlelement(
+                  "item"
+                , xmlelement( "title",           posts.post_title )
+                , xmlelement( "dc:creator",      posts.blogger_name )
+                , xmlelement( "category",        posts.category_title )
+                , xmlelement( "link",            posts.absolute_url )
+                , xmlelement( "description",     posts.post_desc )
+                , xmlelement( "content:encoded", xmlcdata( posts.body_html ) )
+                , xmlelement( "pubDate",
+                    to_char(
+                      sys_extract_utc( posts.published_on )
+                    , blog_util.g_rfc_2822_date
+                    , blog_util.g_nls_date_lang
+                    )
+                  )
+                , xmlelement( "guid", xmlattributes( 'false' as "isPermaLink" ), posts.post_id )
+                ) order by posts.published_on desc
+              )
             )
           )
         )
-      )
-      as blob encoding c_char_set indent size = 2
-    )
-    ,max( posts.published_on ) as max_published
+        as blob encoding c_char_set indent size = 2
+      ) as rss_xml
+    , max( posts.published_on ) as max_published
     into l_rss, l_max_published
     from blog_v_posts_last20 posts
     ;
 
     l_cache_control :=
       apex_string.format(
-         p_message => 'max-age=%s'
-        ,p0 => blog_util.get_attribute_value( 'G_MAX_AGE_RSS' )
+        p_message => 'max-age=%s'
+      , p0 => blog_util.get_attribute_value( 'G_MAX_AGE_RSS' )
       )
     ;
 
     l_last_modified :=
       to_char(
-         sys_extract_utc( l_max_published )
-        ,blog_util.g_rfc_2822_date
-        ,blog_util.g_nls_date_lang
+        sys_extract_utc( l_max_published )
+      , blog_util.g_rfc_2822_date
+      , blog_util.g_nls_date_lang
       )
     ;
 
     blog_util.download_file(
-       p_blob_content   => l_rss
-      ,p_mime_type      => c_mime_xml
-      ,p_header_names   => c_headers
-      ,p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="rss.xml"', l_last_modified  )
-      ,p_charset        => c_char_set
+      p_blob_content   => l_rss
+    , p_mime_type      => c_mime_xml
+    , p_header_names   => c_headers
+    , p_header_values  => apex_t_varchar2( l_cache_control, 'inline; filename="rss.xml"', l_last_modified  )
+    , p_charset        => c_char_set
     );
 
   -- handle errors
@@ -10765,9 +10781,9 @@ as
   then
 
     apex_debug.error(
-       p_message => '%s Error: %s'
-      ,p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
-      ,p1 => sqlerrm
+      p_message => '%s Error: %s'
+    , p0 => utl_call_stack.concatenate_subprogram(utl_call_stack.subprogram(1))
+    , p1 => sqlerrm
     );
 
     -- show http error
