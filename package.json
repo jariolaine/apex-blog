@@ -5,7 +5,7 @@
   "scripts": {
     "lint:js": "bash automation/ci/check_js.sh",
     "lint:styles": "stylelint 'less/**/*.less' 'applications/**/*.css'",
-    "lint:markdown": "markdownlint-cli2 'README.md' 'AGENT.md' 'automation/**/*.md' 'Stack/**/*.md'",
+    "lint:markdown": "markdownlint-cli2 'README.md' 'AGENTS.md' 'automation/**/*.md' 'Stack/**/*.md'",
     "lint:format": "prettier --check 'package.json' '.github/workflows/*.yml'",
     "audit:tools": "npm audit --audit-level=high"
   },

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Export APEXlang source (not split SQL) and SQL-format packaged release files.
 # --build-only checks exported DEV source against Git and runs offline preflight
-# before publication. See AGENT.md for synchronization safeguards.
+# before publication. See AGENTS.md for synchronization safeguards.
 set -Eeuo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 source "$SCRIPT_DIR/lib/common.sh"

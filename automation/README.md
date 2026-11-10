@@ -56,7 +56,7 @@ separate and bypasses the normal release pipeline; see the runbook.
   implementation and CI checks
 - [Environments](docs/ENVIRONMENTS.md) — saved connections and environment guards
 - [Project README](../README.md) — end-user installation and upgrade
-- [Agent safety rules](../AGENT.md) — instructions for coding agents
+- [Agent safety rules](../AGENTS.md) — instructions for coding agents
 
 The source repository owns the automation. Downloadable application ZIPs contain
 full SQL application exports, not the automation scripts. Legacy Terraform is

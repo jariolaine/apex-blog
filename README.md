@@ -56,7 +56,7 @@ under `automation/`. Development and CI commands are defined in `Makefile`.
 For contributors working from the **source repository**, start with
 [`automation/README.md`](automation/README.md) for the command
 map and [`automation/docs/RUNBOOK.md`](automation/docs/RUNBOOK.md) for safe
-operational steps. Coding agents should also read [`AGENT.md`](AGENT.md).
+operational steps. Coding agents should also read [`AGENTS.md`](AGENTS.md).
 These source-only files are not included in the downloadable application ZIP;
 the ZIP contains this README and the full installation exports.
 
