@@ -15,16 +15,55 @@ Snapshot date: 2026-11-14.
 ## Current state
 
 - Branch: `APEX_26.1`. Version: `Release 26.1.5.20261107` (`VERSION.txt`).
-- No repository commits since the previous snapshot; last commit remains
-  `de90ff38` (`.gitignore` reorganization, 2026-11-12). Earlier themes:
-  `blog_ai` package fixes (JSON syntax, divide-by-zero, typos), RSS support
-  refactor, code-structure readability refactor, docs rename `AGENT.md` →
-  `AGENTS.md`.
-- Working tree has only the new untracked `memory-bank/` and `.clinerules/`
-  (memory-bank rule); whether to commit them is the user's call.
+- Last commits: `59bd7c66` (CHANGE LOG comments removed from all 13
+  `Database/Packages/*.pks` specs and the regenerated Supporting Objects
+  install/upgrade SQL; comment-only, 1020 deletions), `e9fde9fa` (obsolete 23.x
+  upgrade patch scripts removed, sequences renumbered). Working tree clean.
 - A local release candidate exists at `build/releases/26.1.5.20261107/`
   (git-ignored artifact). `build/` contents (candidates, hotfix exports,
   deploy logs, `.locks/`, `.backup.*`) are git-ignored; never commit them.
+
+## Active work: BLOG_AI audit — findings delivered, fixes NOT yet implemented
+
+Analysis of `Database/Packages/BLOG_AI.pks`/`.pkb` completed (read-only; no
+edits made). Findings awaiting user approval to implement:
+
+- **B1 (High):** `get_sentiments` and `gen_ai_chat` exist only in the body,
+  absent from the spec → unreachable dead code with zero callers (generative
+  AI now uses APEX AI Agents on admin p12; live sentiment flow uses REST
+  `single_document` + `get_lang_code`/`get_translation`/`merge_sentiment` on
+  public p1001 and admin p62). `get_sentiments` is additionally broken (adds
+  a `languageCode` param the `batch_document` operation does not declare;
+  hardcodes `p_language => 'en'`). Recommendation: delete both plus the now
+  unused `gen_ai_generate_msg`/`gen_ai_generate_prompt_msg` `param_t` keys.
+- **B2 (latent):** `param_t('lang_ai_compartment_ocid')` is snapshotted once
+  at package initialization; `set_lang_ai` never refreshes it for live
+  sessions. Masked today because live flows read the attribute directly via
+  `blog_util.get_attribute_value` (`result_cache`, auto-invalidated). Fix:
+  drop the snapshot from `param_t`.
+- **B3:** package initializer would fail loudly (re-raised `no_data_found`)
+  if the settings row were missing; make `init_params` defensive.
+- **B4:** `get_lang_code`/`get_translation`/`merge_sentiment` have no
+  handling for OCI error payloads (missing/mistyped `documents` key → JSON
+  exceptions in the background chain); guard with `has('documents')`,
+  `validate_conversion` on `to_number(key)`, sensible defaults.
+- **B5 (Low):** `merge_sentiment` FK race if comment deleted before merge.
+- **B6 (Low):** `get_param_value` re-raises `no_data_found` for unknown keys.
+- ~~**B7 (trivial):** spec changelog dates inconsistent~~ — mooted: all
+  `CHANGE LOG` blocks were deleted from every `Database/Packages/*.pks` on
+  2026-11-14 (340 comment lines removed; descriptions/credits/to-do kept).
+- **B8 (Low):** debug logging of full comment text/response JSON at info level.
+
+Confirmed NOT bugs: `apex_exec.execute_rest_source`/`get_parameter_clob`
+usage, `response_body` parameter name, `apex_ai.chat` signature 2 and
+lowercase `'user'` role, `apex_credential.set_persistent_credentials`
+key/value signature, spec `out` vs body `out nocopy` (legal; same pattern in
+`BLOG_OCI_OS`).
+
+Planned remediation steps (pending approval): delete dead code (B1), remove
+OCID snapshot (B2), defensive init (B3), harden JSON parsers (B4); B7 is moot
+(changelogs removed from all specs). Then `make lint` + `make check-source`.
+No database commands run.
 
 ## Standing working conventions
 
@@ -53,5 +92,6 @@ Snapshot date: 2026-11-14.
 
 ## Open threads / reminders
 
-- No pending tasks recorded yet; update this section as work begins.
+- BLOG_AI remediation (B1–B4 above) is pending user approval to start
+  editing; see "Active work" for the full finding list and planned steps.
 - Remember: mock-based tests are never proof of database deployment success.

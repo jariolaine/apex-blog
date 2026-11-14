@@ -16,9 +16,14 @@
 
 ## Completed milestones (from git history, newest first)
 
+- Removed all `CHANGE LOG` comment blocks from every `Database/Packages/*.pks`
+  (comment-only deletions); package descriptions/credits/to-do comments kept.
+- BLOG_AI package audit completed as read-only analysis (findings B1–B8 in
+  `activeContext.md`); no code changes implemented yet.
 - 26.1.5 line: blog_ai package fixes (JSON syntax, divide-by-zero, typos),
   RSS refactor, readability refactor, `AGENT.md` → `AGENTS.md` rename,
-  `.gitignore` reorganization.
+  `.gitignore` reorganization, memory bank + Cline workflow rules,
+  "Oracle APEX" reference rename.
 - Release-safety hardening: installer/upgrade-test safety, refactored release
   management and source-consistency checks, linting + GitHub Actions CI,
   obsolete tests removed and CI contracts added.
@@ -40,4 +45,6 @@
 
 ## What's next
 
-- No open feature work recorded; see `activeContext.md` for current focus.
+- Implement approved BLOG_AI remediation steps (see `activeContext.md`
+  "Active work"); verify with `make lint` and `make check-source` only —
+  compile/deploy verification happens solely via an approved release flow.
