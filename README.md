@@ -7,7 +7,7 @@ Blog application built with Oracle APEX.
 ### System requirements
 
 - Oracle Database 19c or later
-- Oracle Application Express 26.1 or later
+- Oracle APEX 26.1 or later
 
 The target parsing schema needs these privileges and roles:
 
@@ -34,7 +34,7 @@ import the included full SQL exports **in this order**:
 
 After installation, create an APEX workspace user group named **Bloggers** and
 add users authorized to administer the blog. See Oracle's
-[Using Groups to Manage Application Express Users](https://docs.oracle.com/en/database/oracle/apex/26.1/aeadm/managing-users-in-a-workspace.html#GUID-0FD7B406-8A83-40C0-A3E7-EF19BBDEA5A4).
+[Using Groups to Manage Oracle APEX Users](https://docs.oracle.com/en/database/oracle/apex/26.1/aeadm/managing-users-in-a-workspace.html#GUID-0FD7B406-8A83-40C0-A3E7-EF19BBDEA5A4).
 
 ## Upgrade
 

@@ -135,7 +135,7 @@ as
     apex_web_service.set_request_headers(
       p_reset     => false
     , p_name_01   => 'User-Agent'
-    , p_value_01  => 'Oracle Application Express (gzip)'
+    , p_value_01  => 'Oracle APEX (gzip)'
     , p_name_02   => 'Accept-Encoding'
     , p_value_02  => 'gzip, deflate'
     );

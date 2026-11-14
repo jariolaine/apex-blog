@@ -237,7 +237,7 @@ restDataSource BLOG_LANGUAGE_AI (
         value {
             static: true
             defaultValueType: staticValue
-            staticValue: Oracle Application Express (gzip)
+            staticValue: Oracle APEX (gzip)
         }
     )
 
@@ -586,4 +586,3 @@ restDataSource BLOG_LANGUAGE_AI (
     )
 
 )
-

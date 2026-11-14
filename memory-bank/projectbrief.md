@@ -1,7 +1,7 @@
 # Project Brief
 
 **APEX Blog** (`jariolaine/apex-blog`, MIT license, by Jari Laine) is a
-self-hosted personal blog built entirely with Oracle Application Express.
+self-hosted personal blog built entirely with Oracle APEX.
 
 ## Requirements
 

@@ -265,9 +265,9 @@ page 0 (
                 ```html
                 <div class="blog-copyright">
                   <a  href="https://github.com/jariolaine/apex-blog"
-                      title="Blog application built with Oracle Application Express (APEX)" 
-                      target="_blank" 
-                      rel="external" 
+                      title="Blog application built with Oracle APEX"
+                      target="_blank"
+                      rel="external"
                       class="blog-copyright-link t-Button t-Button--link t-Button--icon t-Button--iconRight"
                   >
                     <span class="t-Button-label">Powered By APEX Blog</span><span class="t-Icon fa fa-github" aria-hidden="true"></span>
@@ -581,7 +581,7 @@ page 0 (
             settings {
                 jsCode:
                     ```javascript-browser
-                    apex.theme42.util.scrollTo( 
+                    apex.theme42.util.scrollTo(
                       this.triggeringElement.id == "comments" ?
                       this.triggeringElement.id :
                       "wwvFlowForm"
@@ -597,4 +597,3 @@ page 0 (
     )
 
 )
-

@@ -357,7 +357,7 @@ restDataSource BLOG_OBJECT_STORAGE_OBJECT (
         value {
             static: true
             defaultValueType: staticValue
-            staticValue: Application Express (gzip)
+            staticValue: Oracle APEX (gzip)
         }
     )
 
@@ -546,4 +546,3 @@ restDataSource BLOG_OBJECT_STORAGE_OBJECT (
     )
 
 )
-
