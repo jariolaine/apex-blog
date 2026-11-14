@@ -4541,10 +4541,7 @@ as
     param_t( 'gen_ai_credential_static_id' ) := 'BLOG_OPEN_AI_API_KEY';
     param_t( 'lang_ai_build_option' ) := 'BLOG_FEATURE_LANGUAGE_AI';
     param_t( 'gen_ai_build_option' ) := 'BLOG_FEATURE_GENERATIVE_AI';
-    param_t( 'gen_ai_generate_msg' ) := 'BLOG_AI_GENERATE_MESSAGE';
-    param_t( 'gen_ai_generate_prompt_msg' ) := 'BLOG_AI_GENERATE_PROMPT';
     param_t( 'lang_ai_compartment_param_name') := 'G_OCI_LANG_AI_COMPARTMENT_OCID';
-    param_t( 'lang_ai_compartment_ocid' ) := blog_util.get_attribute_value( param_t( 'lang_ai_compartment_param_name' ) );
 
     -- Debug parameters
     apex_debug.info( 'Language AI remote server static id: %s', param_t( 'lang_ai_static_id' ) );
@@ -4552,74 +4549,9 @@ as
     apex_debug.info( 'Generative AI credential static id: %s', param_t( 'gen_ai_credential_static_id' ) );
     apex_debug.info( 'Language AI build option name: %s', param_t( 'lang_ai_build_option' ) );
     apex_debug.info( 'Generative AI build option name: %s', param_t( 'gen_ai_build_option' ) );
-    apex_debug.info( 'Generative AI generate message: %s', param_t( 'gen_ai_generate_msg' ) );
-    apex_debug.info( 'Generative AI generate prompt message: %s', param_t( 'gen_ai_generate_prompt_msg' ) );
     apex_debug.info( 'Language AI compartment parameter name : %s', param_t( 'lang_ai_compartment_param_name' ) );
-    apex_debug.info( 'Language AI compartment OCID : %s', param_t( 'lang_ai_compartment_ocid') );
 
   end init_params;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-  procedure get_sentiments
-  as
-    l_document  clob;
-    l_params    apex_exec.t_parameters;
-  begin
-
-    -- Loop through comments that have not yet been analyzed
-    for c1 in (
-      with q1 as(
-        select
-          id
-        , v1.body_html
-        , mod(
-            rownum, greatest( floor( count(1) over() / 5 ), 1 )
-          ) as batch_group
-        from blog_v_all_comments v1
-        where 1 = 1
-          and sentiment is null
-      )
-      select
-        json_arrayagg(
-          json_object(
-            'key'   value blog_util.int_to_vc2( q1.id ),
-            'text'  value blog_comment.plain_text( q1.body_html )
-          ) returning clob
-        ) as document
-      from q1
-      group by
-        q1.batch_group
-    ) loop
-
-      l_params := apex_exec.t_parameters();
-      -- Set attributes for the language AI request
-      apex_exec.add_parameter( l_params, 'compartmentId', param_t( 'lang_ai_compartment_ocid') );
-      apex_exec.add_parameter( l_params, 'documents', c1.document );
-      apex_exec.add_parameter( l_params, 'level', 'SENTENCE' );
-      apex_exec.add_parameter( l_params, 'languageCode', 'en' );
-      apex_exec.add_parameter( l_params, 'batchDocumentService', 'batchDetectLanguageSentiments' );
-
-      -- Call language AI to analyze sentiment
-      apex_exec.execute_rest_source(
-        p_static_id           => param_t( 'lang_ai_static_id' ),
-        p_operation_static_id => 'batch_document',
-        p_parameters          => l_params
-      );
-
-      -- Retrieve response body
-      l_document := apex_exec.get_parameter_clob( l_params, 'response_body' );
-
-      -- Insert response JSON into the database
-      merge_sentiment(
-        p_language  => 'en'
-      , p_documents => l_document
-      );
-
-      dbms_session.sleep( 1 );
-
-    end loop;
-
-  end get_sentiments;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Global functions and procedures
@@ -4728,60 +4660,13 @@ as
   end set_gen_ai;
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  procedure gen_ai_chat(
-    p_post          in varchar2,
-    p_system_prompt in varchar2
-  )
-  as
-    l_messages  apex_ai.t_chat_messages := apex_ai.c_chat_messages;
-    l_response  clob;
-  begin
-
-    -- Prepare user message for AI chat
-    l_messages(1).chat_role := 'user';
-    l_messages(1).message :=
-      apex_lang.get_message(
-        p_name    => param_t( 'gen_ai_generate_msg' )
-      , p_params  =>
-          apex_t_varchar2 (
-            'post'
-          , substr( apex_escape.striphtml( p_post ), 1, 32000 )
-          )
-      )
-    ;
-
-    -- Generate AI response using AI service
-    l_response :=
-      apex_ai.chat(
-        p_service_static_id => param_t( 'gen_ai_static_id' )
-      , p_messages          => l_messages
-      , p_prompt            =>
-          apex_lang.get_message(
-            p_name => param_t( 'gen_ai_generate_prompt_msg' )
-          )
-      , p_system_prompt     =>
-          apex_lang.get_message(
-            p_name => p_system_prompt
-          )
-      );
-
-    apex_debug.info( 'AI generated content: %s', l_response );
-
-    -- Write HTTP JSON header and response
-    apex_plugin_util.print_json_http_header;
-    apex_json.open_object;
-    apex_json.write( 'response', l_response );
-    apex_json.close_all;
-
-  end gen_ai_chat;
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
   procedure merge_sentiment(
     p_language  in varchar2,
     p_documents in clob
   )
   as
     l_comment_id      number;
+    l_comment_id_str  varchar2( 2000 );
     l_sentiment_json  clob;
     l_json_documents  json_array_t;
     l_json_document   json_object_t;
@@ -4789,17 +4674,49 @@ as
 
     apex_debug.info( 'Input JSON document: %s', p_documents );
 
+    -- Skip when response payload is missing
+    if p_documents is null
+    then
+      apex_debug.warn( 'Input JSON document is null, nothing to merge' );
+      return;
+    end if;
+
     -- Parse JSON document
     l_json_document := json_object_t.parse( p_documents );
+
+    -- Skip when parsed payload has no documents array
+    if not l_json_document.has( 'documents' )
+    then
+      apex_debug.warn( 'JSON document has no documents, nothing to merge' );
+      return;
+    end if;
+
     -- Retrieve the "documents" array
     l_json_documents := l_json_document.get_array( 'documents' );
 
     -- Loop through each document in the array
     for i in 0 .. l_json_documents.get_size() - 1 loop
 
-      -- Extract document details
       l_json_document := json_object_t( l_json_documents.get(i) );
-      l_comment_id := to_number( l_json_document.get_string( 'key' ) );
+
+      -- Extract document key (comment id) and skip when it is missing or not an integer
+      l_comment_id_str :=
+        case
+          when l_json_document.has( 'key' )
+            then l_json_document.get_string( 'key' )
+        end;
+
+      if l_comment_id_str is null
+      or not regexp_like( l_comment_id_str, '^[0-9]+$' )
+      then
+        apex_debug.warn(
+          p_message => 'Skip sentiment analyze result at position %s, invalid comment key'
+        , p1        => blog_util.int_to_vc2( i )
+        );
+        continue;
+      end if;
+
+      l_comment_id := to_number( l_comment_id_str );
       l_sentiment_json := l_json_document.stringify();
 
       -- Merge sentiment data into the database
@@ -4823,6 +4740,7 @@ as
   as
     l_temp_score      number;
     l_score           number := -999;
+    l_languages       json_array_t;
     l_json_documents  json_array_t;
     l_json_document   json_object_t;
   begin
@@ -4831,13 +4749,27 @@ as
 
     p_lang_code := 'en'; -- Default language code
 
+    -- Keep default language code when response payload is missing
+    if p_documents is null
+    then
+      apex_debug.warn( 'Input JSON document is null, defaulting to en' );
+      return;
+    end if;
+
     -- Parse JSON document
     l_json_document := json_object_t.parse( p_documents );
+
+    -- Keep default language code when parsed payload has no documents array
+    if not l_json_document.has( 'documents' )
+    then
+      apex_debug.warn( 'JSON document has no documents, defaulting to en' );
+      return;
+    end if;
+
     -- Retrieve the "documents" array
     l_json_documents := l_json_document.get_array( 'documents' );
 
-    if l_json_documents is null
-    or l_json_documents.get_size() = 0
+    if l_json_documents.get_size() = 0
     then
       apex_debug.warn( 'No languages detected in response, defaulting to en' );
       return;
@@ -4845,17 +4777,38 @@ as
 
     -- Extract the first document
     l_json_document := json_object_t( l_json_documents.get(0) );
+
+    -- Keep default language code when document has no languages array
+    if not l_json_document.has( 'languages' )
+    then
+      apex_debug.warn( 'Document has no languages, defaulting to en' );
+      return;
+    end if;
+
     -- Retrieve the "languages" array
-    l_json_documents := l_json_document.get_array( 'languages' );
+    l_languages := l_json_document.get_array( 'languages' );
 
     -- Loop through languages to find the highest score
-    for i in 0 .. l_json_documents.get_size() - 1 loop
-      l_json_document := json_object_t( l_json_documents.get(i) );
+    for i in 0 .. l_languages.get_size() - 1 loop
+
+      l_json_document := json_object_t( l_languages.get(i) );
+
+      -- Skip language when code or score is missing
+      if not ( l_json_document.has( 'code' ) and l_json_document.has( 'score' ) )
+      then
+        apex_debug.warn(
+          p_message => 'Skip language entry at position %s, missing code or score'
+        , p1        => blog_util.int_to_vc2( i )
+        );
+        continue;
+      end if;
+
       l_temp_score := l_json_document.get_number( 'score' );
       if l_temp_score > l_score then
         l_score := l_temp_score;
         p_lang_code := l_json_document.get_string( 'code' );
       end if;
+
     end loop;
 
   end get_lang_code;
@@ -4872,18 +4825,44 @@ as
 
     apex_debug.info( 'Input JSON: %s', p_documents );
 
-    -- Parse JSON document
-    l_json_document := json_object_t.parse( p_documents );
-    -- Retrieve the "documents" array
-    l_json_documents := l_json_document.get_array( 'documents' );
+    p_translation := null; -- Default no translation
 
-    if l_json_documents is null or l_json_documents.get_size() = 0 then
-      p_translation := null;
+    -- Keep translation null when response payload is missing
+    if p_documents is null
+    then
+      apex_debug.warn( 'Input JSON document is null, no translation available' );
       return;
     end if;
 
-    -- Extract the translated text from the first document
+    -- Parse JSON document
+    l_json_document := json_object_t.parse( p_documents );
+
+    -- Keep translation null when parsed payload has no documents array
+    if not l_json_document.has( 'documents' )
+    then
+      apex_debug.warn( 'JSON document has no documents, no translation available' );
+      return;
+    end if;
+
+    -- Retrieve the "documents" array
+    l_json_documents := l_json_document.get_array( 'documents' );
+
+    if l_json_documents.get_size() = 0 then
+      apex_debug.warn( 'Response has no translated text' );
+      return;
+    end if;
+
+    -- Extract the first document
     l_json_document := json_object_t( l_json_documents.get(0) );
+
+    -- Keep translation null when document has no translated text
+    if not l_json_document.has( 'translatedText' )
+    then
+      apex_debug.warn( 'Document has no translated text' );
+      return;
+    end if;
+
+    -- Extract the translated text
     p_translation := l_json_document.get_string( 'translatedText' );
 
   end get_translation;
