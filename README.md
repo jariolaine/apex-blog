@@ -38,10 +38,9 @@ add users authorized to administer the blog. See Oracle's
 
 ## Upgrade
 
-Upgrades require an existing application version of **Release
-v22.2.1.20230117 or later**. Back up the application parsing schema's **data
-and objects** before upgrading, and review any schema/data migrations for
-your installed version.
+Upgrades require an existing application version of **24.1.0.20240714 or later**.
+Back up the application parsing schema's **data and objects** before upgrading,
+and review any schema/data migrations for your installed version.
 
 In the target APEX workspace, import the two files from the new release ZIP
 in the same order: Admin then Public. Select **upgrade Supporting Objects**

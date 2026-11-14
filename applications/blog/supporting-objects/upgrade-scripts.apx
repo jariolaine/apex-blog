@@ -1,6 +1,6 @@
 upgradeScript "Create text indexes" (
     execution {
-        sequence: 70
+        sequence: 40
     }
     script {
         contentFile: create-text-indexes.sql
@@ -19,7 +19,7 @@ upgradeScript "Create text indexes" (
 
 upgradeScript "Database objects upgrade" (
     execution {
-        sequence: 60
+        sequence: 30
     }
     script {
         contentFile: database-objects-upgrade.sql
@@ -28,7 +28,7 @@ upgradeScript "Database objects upgrade" (
 
 upgradeScript "Drop text indexes" (
     execution {
-        sequence: 50
+        sequence: 20
     }
     script {
         contentFile: drop-text-indexes.sql
@@ -45,66 +45,9 @@ upgradeScript "Drop text indexes" (
     }
 )
 
-upgradeScript "Patch 23.1.20231118" (
-    execution {
-        sequence: 10
-    }
-    script {
-        contentFile: patch-23-1-20231118.sql
-    }
-    serverSideCondition {
-        type: rowsReturned
-        sqlQuery:
-            ```sql
-            select 1
-            from blog_v_version
-            where 1 = 1
-            and application_date < 20231118
-            ```
-    }
-)
-
-upgradeScript "Patch 23.2.20231120" (
-    execution {
-        sequence: 20
-    }
-    script {
-        contentFile: patch-23-2-20231120.sql
-    }
-    serverSideCondition {
-        type: rowsReturned
-        sqlQuery:
-            ```sql
-            select 1
-            from blog_v_version
-            where 1 = 1
-            and application_date < 20231120
-            ```
-    }
-)
-
-upgradeScript "Patch 23.2.20240414" (
-    execution {
-        sequence: 30
-    }
-    script {
-        contentFile: patch-23-2-20240414.sql
-    }
-    serverSideCondition {
-        type: rowsReturned
-        sqlQuery:
-            ```sql
-            select 1
-            from blog_v_version
-            where 1 = 1
-            and application_date < 20240414
-            ```
-    }
-)
-
 upgradeScript "Patch 24.2.20250701 part 1" (
     execution {
-        sequence: 40
+        sequence: 10
     }
     script {
         contentFile: patch-24-2-20250701-part-1.sql
@@ -142,7 +85,7 @@ upgradeScript "Patch 24.2.20250701 part 2" (
 
 upgradeScript Postupgrade (
     execution {
-        sequence: 90
+        sequence: 50
     }
     script {
         contentFile: postupgrade.sql
