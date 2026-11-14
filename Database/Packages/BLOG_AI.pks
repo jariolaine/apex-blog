@@ -5,17 +5,6 @@ as
 --------------------------------------------------------------------------------
 --  DESCRIPTION
 --    Procedures and functions for AI-related functionalities
---
---  CHANGE LOG
---  ============================================================================
---  DATE         MODIFIED BY    DESCRIPTION
---  -----------  -------------  ------------------------------------------------
---  15.08.2025   Jari Laine     Created package.
---  30.06.2025   Jari Laine     New function get_param_value
---                              Changes to procedures:
---                                - set_gen_ai
---                                - init_params
---
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_param_value(

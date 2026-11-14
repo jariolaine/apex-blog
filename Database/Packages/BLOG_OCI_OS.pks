@@ -9,14 +9,6 @@ as
 --  CREDITS:
 --    https://blogs.oracle.com/oraclemagazine/post/better-file-storage-in-oracle-cloud
 --
---  CHANGE LOG
---  ============================================================================
---  DATE         MODIFIED BY    DESCRIPTION
---  -----------  -------------  ------------------------------------------------
---  21.07.2025   Jari Laine     Created package.
---  30.06.2025   Jari Laine     New function get_param_value
---                              Changes to procedure set_object_storage
---
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_param_value(

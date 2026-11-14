@@ -8,13 +8,6 @@ as
 --
 --  CREDITS:
 --    https://asktom.oracle.com/pls/apex/asktom.search?tag=mime-type-using-blob-data
---
---  CHANGE LOG
---  ============================================================================
---  DATE         MODIFIED BY    DESCRIPTION
---  -----------  -------------  ------------------------------------------------
---  21.07.2025   Jari Laine     Created package.
---
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   g_default_mime constant varchar2(100) := 'application/octet-stream';

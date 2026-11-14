@@ -7,13 +7,6 @@ as
 --    This package provides procedures and functions for managing files in the
 --    admin application's file repository. It includes operations for formatting
 --    file paths, uploading, replacing, selecting, deleting, and downloading files.
---
---  CHANGE LOG
---  ============================================================================
---  DATE         MODIFIED BY    DESCRIPTION
---  -----------  -------------  ------------------------------------------------
---  21.07.2024   Jari Laine     Created package.
---
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
   function get_zip_name return varchar2;
