@@ -14,56 +14,56 @@ Snapshot date: 2026-11-14.
 
 ## Current state
 
-- Branch: `APEX_26.1`. Version: `Release 26.1.5.20261107` (`VERSION.txt`).
-- Last commits: `59bd7c66` (CHANGE LOG comments removed from all 13
-  `Database/Packages/*.pks` specs and the regenerated Supporting Objects
-  install/upgrade SQL; comment-only, 1020 deletions), `e9fde9fa` (obsolete 23.x
-  upgrade patch scripts removed, sequences renumbered). Working tree clean.
-- A local release candidate exists at `build/releases/26.1.5.20261107/`
-  (git-ignored artifact). `build/` contents (candidates, hotfix exports,
-  deploy logs, `.locks/`, `.backup.*`) are git-ignored; never commit them.
+- Branch: `blog-ai-remediation` (created from `APEX_26.1`). Version:
+  `Release 26.1.5.20261107` (`VERSION.txt`).
+- BLOG_AI remediation is committed on this branch; DEV (saved connection
+  `blog_dev`, workspace/schema `BLOG_040000`, apps 402/401) was synced from Git and
+  the strict release source-consistency check passed, so DEV matches Git.
+- The local candidate `build/releases/26.1.5.20261107/` was rebuilt with
+  `OVERWRITE=YES` and **passed real TEST-schema upgrade, fresh-install and deinstall
+  acceptance** (deinstall left zero user objects) — the new `BLOG_AI` body compiles.
+  It is still **unpromoted**; QA/PROD deployment needs approval. `build/` contents
+  (candidates, hotfix exports, deploy logs, `.locks/`, `.backup.*`) are git-ignored;
+  never commit them.
 
-## Active work: BLOG_AI audit — findings delivered, fixes NOT yet implemented
+## Active work: BLOG_AI remediation implemented and TEST-verified
 
-Analysis of `Database/Packages/BLOG_AI.pks`/`.pkb` completed (read-only; no
-edits made). Findings awaiting user approval to implement:
+Implemented 2026-11-14 in `Database/Packages/BLOG_AI.pkb` and regenerated into the
+Git-owned Supporting Objects install/upgrade SQL. The spec `.pks` is unchanged and the
+public API is identical (`get_param_value`, `set_lang_ai`, `set_gen_ai`,
+`merge_sentiment`, `get_lang_code`, `get_translation`). Offline checks green:
+`make lint`, `make check-source`, `make test` (49 tests), `make check-schema`; the body
+then compiled for real during the disposable-TEST upgrade and fresh-install acceptance
+runs.
 
-- **B1 (High):** `get_sentiments` and `gen_ai_chat` exist only in the body,
-  absent from the spec → unreachable dead code with zero callers (generative
-  AI now uses APEX AI Agents on admin p12; live sentiment flow uses REST
-  `single_document` + `get_lang_code`/`get_translation`/`merge_sentiment` on
-  public p1001 and admin p62). `get_sentiments` is additionally broken (adds
-  a `languageCode` param the `batch_document` operation does not declare;
-  hardcodes `p_language => 'en'`). Recommendation: delete both plus the now
-  unused `gen_ai_generate_msg`/`gen_ai_generate_prompt_msg` `param_t` keys.
-- **B2 (latent):** `param_t('lang_ai_compartment_ocid')` is snapshotted once
-  at package initialization; `set_lang_ai` never refreshes it for live
-  sessions. Masked today because live flows read the attribute directly via
-  `blog_util.get_attribute_value` (`result_cache`, auto-invalidated). Fix:
-  drop the snapshot from `param_t`.
-- **B3:** package initializer would fail loudly (re-raised `no_data_found`)
-  if the settings row were missing; make `init_params` defensive.
-- **B4:** `get_lang_code`/`get_translation`/`merge_sentiment` have no
-  handling for OCI error payloads (missing/mistyped `documents` key → JSON
-  exceptions in the background chain); guard with `has('documents')`,
-  `validate_conversion` on `to_number(key)`, sensible defaults.
-- **B5 (Low):** `merge_sentiment` FK race if comment deleted before merge.
-- **B6 (Low):** `get_param_value` re-raises `no_data_found` for unknown keys.
-- ~~**B7 (trivial):** spec changelog dates inconsistent~~ — mooted: all
-  `CHANGE LOG` blocks were deleted from every `Database/Packages/*.pks` on
-  2026-11-14 (340 comment lines removed; descriptions/credits/to-do kept).
-- **B8 (Low):** debug logging of full comment text/response JSON at info level.
+- **B1:** dead body-only `get_sentiments` and `gen_ai_chat` deleted together with the
+  `param_t( 'gen_ai_generate_msg' )` / `param_t( 'gen_ai_generate_prompt_msg' )` keys
+  and their debug lines. Callers re-verified as zero (generative AI uses APEX AI Agents
+  on admin p12; the live sentiment flow is REST `single_document` → `get_lang_code` /
+  `get_translation` / `merge_sentiment` on public p1001 and admin p62). `get_sentiments`
+  had also been broken (undeclared `languageCode` param, hardcoded `p_language => 'en'`).
+- **B2:** the once-snapshotted `param_t( 'lang_ai_compartment_ocid' )` is gone; live
+  flows still read the setting directly via `blog_util.get_attribute_value`
+  (`result_cache`, auto-invalidated), and admin p20015 keeps the attribute *name*
+  through `get_param_value( 'lang_ai_compartment_param_name' )`.
+- **B3:** satisfied by B2 — `init_params` now assigns literals only, so package
+  instantiation can no longer raise `no_data_found` from a missing settings row.
+- **B4:** every live parser returns early on a null payload and checks
+  `has( 'documents' )` before `get_array`; `get_lang_code` also checks
+  `has( 'languages' )`. Per-entry guards: `merge_sentiment` skips entries whose `key` is
+  missing or fails `regexp_like( key, '^[0-9]+$' )` before `to_number`, `get_lang_code`
+  skips entries missing `code`/`score`, `get_translation` keeps null without
+  `translatedText`. `regexp_like` was chosen over `validate_conversion` for readability;
+  skipped-entry positions are logged with `blog_util.int_to_vc2( i )`.
+- **Still open (Low, deliberately untouched):** B5 FK race when a comment is deleted
+  before the sentiment merge; B6 `get_param_value` re-raising `no_data_found` for unknown
+  keys; B8 verbose info-level logging of comment text and response JSON. B7 stays moot
+  (all spec `CHANGE LOG` blocks were removed on 2026-11-14).
 
-Confirmed NOT bugs: `apex_exec.execute_rest_source`/`get_parameter_clob`
-usage, `response_body` parameter name, `apex_ai.chat` signature 2 and
-lowercase `'user'` role, `apex_credential.set_persistent_credentials`
-key/value signature, spec `out` vs body `out nocopy` (legal; same pattern in
-`BLOG_OCI_OS`).
-
-Planned remediation steps (pending approval): delete dead code (B1), remove
-OCID snapshot (B2), defensive init (B3), harden JSON parsers (B4); B7 is moot
-(changelogs removed from all specs). Then `make lint` + `make check-source`.
-No database commands run.
+Confirmed NOT bugs (audit): `apex_exec.execute_rest_source` / `get_parameter_clob`
+usage, `response_body` parameter name, `apex_ai.chat` signature and lowercase `'user'`
+role, `apex_credential.set_persistent_credentials` key/value signature, spec `out` vs
+body `out nocopy` (legal; same pattern in `BLOG_OCI_OS`).
 
 ## Standing working conventions
 
@@ -92,6 +92,12 @@ No database commands run.
 
 ## Open threads / reminders
 
-- BLOG_AI remediation (B1–B4 above) is pending user approval to start
-  editing; see "Active work" for the full finding list and planned steps.
-- Remember: mock-based tests are never proof of database deployment success.
+- Supporting Objects now carry the fixed body (regenerated with `make supporting`, then
+  re-assembled unchanged inside `make build`) — nothing left to regenerate.
+- Promoting the verified candidate `26.1.5.20261107` (`make qa`, then
+  `make production`) still needs explicit human approval.
+- `BLOG_AI_GENERATE_MESSAGE` and `BLOG_AI_GENERATE_PROMPT` in
+  `applications/blog-admin/shared-components/messages.apx` are unreferenced after B1;
+  deleting them is an APEXLang app-source change (DEV round trip) awaiting a decision.
+- Remember: mock-based tests are never proof of database deployment success — the real
+  proof here was the disposable-TEST upgrade/install/deinstall acceptance runs.

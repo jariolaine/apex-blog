@@ -46,7 +46,7 @@
 | Package | Responsibility |
 | --- | --- |
 | `BLOG_ADMIN` | Admin app data operations |
-| `BLOG_AI` | Language AI: OCI sentiment/detect-language/translate via REST data source `BLOG_LANGUAGE_AI`; config for admin pages 20015/20016; body-only dead code `get_sentiments`/`gen_ai_chat` (see activeContext) |
+| `BLOG_AI` | Language AI: OCI sentiment/detect-language/translate via REST data source `BLOG_LANGUAGE_AI`; config for admin pages 20015/20016; public surface is `get_param_value`, `set_lang_ai`, `set_gen_ai`, `merge_sentiment`, `get_lang_code`, `get_translation` (dead body-only `get_sentiments`/`gen_ai_chat` removed 2026-11-14) |
 | `BLOG_COMMENT` | Comment management workflow |
 | `BLOG_CTX` | Oracle Text indexing/sync |
 | `BLOG_FILE` | File repository operations |

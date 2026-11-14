@@ -14,12 +14,19 @@
 - Emergency hotfix path (`make hotfix-export` / `make hotfix-production`,
   `OBJECTS=NO` to skip Supporting Objects) is gate-exempt by design.
 
-## Completed milestones (from git history, newest first)
+## Completed milestones (newest first; includes current uncommitted work)
 
+- BLOG_AI remediation B1–B4 implemented in `Database/Packages/BLOG_AI.pkb` (dead
+  body-only `get_sentiments`/`gen_ai_chat` and their `param_t` keys removed; stale
+  `lang_ai_compartment_ocid` snapshot dropped — which also made init safe; null-payload,
+  `has('documents')` and per-entry JSON guards added). Spec unchanged, public API
+  identical. Supporting Objects regenerated from Git, DEV synced (strict source
+  consistency green), and the candidate passed real TEST upgrade + fresh install +
+  deinstall — so the new body compiles on a real database.
 - Removed all `CHANGE LOG` comment blocks from every `Database/Packages/*.pks`
   (comment-only deletions); package descriptions/credits/to-do comments kept.
-- BLOG_AI package audit completed as read-only analysis (findings B1–B8 in
-  `activeContext.md`); no code changes implemented yet.
+- BLOG_AI package audit completed as read-only analysis; remaining Low findings
+  (B5/B6/B8) recorded in `activeContext.md`.
 - 26.1.5 line: blog_ai package fixes (JSON syntax, divide-by-zero, typos),
   RSS refactor, readability refactor, `AGENT.md` → `AGENTS.md` rename,
   `.gitignore` reorganization, memory bank + Cline workflow rules,
@@ -45,6 +52,8 @@
 
 ## What's next
 
-- Implement approved BLOG_AI remediation steps (see `activeContext.md`
-  "Active work"); verify with `make lint` and `make check-source` only —
-  compile/deploy verification happens solely via an approved release flow.
+- Promote the verified candidate `build/releases/26.1.5.20261107/` to QA (`make qa`)
+  and then PROD (`make production`) — both need explicit approval. Merging
+  `blog-ai-remediation` back into `APEX_26.1` is also pending your decision.
+- Decide whether to remove the now-unreferenced admin messages
+  `BLOG_AI_GENERATE_MESSAGE` / `BLOG_AI_GENERATE_PROMPT`.
