@@ -1,5 +1,6 @@
 # Generated / disposable data
 **/.vscode/
+**/.dbtools/
 **/__pycache__/
 **/.venv/
 **/node_modules/
