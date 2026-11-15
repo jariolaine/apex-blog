@@ -1,6 +1,6 @@
 # Active Context
 
-Snapshot date: 2026-11-14.
+Snapshot date: 2026-11-15.
 
 ## Memory bank maintenance
 
@@ -25,6 +25,10 @@ Snapshot date: 2026-11-14.
   It is still **unpromoted**; QA/PROD deployment needs approval. `build/` contents
   (candidates, hotfix exports, deploy logs, `.locks/`, `.backup.*`) are git-ignored;
   never commit them.
+- That candidate was packaged **before** the orphan-message removal, so it no longer
+  mirrors current Git source. The owner confirmed this is fine: development is still
+  ongoing, the candidate only exists to run the disposable TEST database checks, and it
+  will be rebuilt when release time comes. Do not treat its contents as current truth.
 
 ## Active work: BLOG_AI remediation implemented and TEST-verified
 
@@ -65,6 +69,25 @@ usage, `response_body` parameter name, `apex_ai.chat` signature and lowercase `'
 role, `apex_credential.set_persistent_credentials` key/value signature, spec `out` vs
 body `out nocopy` (legal; same pattern in `BLOG_OCI_OS`).
 
+## Completed work: 7 orphan text messages removed (2026-11-15)
+
+Followed the audit in `systemContext.md`. Edited both Git-owned `messages.apx` files,
+then pushed to DEV with `make sync-dev`; the follow-up `make source` produced **no
+diff**, confirming DEV and Git agree again.
+
+- Public `applications/blog/shared-components/messages.apx`: removed
+  `BLOG_ERR_MSG_COMMENT_REQUEST` (21 -> 20 messages).
+- Admin `applications/blog-admin/shared-components/messages.apx`: removed
+  `BLOG_AI_GENERATE_MESSAGE`, `BLOG_AI_GENERATE_PROMPT` (dead since B1),
+  `BLOG_MSG_AI_NO_POST_FOR_CONTEXT`, `BLOG_MSG_SELECTED_FILES_DELETED`,
+  `BLOG_TXT_DOWNLOAD` and `BLOG_MSG_NO_DATA_FOUND` (184 -> 178 messages; the public
+  app keeps its own live `BLOG_MSG_NO_DATA_FOUND`).
+- Re-verified after deletion: zero references to any removed name in either app or in
+  `Database/`; the public `BLOG_MSG_NO_DATA_FOUND` is still referenced by public pages.
+- Checks run: `make supporting` (no diff), `make lint`, `make check-source`,
+  `make validate`, and the full preflight inside `make sync-dev` (49 offline tests OK,
+  both apps validated) — all green.
+
 ## Standing working conventions
 
 1. Check `git status --short` before editing; work in small reviewable steps;
@@ -96,8 +119,8 @@ body `out nocopy` (legal; same pattern in `BLOG_OCI_OS`).
   re-assembled unchanged inside `make build`) — nothing left to regenerate.
 - Promoting the verified candidate `26.1.5.20261107` (`make qa`, then
   `make production`) still needs explicit human approval.
-- `BLOG_AI_GENERATE_MESSAGE` and `BLOG_AI_GENERATE_PROMPT` in
-  `applications/blog-admin/shared-components/messages.apx` are unreferenced after B1;
-  deleting them is an APEXLang app-source change (DEV round trip) awaiting a decision.
+- Orphan-message cleanup is **done** (see "Completed work" above); nothing left to
+  delete. Re-running the audit procedure in `systemContext.md` should now find zero
+  orphans.
 - Remember: mock-based tests are never proof of database deployment success — the real
   proof here was the disposable-TEST upgrade/install/deinstall acceptance runs.

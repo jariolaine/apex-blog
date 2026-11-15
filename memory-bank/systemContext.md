@@ -46,7 +46,7 @@
 | Package | Responsibility |
 | --- | --- |
 | `BLOG_ADMIN` | Admin app data operations |
-| `BLOG_AI` | Language AI: OCI sentiment/detect-language/translate via REST data source `BLOG_LANGUAGE_AI`; config for admin pages 20015/20016; public surface is `get_param_value`, `set_lang_ai`, `set_gen_ai`, `merge_sentiment`, `get_lang_code`, `get_translation` (dead body-only `get_sentiments`/`gen_ai_chat` removed 2026-11-14) |
+| `BLOG_AI` | Language AI: OCI sentiment/detect-language/translate|
 | `BLOG_COMMENT` | Comment management workflow |
 | `BLOG_CTX` | Oracle Text indexing/sync |
 | `BLOG_FILE` | File repository operations |
@@ -66,6 +66,59 @@ Core tables: `BLOG_POSTS`, `BLOG_BLOGGERS`, `BLOG_CATEGORIES`, `BLOG_TAGS`,
 `BLOG_SUBSCRIBERS_EMAIL`, `BLOG_COMMENTS_CTX`/`BLOG_POSTS_CTX` (Oracle Text).
 Views follow `BLOG_V_*` naming; `BLOG_V_VERSION` feeds the public metadata
 `G_APP_VERSION` rendered from `VERSION.txt`.
+
+## Application text messages: resolution model
+
+Messages are **per-app**: `textMessage <NAME>` blocks in
+`applications/<app>/shared-components/messages.apx`; `apex_lang.get_message` /
+`apex.lang.getMessage` resolve a name only inside the *current* app, so a name
+referenced only by the other app is orphaned here. A message is live if it is
+either referenced **literally** (owning app's `.apx`/static JS or shared
+`Database/` code) or resolved **dynamically** through exactly these mechanisms:
+
+1. **Constraint lookup** - `BLOG_UTIL.parse_error` extracts the ORA constraint
+   name and calls `apex_lang.get_message` with it; a message named after any
+   constraint in `Database/Tables/*.sql` (lowercase DDL, uppercase at runtime)
+   is live.
+2. **Settings** - `blog_settings` virtual columns
+   `attribute_message = 'BLOG_SETTING_'||attribute_name` and
+   `help_message = 'BLOG_HELP_'||attribute_name`, plus plain
+   `attribute_group_message`; resolved in `blog_v_settings` (admin p20012) and
+   the p20100 help dialog.
+3. **Features** - `blog_v_features` resolves `build_option_name` (label),
+   `build_option_group` (group header) and the per-feature help name via
+   `regexp_replace(name, '^(BLOG)', '\1_HELP')`; consumed by admin p20011
+   (`whereClause: application_id = :G_PUB_APP_ID`) and the p20100 union.
+   Features seeded with group `INTERNAL` are filtered out of the view, so their
+   label/help messages are dead.
+4. **LOVs** - `blog_v_lov` resolves each row's `display_message`; consumed by
+   admin `lovs.apx`.
+
+The seed data that makes dynamic names live lives in
+`applications/blog/supporting-objects/install-scripts/metadata.sql`
+(`blog_install.settings_merge` / `features_merge` / `list_of_values_ins`).
+
+## Orphan-message audit procedure (read-only)
+
+1. Extract every `^textMessage <NAME>` from each app's `messages.apx`.
+2. Literal check: case-insensitive fixed-string grep for the name in the
+   **owning** app directory (excluding `messages.apx` itself) and shared
+   `Database/`; hits in the other app alone do not count.
+3. Dynamic checks - live if the name is a constraint defined in
+   `Database/Tables/*.sql`, or `BLOG_SETTING_<attr>` / `BLOG_HELP_<attr>` where
+   `<attr>` is seeded via `settings_merge`, or a non-INTERNAL seeded feature
+   (`features_merge`) label, its help name (`BLOG_HELP_<suffix>`), or a seeded
+   group name, or a LOV `display_message` seeded via `list_of_values_ins`.
+4. Ignore `build/` (generated copies); anything left is orphaned.
+
+Result 2026-11-14: 7 orphans - public `BLOG_ERR_MSG_COMMENT_REQUEST`; admin
+`BLOG_AI_GENERATE_MESSAGE`, `BLOG_AI_GENERATE_PROMPT`,
+`BLOG_MSG_AI_NO_POST_FOR_CONTEXT`, `BLOG_MSG_SELECTED_FILES_DELETED`,
+`BLOG_TXT_DOWNLOAD` (stale `usedInJavaScript: true`) and `BLOG_MSG_NO_DATA_FOUND`
+(live only in the public app; the admin duplicate is the orphan). All 7 removed on
+2026-11-15: edited both `messages.apx` files in Git, then `make sync-dev`; the
+follow-up `make source` round trip produced **no diff**, so DEV matches Git. The
+public `BLOG_MSG_NO_DATA_FOUND` stays (live in public pages).
 
 ## Release pipeline (immutable candidate model)
 

@@ -16,6 +16,15 @@
 
 ## Completed milestones (newest first; includes current uncommitted work)
 
+- Removed the 7 orphan text messages found by the audit: public
+  `BLOG_ERR_MSG_COMMENT_REQUEST`; admin `BLOG_AI_GENERATE_MESSAGE`,
+  `BLOG_AI_GENERATE_PROMPT`, `BLOG_MSG_AI_NO_POST_FOR_CONTEXT`,
+  `BLOG_MSG_SELECTED_FILES_DELETED`, `BLOG_TXT_DOWNLOAD`, `BLOG_MSG_NO_DATA_FOUND`.
+  Git edits pushed to DEV with `make sync-dev`; the follow-up `make source` round trip
+  produced no diff, so DEV matches Git.
+- Orphan-message audit of both apps' `messages.apx` completed as read-only
+  analysis; per-app resolution model and audit procedure documented in
+  `systemContext.md`.
 - BLOG_AI remediation B1–B4 implemented in `Database/Packages/BLOG_AI.pkb` (dead
   body-only `get_sentiments`/`gen_ai_chat` and their `param_t` keys removed; stale
   `lang_ai_compartment_ocid` snapshot dropped — which also made init safe; null-payload,
@@ -55,5 +64,5 @@
 - Promote the verified candidate `build/releases/26.1.5.20261107/` to QA (`make qa`)
   and then PROD (`make production`) — both need explicit approval. Merging
   `blog-ai-remediation` back into `APEX_26.1` is also pending your decision.
-- Decide whether to remove the now-unreferenced admin messages
-  `BLOG_AI_GENERATE_MESSAGE` / `BLOG_AI_GENERATE_PROMPT`.
+- Rebuild the release candidate when it is time to release; the current local candidate
+  predates the message removal, which the owner accepts while development continues.
