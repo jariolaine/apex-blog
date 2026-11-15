@@ -1,10 +1,3 @@
-textMessage BLOG_ERR_MSG_COMMENT_REQUEST (
-    message {
-        text: Error occured. It's not possible submit comment at this time.
-        language: en
-    }
-)
-
 textMessage BLOG_GENERIC_ERROR (
     message {
         text: Ooops... We are sorry! Unexpected internal error have occurred. Please try again later.

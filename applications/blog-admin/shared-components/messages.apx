@@ -1,22 +1,3 @@
-textMessage BLOG_AI_GENERATE_MESSAGE (
-    message {
-        text:
-            ```
-            Consider the following blog post: """
-            %post
-            """
-            ```
-        language: en
-    }
-)
-
-textMessage BLOG_AI_GENERATE_PROMPT (
-    message {
-        text: Please generate
-        language: en
-    }
-)
-
 textMessage BLOG_AI_SYSTEM_PROMPT_POST_ASSISTANT (
     message {
         text: You are an advanced AI assistant specializing in writing engaging, informative, and well-structured blog posts tailored to a specific audience. Your goal is to produce content that is easy to read, factually accurate, and optimized for search engines (SEO). Use a tone that aligns with the intended audience, whether professional, casual, or conversational. Typically aim for 800-1500 words unless a specific length is requested. Generate only blog post content. Do not include title or description for post as those are generated separately.
@@ -814,14 +795,6 @@ textMessage BLOG_MSG_AI_ASSISTANT_WELCOME (
     }
 )
 
-textMessage BLOG_MSG_AI_NO_POST_FOR_CONTEXT (
-    message {
-        text: AI cannot generate text without context. Please create and provide a blog post as context before proceeding.
-        language: en
-        usedInJavaScript: true
-    }
-)
-
 textMessage BLOG_MSG_APEX_AUTH_INFO (
     message {
         text:
@@ -928,13 +901,6 @@ textMessage BLOG_MSG_LINK_GROUPS_RESEQUENCED (
     }
 )
 
-textMessage BLOG_MSG_NO_DATA_FOUND (
-    message {
-        text: No records found.
-        language: en
-    }
-)
-
 textMessage BLOG_MSG_OBJECT_STORAGE_INFO (
     message {
         text:
@@ -961,14 +927,6 @@ textMessage BLOG_MSG_OCI_API_KEY_INFO (
             <p><strong>NOTE:</strong> Existing credential information is not displayed. To update the credential, provide a value for all fields.</p>
             ```
         language: en
-    }
-)
-
-textMessage BLOG_MSG_SELECTED_FILES_DELETED (
-    message {
-        text: File(s) deleted.
-        language: en
-        usedInJavaScript: true
     }
 )
 
@@ -1237,14 +1195,6 @@ textMessage BLOG_TXT_DISABLED (
     message {
         text: Disabled
         language: en
-    }
-)
-
-textMessage BLOG_TXT_DOWNLOAD (
-    message {
-        text: Download
-        language: en
-        usedInJavaScript: true
     }
 )
 
