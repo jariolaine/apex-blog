@@ -127,7 +127,7 @@ other workspaces. The container is still bound to **this** checkout, so a
 call from another workspace could change this repository. Disable the entry
 when working on unrelated projects, or use separate isolated Cline profiles
 where your environment supports them. The workspace rule
-[`.clinerules/mcp-automation.md`](../../.clinerules/mcp-automation.md) guides
+[`.clinerules/project-workflow.md`](../../.clinerules/project-workflow.md) guides
 Cline in this repository but **is not an access-control boundary**. Keep
 `autoApprove` empty, especially for `automation_start` and potentially
 sensitive logs.

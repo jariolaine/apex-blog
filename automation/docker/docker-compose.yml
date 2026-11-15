@@ -20,7 +20,7 @@ services:
     environment:
       - ORACLE_PWD=${ORACLE_PWD}
       - ORACLE_USER_PWD=${ORACLE_PWD}
-      - DBHOST=db-26ai-free
+      - DBHOST=blog-tst-db
       - DBPORT=1521
       - DBSERVICENAME=freepdb1
     volumes:

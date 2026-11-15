@@ -5,16 +5,16 @@
 | Path | Ownership / purpose |
 | --- | --- |
 | `applications/blog/` | Public Pages app APEXLang source + Supporting Objects + static files |
-| `applications/blog-admin/` | Admin app APEXLang source + Supporting Objects (incl. **manually maintained** `deinstall-script.sql`) |
-| `Database/` | Git-tracked schema SQL: `Tables/`, `Packages/` (`.pks`/`.pkb`), `Views/`, `Triggers/`, `Sequences/`, `Indexes/` |
+| `applications/blog-admin/` | Admin APEXLang, Supporting Objects, manual deinstall SQL |
+| `Database/` | Schema SQL: tables, packages (`.pks`, `.pkb`), views, triggers, etc. |
 | `automation/` | All release/CI automation scripts, docs, offline tests (see below) |
-| `automation/schema/install.list`, `upgrade.list` | Explicit object install/upgrade order; every `.pks` pairs with a `.pkb`; all specs precede bodies |
-| `build/releases/<version>/` | Immutable checksummed candidate (manifest.json, SHA256SUMS, both SQL exports, both ZIPs) — **never committed** |
-| `build/hotfix/` | Emergency QA→PROD exports/logs — never committed |
-| `less/` | LESS source (`style.less`, `admin.less`, `rss.less`, `core/*.less`) compiled/minified into app static files; keep both in sync |
+| `automation/schema/*.list` | Schema install and upgrade order |
+| `build/releases/<version>/` | Generated candidate: manifest, checksums, SQL, ZIPs |
+| `build/hotfix/` | Generated emergency QA/UAT → PROD exports and logs |
+| `less/` | LESS sources for generated app CSS files |
 | `ideas/` | Non-shipping scratch notes, draft SQL/LESS |
 | `Stack/` | Legacy OCI Resource Manager Terraform stack |
-| `VERSION.txt` | Release version authority, format `Release x.y.z.YYYYMMDD`; read the file for the current value |
+| `VERSION.txt` | Release version authority (`Release x.y.z.YYYYMMDD`) |
 
 ## Application details
 
@@ -26,7 +26,8 @@
 - `blog-admin` static files: `js/admin.js(.min.js)`, `css/admin(.min).css`.
   Plugins: DA `copyToClipboard`, DA `speechRecognition`, template components
   `buttonCustom-...`, `footerLinkCustom-...`, `iconCustom-...`. Gen-AI service
-  `@BLOG_OPEN_AI_API`; authorization scheme `@bloggers` (workspace group).
+  `@BLOG_OPEN_AI_API` backed by web credential `@BLOG_OPEN_AI_API_KEY`;
+  authorization scheme `@bloggers` (workspace group).
 - Admin pages (id → purpose): 0 global, 1 home, 11 posts, 12 post-properties,
   14 categories, 15 tags, 16 post-tags, 50/51/52/53 links & link groups,
   60/61/62 comments, 80/81 popup pages, 201 help, 202 about, 300-303 file
@@ -103,15 +104,14 @@ For the completed read-only orphan audit, its method and 2026-11 findings, see
 
 ## Release pipeline (immutable candidate model)
 
-Git source → (reviewed sync with DEV, DEV ids 402/401) → `make build` assembles
-Supporting Objects from Git, sets DEV versions from VERSION.txt, exports both
-apps to temp space, diffs against Git, runs full offline gate, publishes and
-verifies a checksummed candidate under `build/releases/<version>/`, then runs
-real TEST acceptance (upgrade from strictly-older published release, fresh
-install, verified deinstall leaving **zero** user objects). The same verified
-candidate is then promoted to QA/UAT (ids 102/101) and PROD (102/101) with
-approval. Candidate locking: exclusive `flock` per version in
-`build/releases/.locks/` (persistent — never delete); rollback restores
-backups; overwrite only with `OVERWRITE=YES` for unpromoted local candidates.
-No STAGING environment exists. Emergency hotfix path (QA export → PROD import,
-Supporting Objects installed by default) deliberately bypasses normal gates.
+The normal flow is Git source → reviewed DEV synchronization (Admin/Public
+IDs 402/401) → `make build` (assemble Supporting Objects, set DEV versions,
+export and compare APEXLang with Git, run offline checks, publish a
+checksummed candidate) → disposable-TEST upgrade/install/deinstall acceptance
+→ promotion of the **same candidate** to QA/UAT and PROD (Admin/Public IDs
+102/101). Candidate publication uses per-version `flock` locks in
+`build/releases/.locks/` and rollback backups; see
+[`automation/docs/ARCHITECTURE.md`](../automation/docs/ARCHITECTURE.md).
+
+There is no STAGING environment. The emergency QA/UAT → PROD hotfix path is
+separate from the normal candidate flow.

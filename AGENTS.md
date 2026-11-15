@@ -28,7 +28,8 @@ invent APEXLang syntax, SQLcl flags, paths, or Make targets.
   update deinstall with schema changes.
 - `applications/*/shared-components/static-files/` contains owned CSS, JS, and binary assets.
   When adding/renaming files, update the corresponding `shared-components/static-files.apx`
-  metadata. Keep `less/` sources and generated CSS/minified assets consistent.
+  metadata. The **top-level `less/`** directory holds the LESS sources that compile into the
+  generated (and minified) CSS under each app's `static-files/css/`; keep both consistent.
 - `VERSION.txt` defines the release version, including its final `YYYYMMDD` suffix; historical
   upgrade SQL retains its original version dates.
 - `automation/variables.sh` defines defaults; ignored `automation/variables.local.sh` and
@@ -42,7 +43,7 @@ invent APEXLang syntax, SQLcl flags, paths, or Make targets.
 `make check-schema`, `make check-source`, `make check-release`, `make verify-release`,
 `make release-check`, `make validate`, and `make check`. `make validate` requires SQLcl but does
 not connect to a database; `make check` is the full offline quality gate, including APEXLang
-validation.
+validation, and runs the same `preflight` gate that is enforced inside the DEV/QA scripts.
 
 **Git-only generation:** `make supporting` assembles tracked Supporting Objects from Git and
 renders the version. It does not regenerate the Admin deinstall script. Review the resulting

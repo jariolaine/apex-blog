@@ -7,7 +7,8 @@ self-hosted personal blog built entirely with Oracle APEX.
 
 - Oracle Database 19c or later (Oracle Text / `CTXAPP` required; parsing schema
   needs `CREATE INDEXTYPE/PROCEDURE/SEQUENCE/TABLE/TRIGGER/VIEW`).
-- Oracle APEX 26.1 or later.
+- Oracle APEX **26.1** (current development and validation target; compatibility
+  with later releases is not established here).
 - An APEX workspace; after install, a workspace user group named **Bloggers**
   authorizes admin application users.
 
@@ -27,10 +28,11 @@ self-hosted personal blog built entirely with Oracle APEX.
 
 - Full-text search via Oracle Text ctx indexes on posts and comments.
 - Comment workflow with subscribers, flags and AI-assisted sentiment.
-- Generative AI integration (OpenAI credential `BLOG_OPEN_AI_API`) for comment
-  sentiment and prompt-driven features; OCI object storage for files.
+- OpenAI-backed APEX generative-AI service `BLOG_OPEN_AI_API` (using web
+  credential `BLOG_OPEN_AI_API_KEY`) for prompt-driven features; OCI language
+  AI supports comment sentiment, and OCI Object Storage supports files.
 - Install/upgrade delivered as full SQL exports **with Supporting Objects**;
-  upgrade requires an existing version Release v22.2.1.20230117 or later.
+  upgrade requires an existing version Release 24.1.0.20240714 or later.
 
 ## Out of scope
 

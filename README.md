@@ -46,19 +46,6 @@ In the target APEX workspace, import the two files from the new release ZIP
 in the same order: Admin then Public. Select **upgrade Supporting Objects**
 for each import. Verify both applications and their data afterward.
 
-## Development and automation
-
-The source checkout tracks the APEX applications as **APEXLang** in
-`applications/`, database SQL in `Database/`, and versioned release automation
-under `automation/`. Development and CI commands are defined in `Makefile`.
-
-For contributors working from the **source repository**, start with
-[`automation/README.md`](automation/README.md) for the command
-map and [`automation/docs/RUNBOOK.md`](automation/docs/RUNBOOK.md) for safe
-operational steps. Coding agents should also read [`AGENTS.md`](AGENTS.md).
-These source-only files are not included in the downloadable application ZIP;
-the ZIP contains this README and the full installation exports.
-
 ## License
 
 Released under the [MIT license](LICENSE.txt) by Jari Laine.
