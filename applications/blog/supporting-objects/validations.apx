@@ -33,7 +33,7 @@ validation "Application upgrade is supported" (
             select 1
             from blog_v_version
             where 1 = 1
-            and application_date >= 20230117
+            and application_date >= 20240714
             ```
     }
     error {
@@ -100,4 +100,3 @@ validation "Supporting objects installed" (
         errorMessage: The required supporting objects are not installed. Please install administration application and supporting objects using file blog_administration.sql.
     }
 )
-

@@ -9,6 +9,20 @@ require_file() { [[ -s "$1" && -f "$1" ]] || die "Missing or empty file: $1"; }
 
 sqlcl_bin="${SQLCL_BIN:-sql}"
 
+# The exporter and TEST scripts remove their temporary directories on exit.
+# Preserve their SQLcl output in the MCP job's private volume when requested.
+# Use a unique name because one job may run the same SQL script repeatedly.
+persist_sqlcl_log() {
+    local log_file="$1" base destination
+    [[ -n "${AUTOMATION_SQLCL_LOG_DIR:-}" && -f "$log_file" ]] || return 0
+    mkdir -p -- "$AUTOMATION_SQLCL_LOG_DIR"
+    base="${log_file##*/}"
+    base="${base//[^[:alnum:]._-]/_}"
+    destination="$(mktemp "$AUTOMATION_SQLCL_LOG_DIR/${base}.XXXXXXXX")"
+    cp -- "$log_file" "$destination"
+    chmod 600 -- "$destination"
+}
+
 # Run an SQLcl command script with SQL/PLSQL failures raised to the shell.
 # SQLcl command parsing errors do not always set an exit code; callers MUST
 # also validate the expected outputs or a positive success marker.
@@ -21,6 +35,7 @@ run_sqlcl() {
         cat -- "$sql_file"
         printf '\nexit success\n'
     } | "$sqlcl_bin" -L -S -name "$conn" >"$log_file" 2>&1 || rc=$?
+    persist_sqlcl_log "$log_file" || log 'WARNING: Could not retain SQLcl diagnostic log'
     if (( rc != 0 )); then
         log "SQLcl failed (exit $rc): $log_file"
         tail -n 35 "$log_file" >&2 || true
@@ -36,6 +51,7 @@ run_sqlcl_nolog() {
         cat -- "$sql_file"
         printf '\nexit success\n'
     } | "$sqlcl_bin" /nolog >"$log_file" 2>&1 || rc=$?
+    persist_sqlcl_log "$log_file" || log 'WARNING: Could not retain SQLcl diagnostic log'
     if (( rc != 0 )); then
         log "SQLcl failed (exit $rc): $log_file"
         tail -n 35 "$log_file" >&2 || true

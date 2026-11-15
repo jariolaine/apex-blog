@@ -1,0 +1,29 @@
+# Optional Compose overlay for first-start dependency volume initialization.
+# The base docker-compose.yml already defines the `automation` MCP service.
+# Start from the repository root with both -f files and target `automation`.
+services:
+  # Root only within Docker named volumes; no host checkout, SQLcl profiles,
+  # network, or Docker socket mounted. The normal automation process stays
+  # non-root with all capabilities dropped.
+  automation-mcp-volume-init:
+    image: busybox:1.36.1
+    user: "0:0"
+    restart: "no"
+    network_mode: none
+    security_opt:
+      - no-new-privileges:true
+    command:
+      - sh
+      - -ec
+      - |
+          chown -R ${HOST_UID:-1000}:${HOST_GID:-1000} \
+            /volumes/venv /volumes/node_modules /volumes/jobs
+    volumes:
+      - automation_venv:/volumes/venv
+      - automation_node_modules:/volumes/node_modules
+      - automation_jobs:/volumes/jobs
+
+  automation:
+    depends_on:
+      automation-mcp-volume-init:
+        condition: service_completed_successfully

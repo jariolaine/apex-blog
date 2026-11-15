@@ -53,15 +53,19 @@ fi
 if command -v git >/dev/null 2>&1; then
   if [[ "$(git rev-parse --is-inside-work-tree 2>/dev/null || true)" == 'true' ]]; then
     ok 'Git working tree'
-    hooks_dir="$(git config --get core.hooksPath || true)"
-    if [[ -n "$hooks_dir" ]]; then
-      [[ "$hooks_dir" == /* ]] || hooks_dir="$REPO_DIR/$hooks_dir"
-      hook_path="$hooks_dir/pre-commit"
+    if [[ "${APEX_BLOG_MCP_CONTAINER:-}" == 'true' ]]; then
+      printf '%s\n' '[INFO] Git hook check skipped: MCP container bootstrap does not install host hooks'
     else
-      hook_path="$(git rev-parse --git-path hooks/pre-commit)"
-      [[ "$hook_path" == /* ]] || hook_path="$REPO_DIR/$hook_path"
+      hooks_dir="$(git config --get core.hooksPath || true)"
+      if [[ -n "$hooks_dir" ]]; then
+        [[ "$hooks_dir" == /* ]] || hooks_dir="$REPO_DIR/$hooks_dir"
+        hook_path="$hooks_dir/pre-commit"
+      else
+        hook_path="$(git rev-parse --git-path hooks/pre-commit)"
+        [[ "$hook_path" == /* ]] || hook_path="$REPO_DIR/$hook_path"
+      fi
+      check_local_executable "$hook_path" 'run make setup-ci to install the Git hook'
     fi
-    check_local_executable "$hook_path" 'run make setup-ci to install the Git hook'
   else
     missing 'Git working tree' 'clone the repository instead of using a source ZIP'
   fi

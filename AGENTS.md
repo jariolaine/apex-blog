@@ -1,125 +1,120 @@
-# APEX Blog: instructions for a local coding agent
+# APEX Blog: coding-agent instructions
 
-Scope: this repository. Target Oracle APEX **26.1**. Work in small, reviewable steps. Do not invent APEXLang syntax, SQLcl flags, paths, or Makefile targets.
+Scope: this repository. Target Oracle APEX **26.1**. Work in small, reviewable steps. Do not
+invent APEXLang syntax, SQLcl flags, paths, or Make targets.
 
-## First steps
+## Start and finish
 
-1. Read `Makefile`, then inspect only the files needed for the task. Check `git status --short` before editing.
-2. State a short plan. Prefer the smallest change; preserve unrelated files and existing behavior.
-3. After editing, run the relevant *non-destructive* checks. Report changed files, test results, and anything not verified.
-4. Never claim that a mock test proves an Oracle database import, PL/SQL compile, or deployment succeeded.
+1. Inspect `Makefile` and the task-relevant files. Check `git status --short` before editing;
+   preserve unrelated work.
+2. State a short plan, make the smallest necessary change, and run relevant **non-destructive**
+   checks.
+3. Report changed files, checks and results, database actions not run, and remaining risks or
+   approvals. Never treat mocked tests as proof of a real Oracle compile, import, or deployment.
+4. Treat Docker, SQLcl saved connections, environment variables, and MCP as
+   **human-configured**. If a required tool or connection is unavailable, report the blocker; do
+   not change the developer's setup unless explicitly asked.
 
-## Repository map
+## Source ownership and repository map
 
-- `applications/blog/` and `applications/blog-admin/`: **APEXLang** application source (`.apx`), not split SQL.
-- `Database/`: schema SQL, including separate package `.pks`/`.pkb` files. `automation/schema/`: Git-owned install/upgrade order.
-- `applications/*/supporting-objects/`: Git-owned install metadata, generated
-  schema/upgrade SQL and manually maintained `blog-admin/supporting-objects/deinstall-script.sql`.
-  Never generate metadata or deinstall SQL from DEV. Keep the dynamic APEX
-  application-ID expressions; update tracked deinstall SQL with schema changes.
-- `applications/*/shared-components/static-files/`: Git-owned CSS, JS, images, and binaries. Add/rename assets in `shared-components/static-files.apx` too.
-- `less/`: LESS source for generated CSS. Keep LESS and CSS consistent.
-- `VERSION.txt`: authoritative release version; keep its final `YYYYMMDD` suffix.
-- `automation/variables.sh`: default settings. `automation/variables.local.sh`: local overrides; **never commit or print secrets**.
-- `build/releases/<version>/`: immutable SQL release candidates with manifest and checksums. `build/hotfix/` stays separate. Never commit generated artifacts.
+- `applications/blog/` and `applications/blog-admin/` contain tracked **APEXLang** (`.apx`)
+  applications, not split SQLcl exports.
+- `Database/` owns schema SQL, including separate `.pks`/`.pkb` packages;
+  `automation/schema/install.list` and `upgrade.list` define object order (all specs before
+  bodies).
+- `applications/*/supporting-objects/` contains Git-owned metadata and generated install/upgrade
+  SQL. Admin `supporting-objects/deinstall-script.sql` is **manually maintained**. Do not
+  regenerate metadata or deinstall SQL from DEV; retain dynamic application-ID expressions and
+  update deinstall with schema changes.
+- `applications/*/shared-components/static-files/` contains owned CSS, JS, and binary assets.
+  When adding/renaming files, update the corresponding `shared-components/static-files.apx`
+  metadata. Keep `less/` sources and generated CSS/minified assets consistent.
+- `VERSION.txt` defines the release version, including its final `YYYYMMDD` suffix; historical
+  upgrade SQL retains its original version dates.
+- `automation/variables.sh` defines defaults; ignored `automation/variables.local.sh` and
+  environment overrides may change the effective values. Never print or commit secrets.
+- `build/releases/<version>/` contains versioned, checksummed release candidates;
+  `build/hotfix/` is separate. Do not commit generated artifacts or delete candidate lock files.
 
-## Commands and permission
+## Commands and authorization
 
-**Local checks (may run):**
+**Non-destructive checks:** `make doctor`, `make lint`, `make test-fast`, `make test`,
+`make check-schema`, `make check-source`, `make check-release`, `make verify-release`,
+`make release-check`, `make validate`, and `make check`. `make validate` requires SQLcl but does
+not connect to a database; `make check` is the full offline quality gate, including APEXLang
+validation.
 
-```sh
-make doctor
-make lint
-make test
-make validate
-make check-source
-make check-schema
-make check-release
-make verify-release
-make release-check
-make check
-```
+**Git-only generation:** `make supporting` assembles tracked Supporting Objects from Git and
+renders the version. It does not regenerate the Admin deinstall script. Review the resulting
+diff. Environment installation (`make setup`, bootstrap, Docker, Git hooks) is handled by the
+human unless specifically requested.
 
-`make validate` needs SQLcl but does not connect to a database. If SQLcl is missing, say so.
+**Read DEV, write local source:** `make source` exports APEXLang into `applications/` and can
+overwrite uncommitted `.apx` changes. Review the working tree and warn about overwrites first.
+Supporting Objects SQL and static-file bytes are preserved, but this does **not** establish
+DEV/Git parity. `make source` (DEV → Git) and `make sync-dev` (Git → DEV) must never be chained
+blindly. Direct `automation/export_application.sh` calls require an explicit `--source-only` or
+`--build-only` mode.
 
-**Local-only setup and source generation (no database connection):**
+**Obtain explicit human authorization before any of these database-changing operations**
+(including equivalent direct scripts or MCP jobs):
 
-- `make setup`: install local CI tools and Git hook. No database changes.
-- `make supporting`: assemble database objects, foreign keys and indexes from Git; validate checked-in metadata and render its `G_APP_VERSION` value from `VERSION.txt`. It never overwrites the tracked deinstall script. Inspect the resulting diff.
+- `make prepare-release` — changes DEV application versions.
+- `make sync-dev` — replaces both application definitions in DEV.
+- `make test-release`, `make test-install`, `make test-upgrade`, `make test-deinstall` — reset
+  an **approved disposable TEST** schema. `test-deinstall` installs first, then verifies zero
+  remaining user objects.
+- `make build` — assembles Supporting Objects, updates DEV versions, compares DEV exports with
+  Git, runs the full gate, publishes a candidate, and runs real TEST acceptance.
+  `PREVIOUS_ZIP=path` is optional; without it, the upgrade input is GitHub's latest published
+  release. Never run without DEV and TEST authorization.
+- `make qa`, `make production`, `make hotfix-production` — deploy application definitions; the
+  emergency hotfix has different safeguards (below).
 
-**Read DEV but change local files (run only when relevant; warn about overwritten source):**
+Before an authorized database operation, verify the effective saved SQLcl connection, schema,
+workspace, and intended target. Never run destructive SQL merely because it is listed in a
+runbook. The existing scripts enforce their own environment checks. `make sync-dev` and
+`make qa` also enforce mandatory preflight **inside the scripts**, without a bypass flag; do not
+weaken or skip it.
 
-- `make source`: export APEXLang from DEV; may overwrite `.apx` changes. Existing local Supporting Objects SQL and static-file bytes are preserved.
-  Direct `automation/export_application.sh` calls require `--source-only` or
-  `--build-only`; invoking it without a mode is an error, never a combined export.
+For supported long-running Make targets, follow `.clinerules/project-workflow.md` when using
+Cline's configured MCP tools. MCP adds **no second approval workflow**; the human authorization
+above still applies. Cline/Docker/SQLcl setup is documented for maintainers in
+`automation/docs/MCP_AUTOMATION.md`.
 
-**End-to-end release (requires explicit human approval before execution):**
+## APEXLang, source consistency, and release integrity
 
-- `make build`: generate Supporting Objects (may modify tracked SQL), update DEV
-  application versions, export both apps to temporary space, compare with Git,
-  run `make check` **after export and before publication**, package/verify the
-  candidate, and reset disposable TEST for real upgrade/install/deinstall.
-  `PREVIOUS_ZIP=path` is optional; the default is GitHub's latest release.
-  **Never run this command without authorization for DEV and TEST.** It never
-  executes `make source` or `make sync-dev` automatically. A failing TEST gate
-  leaves an unapproved local candidate; rerun `make test-release` before approval.
-  `make build OVERWRITE=YES` can replace an eligible unpromoted local candidate;
-  never overwrite a QA-approved/published version.
+- Keep APEXLang as the tracked application format; never replace it with SQLcl `-split` exports.
+  If available, use Oracle's
+  [APEXLang skill](https://github.com/oracle/skills/blob/main/apex/apexlang/SKILL.md) and
+  [APEX 26.1 guidance](https://github.com/oracle/skills/blob/main/apex/apexlang/26.1/SKILL.md)
+  for syntax, but use repository automation for validation and deployment.
+- Installable artifacts are **full SQL exports with Supporting Objects**, not APEXLang files
+  alone. Install Admin before Public. Keep `Database/`, manifests, Supporting Objects SQL, and
+  the manually maintained deinstall script in sync. Check every `.pks` has a matching `.pkb`.
+- `make check-source` supports work in progress; `make check-release` requires matching
+  application and Supporting Objects versions from `VERSION.txt`. Never falsify drift checks or
+  suppress test failures.
+- `make build` must stop when DEV Supporting Objects or static-file metadata differs from Git,
+  rather than silently running `source`/`sync-dev`. It runs `make check` after export and before
+  candidate publication.
+- A failed TEST gate does not approve the candidate. Rerun authorized `make test-release` after
+  fixing it. `make build OVERWRITE=YES` may replace **only** an eligible unpromoted local
+  candidate; never overwrite a QA-approved or published version.
+- For a normal release, use the **same unchanged versioned candidate** for TEST, QA, PROD, and
+  GitHub. Select it with `RELEASE_DIR=...`; never rebuild between environments. Preserve
+  candidate locks and rollback behavior; consult `automation/docs/ARCHITECTURE.md` when changing
+  publication code.
 
-**Requires explicit human approval BEFORE execution:**
+## Emergency QA/UAT → PROD hotfix
 
-- `make prepare-release`: changes DEV versions.
-- `make sync-dev`: overwrites both DEV APEX application definitions.
-- `make test-release`: repeat verified-candidate upgrade, fresh install and deinstall against approved disposable TEST. By default download GitHub's latest published release; `PREVIOUS_ZIP=path` selects another older ZIP. Reject equal/newer releases before resetting TEST; leave TEST empty on success.
-- `make test-install` / `make test-upgrade` / `make test-deinstall`: reset the **disposable TEST** schema. `test-deinstall` always runs `test-install` first, then removes both TEST apps and Supporting Objects and verifies the schema has **zero** user objects. Run only against an approved disposable TEST schema.
-- `make qa` / `make production`: deploy normal release applications.
-- `make hotfix-production`: directly replace both PROD applications from saved QA/UAT exports; no normal build or release gates, but require prior authorization and schema/workspace verification.
+Only follow this path when explicitly requested; it intentionally bypasses the normal DEV/TEST
+pipeline and release gates.
 
-Check the saved SQLcl connection and target schema before any approved database operation. Do not automatically execute SQL that drops or upgrades objects. Never run a command just because it is listed here.
-
-## Mandatory quality checks
-
-- Read `automation/docs/ARCHITECTURE.md` for CI and lint scope and
-  `automation/docs/RUNBOOK.md` for setup. Use
-  `make setup` (or `make setup-ci`) to create the local `.venv/` and Git hook;
-  neither command connects to a database. `make doctor` is a read-only diagnostic.
-  Do not require a fixed Node.js major version or global `pre-commit`.
-- Use `make lint` for linters, `make test` for focused offline release-safety
-  tests, and `make check` for the full quality gate including SQLcl APEXLang validation.
-- Pre-commit hooks run static lint only. GitHub Actions and `make preflight`
-  additionally run offline schema/source checks, selected safety tests (once)
-  and APEXLang validation. Do not suppress failures merely to make a test pass.
-- `make sync-dev` and `make qa` **always** run mandatory preflight inside the
-  underlying Bash scripts, including direct invocations. A failed check must
-  stop before connecting to DEV/QA. No bypass flag is available.
-- The independent QA-to-production emergency hotfix workflow is deliberately
-  exempt. Do not insert normal release gates into it.
-
-## APEXLang and release rules
-
-- Use **APEXLang** for tracked application source; never replace it with SQLcl `-split` SQL exports.
-- When Oracle's skill is available, consult [APEXLang skill](https://github.com/oracle/skills/blob/main/apex/apexlang/SKILL.md) and [APEX 26.1 guidance](https://github.com/oracle/skills/blob/main/apex/apexlang/26.1/SKILL.md). It is optional, not automatically installed. Use the repo `Makefile` for validation and deployment.
-- `make source` protects locally maintained SQL and static assets, but does **not** prove that DEV matches Git. Inspect changes to `.apx` and static-file metadata.
-- `make build` must fail on Supporting Objects or static-file drift from DEV. Correct the drift deliberately; do not overwrite files or weaken checks to make the build pass.
-- Installer is the **full SQL export with Supporting Objects**, not APEXLang alone. Install Admin before Public. Preserve the order in `automation/schema/install.list` and `upgrade.list`: every `.pks` must have a matching `.pkb`, and all specs precede bodies. Run `make check-schema` before generation.
-- `make check-source` is safe for work-in-progress; `make check-release` is strict and requires both app versions and current Supporting Objects versions to match VERSION.txt. Historical upgrade SQL retains old version dates.
-- For **normal releases**, use one **unchanged versioned candidate** under `build/releases/<version>/` for TEST, QA, production, and GitHub. Use `RELEASE_DIR=...` to select it; QA also verifies the candidate's source fingerprint. Never rebuild between environments. Follow `automation/docs/RUNBOOK.md` (release preparation, promotion and candidate integrity).
-- Candidate publication is implemented in the **sourced** `automation/lib/candidate_publish.sh` helper. Keep its exclusive lock from before DEV export through final verification, and preserve same-shell EXIT/signal rollback (including backup restoration). Do not run the helper in a subprocess.
-
-## Emergency QA/UAT -> production application hotfix
-
-Only use this path when explicitly requested. Follow `automation/docs/RUNBOOK.md` (emergency hotfix):
-
-- `make hotfix-export`: export both current QA/UAT applications to `build/hotfix/f<ID>.sql` (overwrites any prior hotfix candidate).
-- `make hotfix-production`: import those two saved SQL files into PROD, Admin first. Obtain human approval before running; both Make and direct script calls verify the configured PROD target.
-- This path deliberately skips DEV/TEST, APEXLang export, checksum validation,
-  and normal release gates. Supporting Objects are **installed by default** in
-  both PROD imports; review possible schema/data changes. To skip their
-  automatic installation, use
-  `make hotfix-production OBJECTS=NO` (direct script:
-  `production --skip-supporting-objects`).
-- Do not commit generated `build/hotfix/` files. Developers must carry fixes back into the usual development and source-control process separately.
-
-## Finish every task
-
-Report: (1) changed files, (2) tests run and results, (3) database actions *not* run, and (4) any remaining risk or needed approval. If unsure, stop and ask rather than guessing.
+- `make hotfix-export` reads both QA/UAT applications into `build/hotfix/f<ID>.sql` (overwrites
+  an older hotfix candidate).
+- After explicit authorization, `make hotfix-production` imports the saved Admin and then Public
+  exports to the verified PROD target. By default it **installs Supporting Objects**, which can
+  change schema/data. `OBJECTS=NO` disables their automatic installation.
+- Do not commit hotfix artifacts; propagate fixes back into regular source control separately.
+  See `automation/docs/RUNBOOK.md` for recovery and deployment details.

@@ -1,0 +1,2 @@
+# Official Python MCP SDK; FastMCP Streamable HTTP transport.
+mcp>=1.12,<2

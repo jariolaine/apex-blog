@@ -5,6 +5,16 @@ reference**; this page intentionally lists only the everyday workflows. When a
 Make target changes, update its help text and the relevant runbook procedure,
 not a separate copy of every command in every document.
 
+## Optional MCP agent runner
+
+For long-running `make source`, `make sync-dev` and real disposable-TEST
+acceptance, the [Dockerized MCP runner](docs/MCP_AUTOMATION.md) provides job IDs,
+progress polling and persistent SQLcl logs. It uses the existing Compose
+`automation` service with a one-shot volume initializer, and wraps Make targets;
+DEV writes and TEST resets follow the existing human-authorization rules in
+`AGENTS.md` (no second MCP approval gate), and QA/PROD are not exposed.
+Existing human and CI Make commands are unchanged.
+
 ## Everyday workflow
 
 ```bash
@@ -55,6 +65,8 @@ separate and bypasses the normal release pipeline; see the runbook.
 - [Architecture](docs/ARCHITECTURE.md) — Git-owned inputs, artifact integrity,
   implementation and CI checks
 - [Environments](docs/ENVIRONMENTS.md) — saved connections and environment guards
+- [Docker/MCP automation](docs/MCP_AUTOMATION.md) — first-start volume setup,
+  Cline connection, long-running jobs and recovery
 - [Project README](../README.md) — end-user installation and upgrade
 - [Agent safety rules](../AGENTS.md) — instructions for coding agents
 

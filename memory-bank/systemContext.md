@@ -14,7 +14,7 @@
 | `less/` | LESS source (`style.less`, `admin.less`, `rss.less`, `core/*.less`) compiled/minified into app static files; keep both in sync |
 | `ideas/` | Non-shipping scratch notes, draft SQL/LESS |
 | `Stack/` | Legacy OCI Resource Manager Terraform stack |
-| `VERSION.txt` | Release version authority, format `Release x.y.z.YYYYMMDD` (currently `Release 26.1.5.20261107`) |
+| `VERSION.txt` | Release version authority, format `Release x.y.z.YYYYMMDD`; read the file for the current value |
 
 ## Application details
 
@@ -98,27 +98,8 @@ The seed data that makes dynamic names live lives in
 `applications/blog/supporting-objects/install-scripts/metadata.sql`
 (`blog_install.settings_merge` / `features_merge` / `list_of_values_ins`).
 
-## Orphan-message audit procedure (read-only)
-
-1. Extract every `^textMessage <NAME>` from each app's `messages.apx`.
-2. Literal check: case-insensitive fixed-string grep for the name in the
-   **owning** app directory (excluding `messages.apx` itself) and shared
-   `Database/`; hits in the other app alone do not count.
-3. Dynamic checks - live if the name is a constraint defined in
-   `Database/Tables/*.sql`, or `BLOG_SETTING_<attr>` / `BLOG_HELP_<attr>` where
-   `<attr>` is seeded via `settings_merge`, or a non-INTERNAL seeded feature
-   (`features_merge`) label, its help name (`BLOG_HELP_<suffix>`), or a seeded
-   group name, or a LOV `display_message` seeded via `list_of_values_ins`.
-4. Ignore `build/` (generated copies); anything left is orphaned.
-
-Result 2026-11-14: 7 orphans - public `BLOG_ERR_MSG_COMMENT_REQUEST`; admin
-`BLOG_AI_GENERATE_MESSAGE`, `BLOG_AI_GENERATE_PROMPT`,
-`BLOG_MSG_AI_NO_POST_FOR_CONTEXT`, `BLOG_MSG_SELECTED_FILES_DELETED`,
-`BLOG_TXT_DOWNLOAD` (stale `usedInJavaScript: true`) and `BLOG_MSG_NO_DATA_FOUND`
-(live only in the public app; the admin duplicate is the orphan). All 7 removed on
-2026-11-15: edited both `messages.apx` files in Git, then `make sync-dev`; the
-follow-up `make source` round trip produced **no diff**, so DEV matches Git. The
-public `BLOG_MSG_NO_DATA_FOUND` stays (live in public pages).
+For the completed read-only orphan audit, its method and 2026-11 findings, see
+[`reference/text-message-audit-2026-11.md`](reference/text-message-audit-2026-11.md).
 
 ## Release pipeline (immutable candidate model)
 

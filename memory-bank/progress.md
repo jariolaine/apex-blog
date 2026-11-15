@@ -1,70 +1,49 @@
 # Progress
 
-## What works
+Snapshot: **2026-11-15**. Validate present status against Git, `VERSION.txt`, build artifacts
+and environment state.
 
-- Both APEXLang applications run on APEX 26.1 (public id 401, admin id 402 in
-  DEV); full feature set documented in `projectbrief.md` is functional.
-- Immutable-candidate release pipeline (`make build` → verified candidate →
-  QA → PROD) with offline gate (`make check`), candidate locks/rollback, and
-  real TEST-schema upgrade/install/deinstall acceptance (deinstall verified to
-  leave zero user objects).
-- Offline safety test suite in `automation/tests/` (schema manifests, metadata
-  source, preserved static parity, hotfix, CI contract, workflow tests) with
-  `mock_sqlcl.py` recorder — offline only, never proof of real deployment.
-- Emergency hotfix path (`make hotfix-export` / `make hotfix-production`,
-  `OBJECTS=NO` to skip Supporting Objects) is gate-exempt by design.
+## Established functionality
 
-## Completed milestones (newest first)
+- Both APEXLang applications target APEX 26.1; DEV application IDs were 402 (Admin) and 401
+  (Public) at the snapshot. See `projectbrief.md` for product capabilities.
+- Release automation supports immutable, checksummed candidates, offline preflight,
+  disposable-TEST upgrade/install/deinstall acceptance, and authorized QA/PROD promotion. The
+  emergency QA/UAT → PROD hotfix path is separate and gate-exempt by design.
+- Offline safety tests cover schema manifests, source metadata/parity, candidate locks and
+  rollback, environment boundaries and CI contracts. These tests use mock SQLcl and do **not**
+  prove a real Oracle deployment.
 
-- Owner verified the orphan-message changes in DEV, so `blog-ai-remediation` was merged
-  back into `APEX_26.1` on 2026-11-15 (fast-forward; the branch was strictly ahead, so
-  no conflicts and no merge commit). The old local branch is now stale.
-- Removed the 7 orphan text messages found by the audit: public
-  `BLOG_ERR_MSG_COMMENT_REQUEST`; admin `BLOG_AI_GENERATE_MESSAGE`,
-  `BLOG_AI_GENERATE_PROMPT`, `BLOG_MSG_AI_NO_POST_FOR_CONTEXT`,
-  `BLOG_MSG_SELECTED_FILES_DELETED`, `BLOG_TXT_DOWNLOAD`, `BLOG_MSG_NO_DATA_FOUND`.
-  Git edits pushed to DEV with `make sync-dev`; the follow-up `make source` round trip
-  produced no diff, so DEV matches Git.
-- Orphan-message audit of both apps' `messages.apx` completed as read-only
-  analysis; per-app resolution model and audit procedure documented in
-  `systemContext.md`.
-- BLOG_AI remediation B1–B4 implemented in `Database/Packages/BLOG_AI.pkb` (dead
-  body-only `get_sentiments`/`gen_ai_chat` and their `param_t` keys removed; stale
-  `lang_ai_compartment_ocid` snapshot dropped — which also made init safe; null-payload,
-  `has('documents')` and per-entry JSON guards added). Spec unchanged, public API
-  identical. Supporting Objects regenerated from Git, DEV synced (strict source
-  consistency green), and the candidate passed real TEST upgrade + fresh install +
-  deinstall — so the new body compiles on a real database.
-- Removed all `CHANGE LOG` comment blocks from every `Database/Packages/*.pks`
-  (comment-only deletions); package descriptions/credits/to-do comments kept.
-- BLOG_AI package audit completed as read-only analysis; remaining Low findings
-  (B5/B6/B8) recorded in `activeContext.md`.
-- 26.1.5 line: blog_ai package fixes (JSON syntax, divide-by-zero, typos),
-  RSS refactor, readability refactor, `AGENT.md` → `AGENTS.md` rename,
-  `.gitignore` reorganization, memory bank + Cline workflow rules,
-  "Oracle APEX" reference rename.
-- Release-safety hardening: installer/upgrade-test safety, refactored release
-  management and source-consistency checks, linting + GitHub Actions CI,
-  obsolete tests removed and CI contracts added.
-- QA hotfix path introduced; Supporting Objects optional install on hotfix.
-- Migrate to APEX 26.1: initial APEXLang export, separated static-file/SQL
-  exports removed, admin theme updated, new APEX 26.1 features (e.g. Button
-  Action) adopted; automation scripts built (`automation/`).
-- Earlier product history: APEX 24.1/24.2 upgrades, AI + OCI object-storage
-  features, new reports pages, canonical-link/meta-tag work.
+## Recent completed work
 
-## Known issues / standing constraints
+- **2026-11-15 (agent-reported):** A `test-release` job through **APEX Blog Automation**
+  reportedly re-ran upgrade (from GitHub's latest published release), fresh install and
+  deinstall acceptance for the still-unpromoted candidate `26.1.5.20261107`. The report states
+  TEST ended empty, with **zero user objects**. No MCP job logs accompanied the reported change;
+  verify the result when needed. This rerun does **not** make the pre-message-cleanup candidate
+  representative of the final current source.
+- **2026-11-15:** merged `blog-ai-remediation` into `APEX_26.1` and removed seven unused text
+  messages. Authorized DEV synchronization followed by source re-export showed no diff. See
+  [`reference/text-message-audit-2026-11.md`](reference/text-message-audit-2026-11.md).
+- **2026-11-14–15:** BLOG_AI remediation B1–B4 (dead code/settings snapshot and JSON validation)
+  was implemented in the package body, with Supporting Objects regenerated from Git. Real TEST
+  upgrade and fresh install compiled the new body. See
+  [`reference/blog-ai-remediation-2026-11.md`](reference/blog-ai-remediation-2026-11.md).
+- Earlier milestones included migration to APEX 26.1/APEXLang, source consistency checks, CI and
+  candidate integrity hardening, and the emergency hotfix route. Inspect commit history for
+  task-specific implementation details.
 
-- `stack` ZIP and `Stack/` Terraform are legacy, maintained outside the
-  automation workflow.
-- Generated artifacts under `build/` are never committed; historical upgrade
-  SQL keeps old version dates.
-- LESS→CSS (and `.min`) syncing and Admin `deinstall-script.sql` maintenance
-  are manual.
+## Remaining concerns
 
-## What's next
+- Low-priority BLOG_AI findings **B5, B6 and B8** remain open; see `activeContext.md`.
+- `Stack/` Terraform and the stack ZIP are legacy, outside the core automation workflow.
+- LESS-to-CSS synchronization and the Admin deinstall script still require explicit source
+  maintenance.
+- The versioned candidate reported in November 2026 was generated **before** the completed
+  message cleanup. Its presence and validity are unverified in a new checkout.
 
-- Promote the verified candidate `build/releases/26.1.5.20261107/` to QA (`make qa`)
-  and then PROD (`make production`) — both need explicit approval.
-- Rebuild the release candidate when it is time to release; the current local candidate
-  predates the message removal, which the owner accepts while development continues.
+## Next release work
+
+- Confirm current version and Git state, prepare a candidate representing **current** source,
+  and run the required authorized TEST acceptance before any QA or PROD promotion. Do not assume
+  an ignored candidate directory exists or that a historical TEST pass validates newer changes.
