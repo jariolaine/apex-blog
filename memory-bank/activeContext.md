@@ -14,7 +14,10 @@ Snapshot date: 2026-11-15.
 
 ## Current state
 
-- Branch: `blog-ai-remediation` (created from `APEX_26.1`). Version:
+- Branch: `APEX_26.1`. The feature branch `blog-ai-remediation` was merged back into it
+  on 2026-11-15 (fast-forward; it was strictly ahead, so no conflicts and no merge
+  commit). All BLOG_AI remediation and orphan-message work now lives on `APEX_26.1`;
+  the old local branch is stale — do not add new work to it. Version:
   `Release 26.1.5.20261107` (`VERSION.txt`).
 - BLOG_AI remediation is committed on this branch; DEV (saved connection
   `blog_dev`, workspace/schema `BLOG_040000`, apps 402/401) was synced from Git and

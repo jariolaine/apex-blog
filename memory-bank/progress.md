@@ -14,8 +14,11 @@
 - Emergency hotfix path (`make hotfix-export` / `make hotfix-production`,
   `OBJECTS=NO` to skip Supporting Objects) is gate-exempt by design.
 
-## Completed milestones (newest first; includes current uncommitted work)
+## Completed milestones (newest first)
 
+- Owner verified the orphan-message changes in DEV, so `blog-ai-remediation` was merged
+  back into `APEX_26.1` on 2026-11-15 (fast-forward; the branch was strictly ahead, so
+  no conflicts and no merge commit). The old local branch is now stale.
 - Removed the 7 orphan text messages found by the audit: public
   `BLOG_ERR_MSG_COMMENT_REQUEST`; admin `BLOG_AI_GENERATE_MESSAGE`,
   `BLOG_AI_GENERATE_PROMPT`, `BLOG_MSG_AI_NO_POST_FOR_CONTEXT`,
@@ -62,7 +65,6 @@
 ## What's next
 
 - Promote the verified candidate `build/releases/26.1.5.20261107/` to QA (`make qa`)
-  and then PROD (`make production`) — both need explicit approval. Merging
-  `blog-ai-remediation` back into `APEX_26.1` is also pending your decision.
+  and then PROD (`make production`) — both need explicit approval.
 - Rebuild the release candidate when it is time to release; the current local candidate
   predates the message removal, which the owner accepts while development continues.
