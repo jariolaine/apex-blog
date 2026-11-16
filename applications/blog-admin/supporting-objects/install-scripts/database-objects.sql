@@ -4500,9 +4500,12 @@ as
     l_sentiment_json  clob;
     l_json_documents  json_array_t;
     l_json_document   json_object_t;
+
+    fk_check_failed   exception;
+    pragma exception_init( fk_check_failed, -2291 );
   begin
 
-    apex_debug.info( 'Input JSON document: %s', p_documents );
+    apex_debug.debug( 'Input JSON document: %s', p_documents );
 
     -- Skip when response payload is missing
     if p_documents is null
@@ -4549,14 +4552,41 @@ as
       l_comment_id := to_number( l_comment_id_str );
       l_sentiment_json := l_json_document.stringify();
 
-      -- Merge sentiment data into the database
-      merge into blog_comment_sentiments t1
-      using dual on ( t1.comment_id = l_comment_id )
-      when not matched then
-        insert( comment_id, original_language, sentiment_json )
-        values( l_comment_id, p_language, l_sentiment_json )
-      when matched then
-        update set sentiment_json = l_sentiment_json;
+      -- Merge sentiment data into the database. The comment may have been
+      -- deleted after the analyze call, so only apply while it still exists
+      begin
+        merge into blog_comment_sentiments t1
+        using (
+          select l_comment_id as comment_id
+            from dual
+           where exists (
+             select 1
+               from blog_comments c
+              where c.id = l_comment_id
+           )
+        ) src
+        on ( t1.comment_id = src.comment_id )
+        when not matched then
+          insert( comment_id, original_language, sentiment_json )
+          values( src.comment_id, p_language, l_sentiment_json )
+        when matched then
+          update set sentiment_json = l_sentiment_json
+        ;
+      -- skip rows changed concurrently after the existence check
+      exception
+        when dup_val_on_index then
+          apex_debug.warn(
+            p_message => 'Skip sentiment analyze result at position %s, comment %s changed concurrently'
+          , p1        => blog_util.int_to_vc2( i )
+          , p2        => blog_util.int_to_vc2( l_comment_id )
+          );
+        when fk_check_failed then
+          apex_debug.warn(
+            p_message => 'Skip sentiment analyze result at position %s, comment %s no longer exists'
+          , p1        => blog_util.int_to_vc2( i )
+          , p2        => blog_util.int_to_vc2( l_comment_id )
+          );
+      end;
 
     end loop;
 
@@ -4575,7 +4605,7 @@ as
     l_json_document   json_object_t;
   begin
 
-    apex_debug.info( 'Input JSON document: %s', p_documents );
+    apex_debug.debug( 'Input JSON document: %s', p_documents );
 
     p_lang_code := 'en'; -- Default language code
 
@@ -4653,7 +4683,7 @@ as
     l_json_document   json_object_t;
   begin
 
-    apex_debug.info( 'Input JSON: %s', p_documents );
+    apex_debug.debug( 'Input JSON: %s', p_documents );
 
     p_translation := null; -- Default no translation
 
