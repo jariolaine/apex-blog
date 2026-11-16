@@ -532,12 +532,8 @@ as
 --    including operations content handling, and utility functions.
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
--- Called from:
---  admin app application authentication scheme Google
   procedure post_authentication;
 --------------------------------------------------------------------------------
--- Called from:
---  admin app application processes
   procedure get_blogger_details(
     p_app_id            in varchar2,
     p_username          in varchar2,
@@ -545,68 +541,44 @@ as
     p_name              out nocopy varchar2
   );
 --------------------------------------------------------------------------------
--- Called from:
---  admin app page 14
   function get_category_seq return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  admin app page 52
   function get_link_grp_seq return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  admin app page 81
   function get_modal_page_seq return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  admin app page 51
   function get_link_seq(
     p_link_group_id     in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  admin app page 12
   function request_to_post_status(
     p_request           in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  admin app page 12
   function get_first_paragraph(
     p_body_html         in clob
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  admin app page 12 Processing process "Process Category"
   procedure add_category(
     p_category_title    in varchar2,
     p_category_id       out nocopy number
   );
 --------------------------------------------------------------------------------
--- Called from:
---  admin app page 14
   procedure remove_unused_categories;
 --------------------------------------------------------------------------------
--- Called from:
---  admin app page 16 and inside this package
   procedure add_tag(
     p_tag               in varchar2,
     p_tag_id            out nocopy number
   );
 --------------------------------------------------------------------------------
--- Called from:
---  admin app page 12
   procedure add_post_tags(
     p_post_id           in varchar2,
     p_tags              in varchar2,
     p_sep               in varchar2 default ','
   );
 --------------------------------------------------------------------------------
--- Called from:
---  admin app page 15
   procedure remove_unused_tags;
 --------------------------------------------------------------------------------
--- Called from:
---  admin app page 20012 validation "Is Integer"
   function is_integer(
     p_value             in varchar2,
     p_min               in number,
@@ -614,62 +586,41 @@ as
     p_err_mesg          in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  admin app page 20012 validation "Is URL"
   function is_url(
     p_value             in varchar2,
     p_err_mesg          in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  admin app page 20012 validation "Is date format"
   function is_date_format(
     p_value             in varchar2,
     p_err_mesg          in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  admin app page 20011 Processing process "Features - Save Interactive Grid Data"
   procedure update_feature(
     p_app_id            in number,
     p_build_option_id   in number,
     p_build_status      in varchar2
   );
 --------------------------------------------------------------------------------
--- Called from:
---  admin app page 20017 and 20018
---  package blog_ai and blog_oci_os
   procedure update_feature(
     p_build_option_name in varchar2,
     p_build_status      in varchar2
   );
 --------------------------------------------------------------------------------
--- Called from:
---  admin app page 14
   procedure resequence_categories;
 --------------------------------------------------------------------------------
--- Called from:
---  admin app page 16
   procedure resequence_tags(
     p_post_id           in varchar2
   );
 --------------------------------------------------------------------------------
--- Called from:
---  admin app page 50
   procedure resequence_link_groups;
 --------------------------------------------------------------------------------
--- Called from:
---  admin app page 50
   procedure resequence_links(
     p_link_group_id     in varchar2
   );
 --------------------------------------------------------------------------------
--- Called from:
---  admin app page 80
   procedure resequence_dynamic_content;
 --------------------------------------------------------------------------------
--- Called from:
---
   procedure set_attribute_value(
     p_attribute_list    in apex_t_varchar2
   );
@@ -704,8 +655,6 @@ as
     p_ai_attributes   in varchar2
   );
 --------------------------------------------------------------------------------
--- Called from:
---  Public app page 1001 and admin app 62
   procedure merge_sentiment(
     p_language        in varchar2,
     p_documents       in clob
@@ -740,67 +689,46 @@ as
 --
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-  -- Called from:
-  --  public app page 1001
-  --  admin app pages 62
   function plain_text(
     p_string          in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from:
-  --
   function short_text(
     p_string          in varchar2,
     p_plain_text      in boolean default true,
     p_str_length      in number default 100
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from:
-  --  public app page 1001
   function format_comment(
     p_comment         in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from:
-  --  public app page 1001
   function validate_comment(
     p_comment         in varchar2,
     p_max_length      in number default 4000
   ) return varchar2;
 --------------------------------------------------------------------------------
-  -- Called from:
-  --  public app page 1001
-  --  admin app page 20012
   function is_email(
     p_email           in varchar2,
     p_err_mesg        in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  public app page 1001
---  admin app pages 61
   procedure flag_comment(
     p_comment_id      in varchar2,
     p_flags           in varchar2
   );
 --------------------------------------------------------------------------------
--- Called from:
---  admin app pages 61
   procedure unflag_comment(
     p_comment_id      in varchar2,
     p_flags           in varchar2
   );
 --------------------------------------------------------------------------------
--- Called from:
---  public app page 1001
   procedure new_comment_notify(
     p_post_id         in varchar2,
     p_app_name        in varchar2,
     p_email_template  in varchar2
   );
 --------------------------------------------------------------------------------
-  -- Called from:
-  --  admin app pages 62
   procedure reply_notify(
     p_app_id          in varchar2,
     p_app_name        in varchar2,
@@ -808,21 +736,15 @@ as
     p_email_template  in varchar2
   );
 --------------------------------------------------------------------------------
--- Called from:
---  public app page 1001
   procedure subscribe(
     p_post_id         in varchar2,
     p_email           in varchar2
   );
 --------------------------------------------------------------------------------
--- Called from:
---  public app page 2
   procedure unsubscribe(
     p_subscription_id in varchar2
   );
 --------------------------------------------------------------------------------
--- Called from:
---  public app page 1001
   procedure auto_approve(
     p_comment_id      in varchar2
   );
@@ -913,50 +835,36 @@ as
 --------------------------------------------------------------------------------
   function get_robots_noindex_meta return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  pub app shortcut BLOG_CANONICAL_LINK_TAB
   function set_tab_canonical_link(
     p_page            in varchar2,
     p_url             out nocopy varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  pub app shortcut BLOG_CANONICAL_LINK_POST
   function set_post_canonical_link(
     p_post_id         in varchar2,
     p_url             out nocopy varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  pub app shortcut BLOG_CANONICAL_LINK_CATEGORY
   function set_category_canonical_link(
     p_category_id     in varchar2,
     p_url             out nocopy varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  pub app shortcut BLOG_CANONICAL_LINK_ARCHIVE
   function set_archive_canonical_link(
     p_archive_id      in varchar2,
     p_url             out nocopy varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  pub app shortcut BLOG_CANONICAL_LINK_TAG
   function set_tag_canonical_link(
     p_tag_id          in varchar2,
     p_url             out nocopy varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  pub app shortcut BLOG_RSS_ANCHOR
   function get_rss_anchor(
     p_app_name        in varchar2,
     p_message         in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  pub app shortcut BLOG_RSS_LINK
   function get_rss_link(
     p_app_id          in varchar2,
     p_app_name        in varchar2,
@@ -964,8 +872,6 @@ as
     p_build_option    in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  pub app shortcut BLOG_ATOM_LINK
   function get_atom_link(
     p_app_id          in varchar2,
     p_app_name        in varchar2,
@@ -1164,85 +1070,60 @@ as
 --    while offering flexibility with canonical options and APEX integrations.
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
--- Called from:
---
   function get_canonical_host return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
--- packages blog_html, blog_xml
   function get_tab(
     p_page            in varchar2,
     p_application     in varchar2 default null,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
--- packages blog_comm, blog_xml
--- view blog_v_posts
   function get_post(
     p_post_id         in number,
     p_application     in varchar2 default null,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
--- packages blog_html, blog_url
   function get_post(
     p_post_id         in varchar2,
     p_application     in varchar2 default null,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
--- package blog_xml and view blog_v_categories
   function get_category(
     p_category_id     in number,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
--- packages blog_html, blog_url
   function get_category(
     p_category_id     in varchar2,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
--- package blog_xml and view blog_v_archive_year
   function get_archive(
     p_archive_id      in number,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
--- packages blog_html, blog_url
   function get_archive(
     p_archive_id      in varchar2,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
--- package blog_xml and view blog_v_post_tags
   function get_tag(
     p_tag_id          in number,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
--- packages blog_html, blog_url
   function get_tag(
     p_tag_id          in varchar2,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
--- view blog_v_dynamic_content
   function get_dynamic_page(
     p_content_id      in number
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
--- packages blog_url, blog_xml
   function get_process(
     p_application     in varchar2 default null,
     p_process         in varchar2 default null,
@@ -1251,36 +1132,24 @@ as
     p_canonical       in varchar2 default 'YES'
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
--- package blog_comm
   function get_unsubscribe(
     p_application     in varchar2,
     p_post_id         in varchar2,
     p_subscription_id in number
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
--- packages blog_html, blog_xml
--- Blog Administration > Lists > Public Application Links
   function get_rss(
     p_application     in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
--- packages blog_html, blog_xml
--- Blog Administration > Lists > Public Application Links
   function get_atom(
     p_application     in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  Blog Administration > Lists > Public Application Links
   function get_sitemap_index(
     p_application     in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  Blog Administration abd Public Application
   function get_file(
     p_file_path       in varchar2,
     p_application     in varchar2 default null,
@@ -1308,9 +1177,6 @@ as
   g_mime_rss      constant varchar2(40) := 'application/rss+xml';
   g_mime_atom     constant varchar2(40) := 'application/atom+xml';
 --------------------------------------------------------------------------------
--- Called from:
---  admin app page 12
---  inside package blog_cm and blog_comm
   function remove_whitespace(
     p_string            in varchar2
   ) return varchar2;
@@ -1319,32 +1185,22 @@ as
     p_error_code      in number
   );
 --------------------------------------------------------------------------------
--- Called from:
---  public and admin application definition Error Handling Function
   function apex_error_handler(
     p_error           in apex_error.t_error
   ) return apex_error.t_error_result;
 --------------------------------------------------------------------------------
--- Called from:
---  inside package and from other packages
   function int_to_vc2(
     p_value           in number
   ) return varchar2 deterministic;
 --------------------------------------------------------------------------------
--- Called from:
---  other packages, public and admin application
   function get_attribute_value(
     p_attribute_name  in varchar2
   ) return varchar2 result_cache;
 --------------------------------------------------------------------------------
--- Called from:
---  public and admin application process Initialize Items
   procedure initialize_items(
     p_app_id          in varchar2
   );
 --------------------------------------------------------------------------------
--- Called from:
---  public app page 2
   procedure get_post_details(
     p_post_id         in varchar2,
     p_post_title      out nocopy varchar2,
@@ -1359,20 +1215,14 @@ as
     p_prev_post_title out nocopy varchar2
   );
 --------------------------------------------------------------------------------
--- Called from:
---  public app page 14 Pre-Rendering Computations
   function get_category_title(
     p_category_id     in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  public app page 6 Pre-Rendering Computations
   function get_tag(
     p_tag_id          in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  inside package and package BLOG_XML
   procedure download_file(
     p_blob_content    in out nocopy blob,
     p_mime_type       in varchar2,
@@ -1381,14 +1231,10 @@ as
     p_charset         in varchar2 default null
   );
 --------------------------------------------------------------------------------
--- Called from:
---  public app page 1003 Ajax Callback process "download"
   procedure download_file(
     p_file_path       in varchar2
   );
 --------------------------------------------------------------------------------
--- Called from:
---  public app application process Redirect to search page
   procedure redirect_search(
     p_value           in varchar2,
     p_app_id          in varchar2 default null,
@@ -1408,50 +1254,34 @@ as
 --    and various sitemap components (index, main, posts, categories, archives, and tags).
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
--- Called from:
---  public app page 1003 Ajax Callback process "rss.xml"
   procedure rss(
     p_app_name      in varchar2,
     p_app_desc      in varchar2,
     p_css_file      in varchar2 default null
   );
 --------------------------------------------------------------------------------
--- Called from:
---  public app page 1003 Ajax Callback process "atom.xml"
   procedure atom(
     p_app_name      in varchar2,
     p_app_desc      in varchar2
   );
 --------------------------------------------------------------------------------
--- Called from:
---  public app page 1003 Ajax Callback process "sitemap-index.xml"
   procedure sitemap_index(
     p_app_id        in varchar2,
     p_app_page_id   in varchar2,
     p_process_name  in varchar2
   );
 --------------------------------------------------------------------------------
--- Called from:
---  public app page 1003 Ajax Callback process "sitemap-main.xml"
   procedure sitemap_main(
     p_app_id        in varchar2,
     p_page_group    in varchar2
   );
 --------------------------------------------------------------------------------
--- Called from:
---  public app page 1003 Ajax Callback process "sitemap-posts.xml"
   procedure sitemap_posts;
 --------------------------------------------------------------------------------
--- Called from:
---  public app page 1003 Ajax Callback process "sitemap-categories.xml"
   procedure sitemap_categories;
 --------------------------------------------------------------------------------
--- Called from:
---  public app page 1003 Ajax Callback process "sitemap-archives.xml"
   procedure sitemap_archives;
 --------------------------------------------------------------------------------
--- Called from:
---  public app page 1003 Ajax Callback process "sitemap-tags.xml"
   procedure sitemap_tags;
 --------------------------------------------------------------------------------
 end "BLOG_XML";

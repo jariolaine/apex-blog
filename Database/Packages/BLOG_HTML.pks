@@ -10,50 +10,36 @@ as
 --------------------------------------------------------------------------------
   function get_robots_noindex_meta return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  pub app shortcut BLOG_CANONICAL_LINK_TAB
   function set_tab_canonical_link(
     p_page            in varchar2,
     p_url             out nocopy varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  pub app shortcut BLOG_CANONICAL_LINK_POST
   function set_post_canonical_link(
     p_post_id         in varchar2,
     p_url             out nocopy varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  pub app shortcut BLOG_CANONICAL_LINK_CATEGORY
   function set_category_canonical_link(
     p_category_id     in varchar2,
     p_url             out nocopy varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  pub app shortcut BLOG_CANONICAL_LINK_ARCHIVE
   function set_archive_canonical_link(
     p_archive_id      in varchar2,
     p_url             out nocopy varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  pub app shortcut BLOG_CANONICAL_LINK_TAG
   function set_tag_canonical_link(
     p_tag_id          in varchar2,
     p_url             out nocopy varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  pub app shortcut BLOG_RSS_ANCHOR
   function get_rss_anchor(
     p_app_name        in varchar2,
     p_message         in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  pub app shortcut BLOG_RSS_LINK
   function get_rss_link(
     p_app_id          in varchar2,
     p_app_name        in varchar2,
@@ -61,8 +47,6 @@ as
     p_build_option    in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  pub app shortcut BLOG_ATOM_LINK
   function get_atom_link(
     p_app_id          in varchar2,
     p_app_name        in varchar2,

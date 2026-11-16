@@ -26,8 +26,6 @@ as
     p_ai_attributes   in varchar2
   );
 --------------------------------------------------------------------------------
--- Called from:
---  Public app page 1001 and admin app 62
   procedure merge_sentiment(
     p_language        in varchar2,
     p_documents       in clob

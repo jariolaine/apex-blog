@@ -10,85 +10,60 @@ as
 --    while offering flexibility with canonical options and APEX integrations.
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
--- Called from:
---
   function get_canonical_host return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
--- packages blog_html, blog_xml
   function get_tab(
     p_page            in varchar2,
     p_application     in varchar2 default null,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
--- packages blog_comm, blog_xml
--- view blog_v_posts
   function get_post(
     p_post_id         in number,
     p_application     in varchar2 default null,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
--- packages blog_html, blog_url
   function get_post(
     p_post_id         in varchar2,
     p_application     in varchar2 default null,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
--- package blog_xml and view blog_v_categories
   function get_category(
     p_category_id     in number,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
--- packages blog_html, blog_url
   function get_category(
     p_category_id     in varchar2,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
--- package blog_xml and view blog_v_archive_year
   function get_archive(
     p_archive_id      in number,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
--- packages blog_html, blog_url
   function get_archive(
     p_archive_id      in varchar2,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
--- package blog_xml and view blog_v_post_tags
   function get_tag(
     p_tag_id          in number,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
--- packages blog_html, blog_url
   function get_tag(
     p_tag_id          in varchar2,
     p_canonical       in varchar2 default 'NO'
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
--- view blog_v_dynamic_content
   function get_dynamic_page(
     p_content_id      in number
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
--- packages blog_url, blog_xml
   function get_process(
     p_application     in varchar2 default null,
     p_process         in varchar2 default null,
@@ -97,36 +72,24 @@ as
     p_canonical       in varchar2 default 'YES'
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
--- package blog_comm
   function get_unsubscribe(
     p_application     in varchar2,
     p_post_id         in varchar2,
     p_subscription_id in number
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
--- packages blog_html, blog_xml
--- Blog Administration > Lists > Public Application Links
   function get_rss(
     p_application     in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
--- packages blog_html, blog_xml
--- Blog Administration > Lists > Public Application Links
   function get_atom(
     p_application     in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  Blog Administration > Lists > Public Application Links
   function get_sitemap_index(
     p_application     in varchar2 default null
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  Blog Administration abd Public Application
   function get_file(
     p_file_path       in varchar2,
     p_application     in varchar2 default null,

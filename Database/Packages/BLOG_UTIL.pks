@@ -16,9 +16,6 @@ as
   g_mime_rss      constant varchar2(40) := 'application/rss+xml';
   g_mime_atom     constant varchar2(40) := 'application/atom+xml';
 --------------------------------------------------------------------------------
--- Called from:
---  admin app page 12
---  inside package blog_cm and blog_comm
   function remove_whitespace(
     p_string            in varchar2
   ) return varchar2;
@@ -27,32 +24,22 @@ as
     p_error_code      in number
   );
 --------------------------------------------------------------------------------
--- Called from:
---  public and admin application definition Error Handling Function
   function apex_error_handler(
     p_error           in apex_error.t_error
   ) return apex_error.t_error_result;
 --------------------------------------------------------------------------------
--- Called from:
---  inside package and from other packages
   function int_to_vc2(
     p_value           in number
   ) return varchar2 deterministic;
 --------------------------------------------------------------------------------
--- Called from:
---  other packages, public and admin application
   function get_attribute_value(
     p_attribute_name  in varchar2
   ) return varchar2 result_cache;
 --------------------------------------------------------------------------------
--- Called from:
---  public and admin application process Initialize Items
   procedure initialize_items(
     p_app_id          in varchar2
   );
 --------------------------------------------------------------------------------
--- Called from:
---  public app page 2
   procedure get_post_details(
     p_post_id         in varchar2,
     p_post_title      out nocopy varchar2,
@@ -67,20 +54,14 @@ as
     p_prev_post_title out nocopy varchar2
   );
 --------------------------------------------------------------------------------
--- Called from:
---  public app page 14 Pre-Rendering Computations
   function get_category_title(
     p_category_id     in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  public app page 6 Pre-Rendering Computations
   function get_tag(
     p_tag_id          in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
--- Called from:
---  inside package and package BLOG_XML
   procedure download_file(
     p_blob_content    in out nocopy blob,
     p_mime_type       in varchar2,
@@ -89,14 +70,10 @@ as
     p_charset         in varchar2 default null
   );
 --------------------------------------------------------------------------------
--- Called from:
---  public app page 1003 Ajax Callback process "download"
   procedure download_file(
     p_file_path       in varchar2
   );
 --------------------------------------------------------------------------------
--- Called from:
---  public app application process Redirect to search page
   procedure redirect_search(
     p_value           in varchar2,
     p_app_id          in varchar2 default null,
