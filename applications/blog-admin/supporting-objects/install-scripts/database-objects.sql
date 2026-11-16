@@ -888,7 +888,7 @@ as
   ) return varchar2;
 --------------------------------------------------------------------------------
   procedure prn_html(
-    p_markdown      in apex_application_global.vc_arr2
+    p_markdown        in apex_application_global.vc_arr2
   );
 --------------------------------------------------------------------------------
 end "BLOG_HTML";
@@ -952,7 +952,7 @@ as
   g_default_mime constant varchar2(100) := 'application/octet-stream';
 --------------------------------------------------------------------------------
   function get_mime_type(
-    p_file_name varchar2
+    p_file_name in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 end "BLOG_MIME";

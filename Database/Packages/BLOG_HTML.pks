@@ -63,7 +63,7 @@ as
   ) return varchar2;
 --------------------------------------------------------------------------------
   procedure prn_html(
-    p_markdown      in apex_application_global.vc_arr2
+    p_markdown        in apex_application_global.vc_arr2
   );
 --------------------------------------------------------------------------------
 end "BLOG_HTML";

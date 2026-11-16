@@ -13,7 +13,7 @@ as
   g_default_mime constant varchar2(100) := 'application/octet-stream';
 --------------------------------------------------------------------------------
   function get_mime_type(
-    p_file_name varchar2
+    p_file_name in varchar2
   ) return varchar2;
 --------------------------------------------------------------------------------
 end "BLOG_MIME";
