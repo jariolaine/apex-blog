@@ -43,9 +43,15 @@ objects. This historical verification does not prove current DEV, TEST or PROD s
 
 ## Intentionally open low-severity findings
 
+Recorded as open at the time of the review:
+
 - **B5:** A possible foreign-key race if a comment is deleted before sentiment merge.
 - **B6:** `get_param_value` re-raises `no_data_found` for unknown keys.
 - **B8:** Verbose info-level logging of comment text and response JSON.
+
+**Update 2026-11-16:** B5 and B8 were resolved in Git source only (not yet
+deployed to any database); see [`../activeContext.md`](../activeContext.md).
+B6 remains open.
 
 B7 became moot when package specification `CHANGE LOG` blocks were removed on 2026-11-14.
 Continue with current source review and task-specific testing rather than treating this history

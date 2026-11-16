@@ -1,9 +1,20 @@
 # Progress
 
-Historical milestones recorded through **2026-11-15**.
+Historical milestones recorded through **2026-11-16**.
 
 ## Completed work
 
+- **2026-11-16 (Git source only):** Resolved BLOG_AI findings **B5** and **B8**:
+  `merge_sentiment` now gates its merge on the comment still existing and skips
+  residual concurrent-change races with warn-level logging; payload dumps in
+  `merge_sentiment`/`get_lang_code`/`get_translation` moved from info to debug
+  level. Regenerated Supporting Objects; full offline gate passed (65 tests,
+  both apps validated). Details in [`activeContext.md`](activeContext.md).
+- **2026-11-16:** Corrected stale path references left by the `less/` →
+  `frontend/less/` relocation (commit `6dbc5c9d`): release-manifest
+  `SOURCE_DIRS`, workflow test fixture, stylelint glob, pre-commit trigger
+  regex, and documentation. This had broken 23 offline tests and blocked
+  candidate manifest create/verify.
 - **2026-11-14–15:** Implemented BLOG_AI remediation **B1–B4** in the package
   body without changing the public specification; regenerated Git-owned
   Supporting Objects. At that time, real disposable-TEST upgrade and fresh

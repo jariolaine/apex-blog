@@ -11,7 +11,7 @@
 | `automation/schema/*.list` | Schema install and upgrade order |
 | `build/releases/<version>/` | Generated candidate: manifest, checksums, SQL, ZIPs |
 | `build/hotfix/` | Generated emergency QA/UAT → PROD exports and logs |
-| `less/` | LESS sources for generated app CSS files |
+| `frontend/less/` | LESS sources for generated app CSS files |
 | `ideas/` | Non-shipping scratch notes, draft SQL/LESS |
 | `Stack/` | Legacy OCI Resource Manager Terraform stack |
 | `VERSION.txt` | Release version authority (`Release x.y.z.YYYYMMDD`) |
