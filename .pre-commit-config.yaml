@@ -25,7 +25,7 @@ repos:
         entry: npm run lint:styles
         language: system
         pass_filenames: false
-        files: ^(less/.*\.less|applications/.*\.css|\.stylelintrc\.json)$
+        files: ^(frontend/less/.*\.less|applications/.*\.css|\.stylelintrc\.json)$
       - id: markdown
         name: Markdownlint
         entry: npm run lint:markdown

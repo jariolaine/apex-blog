@@ -28,7 +28,7 @@ invent APEXLang syntax, SQLcl flags, paths, or Make targets.
   update deinstall with schema changes.
 - `applications/*/shared-components/static-files/` contains owned CSS, JS, and binary assets.
   When adding/renaming files, update the corresponding `shared-components/static-files.apx`
-  metadata. The **top-level `less/`** directory holds the LESS sources that compile into the
+  metadata. The **`frontend/less/`** directory holds the LESS sources that compile into the
   generated (and minified) CSS under each app's `static-files/css/`; keep both consistent.
 - `VERSION.txt` defines the release version, including its final `YYYYMMDD` suffix; historical
   upgrade SQL retains its original version dates.

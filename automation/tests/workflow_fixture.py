@@ -35,7 +35,7 @@ class WorkflowFixture(unittest.TestCase):
         self.repo.mkdir()
         for file in ['README.md', 'LICENSE.txt', 'VERSION.txt', 'Makefile']:
             shutil.copy2(SOURCE / file, self.repo / file)
-        for folder in ['applications', 'Database', 'Stack/terraform', 'less']:
+        for folder in ['applications', 'Database', 'Stack/terraform', 'frontend']:
             shutil.copytree(SOURCE / folder, self.repo / folder)
         # Mock releases must be internally consistent even when the working
         # checkout is mid-release preparation. Normalize *only* fixture copies;
