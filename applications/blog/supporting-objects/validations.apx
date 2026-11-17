@@ -100,3 +100,4 @@ validation "Supporting objects installed" (
         errorMessage: The required supporting objects are not installed. Please install administration application and supporting objects using file blog_administration.sql.
     }
 )
+

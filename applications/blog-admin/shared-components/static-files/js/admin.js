@@ -1,6 +1,6 @@
 /**
  * @namespace blog
- * @description Blog administration JavaScript for Oracle APEX 26.1.
+ * @description Blog administration JavaScript.
  */
 window.blog = window.blog || {};
 
@@ -375,7 +375,7 @@ window.blog = window.blog || {};
 
       /**
        * @function blog.admin.ig.region
-       * @desc Interactive Grid region initialization code for APEX 26.1.
+       * @desc Interactive Grid region initialization code.
        */
       region: function (options) {
         const igId = options.regionDomId;

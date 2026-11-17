@@ -3913,7 +3913,7 @@ as
     pragma exception_init( fk_check_failed, -2291 );
   begin
 
-    apex_debug.debug( 'Input JSON document: %s', p_documents );
+    apex_debug.trace( 'Input JSON document: %s', p_documents );
 
     -- Skip when response payload is missing
     if p_documents is null
@@ -4013,7 +4013,7 @@ as
     l_json_document   json_object_t;
   begin
 
-    apex_debug.debug( 'Input JSON document: %s', p_documents );
+    apex_debug.trace( 'Input JSON document: %s', p_documents );
 
     p_lang_code := 'en'; -- Default language code
 
@@ -4091,7 +4091,7 @@ as
     l_json_document   json_object_t;
   begin
 
-    apex_debug.debug( 'Input JSON: %s', p_documents );
+    apex_debug.trace( 'Input JSON: %s', p_documents );
 
     p_translation := null; -- Default no translation
 
