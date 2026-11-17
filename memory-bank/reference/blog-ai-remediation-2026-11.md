@@ -53,6 +53,13 @@ Recorded as open at the time of the review:
 deployed to any database); see [`../activeContext.md`](../activeContext.md).
 B6 remains open.
 
+**Update 2026-11-17:** The B8 calls committed on 2026-11-16 used
+`apex_debug.debug()`, which does not exist in the `apex_debug` API; offline
+gates do not compile PL/SQL, so this survived until commit `f33386fe`, where
+all three input-document calls became `apex_debug.trace()` and payload dumps
+now appear only at TRACE level. Deployment to any database remains
+unverified.
+
 B7 became moot when package specification `CHANGE LOG` blocks were removed on 2026-11-14.
 Continue with current source review and task-specific testing rather than treating this history
 as an execution instruction.

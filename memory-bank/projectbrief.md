@@ -28,8 +28,7 @@ self-hosted personal blog built entirely with Oracle APEX.
 
 - Full-text search via Oracle Text ctx indexes on posts and comments.
 - Comment workflow with subscribers, flags and AI-assisted sentiment.
-- OpenAI-backed APEX generative-AI service `BLOG_OPEN_AI_API` (using web
-  credential `BLOG_OPEN_AI_API_KEY`) for prompt-driven features; OCI language
+- OpenAI-backed APEX generative-AI service for prompt-driven features, OCI language
   AI supports comment sentiment, and OCI Object Storage supports files.
 - Install/upgrade delivered as full SQL exports **with Supporting Objects**;
   upgrade requires an existing version Release 24.1.0.20240714 or later.

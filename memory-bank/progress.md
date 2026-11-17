@@ -1,9 +1,20 @@
 # Progress
 
-Historical milestones recorded through **2026-11-16**.
+Historical milestones recorded through **2026-11-17**.
 
 ## Completed work
 
+- **2026-11-17 (Git source only):** Commit `f33386fe` completed B8: the three
+  input-document logging calls added on 2026-11-16 used `apex_debug.debug()`,
+  which does not exist in the `apex_debug` API (offline gates do not compile
+  PL/SQL, so this was not caught until review); they now use
+  `apex_debug.trace()`. The same commit rewrote `README.md` (two-application
+  architecture overview, expanded prerequisites, numbered import steps,
+  Bloggers-group setup and upgrade guidance), set the Google-authentication
+  build option status to `include`, dropped APEX-version wording from
+  `admin.js` doc comments, bumped `VERSION.txt` to `Release 26.1.6.20261117`
+  and regenerated Supporting Objects; the matching local candidate was
+  generated (manifest base commit `8db0019`, dirty at build).
 - **2026-11-16 (Git source only):** Resolved BLOG_AI findings **B5** and **B8**:
   `merge_sentiment` now gates its merge on the comment still existing and skips
   residual concurrent-change races with warn-level logging; payload dumps in
