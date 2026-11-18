@@ -31,13 +31,16 @@ report the blocker. Do not invent alternative commands, rebuild multi-step
 release/deployment workflows by chaining MCP jobs, or configure automation
 infrastructure. Follow [`AGENTS.md`](../AGENTS.md) for authorization and safety.
 
-1. Call `apex_blog__automation_start` with the exact `target`. Save the returned
-   `id` as `job_id`; a queued job is not a successful one.
-2. Call `apex_blog__automation_result(job_id="...")`. It waits up to 120 seconds
-   by default and returns early when the job finishes. If `is_terminal=false`,
-   call it again with the same ID. Use `timeout_seconds=0` for an immediate
-   check (maximum 300 seconds). Do not use terminal `sleep` to wait for jobs.
-   Report success only for `state=succeeded` and `exit_code=0`.
+1. Call `apex_blog__automation_start` with the exact `target`. It waits up to
+   30 seconds by default (maximum 60) and returns early if the job finishes.
+   Save the returned `id` as `job_id`. Set `wait_seconds=0` to submit without
+   waiting; submission alone is not success.
+2. If `is_terminal=false`, call `apex_blog__automation_result(job_id="...")`.
+   It waits up to 120 seconds by default (maximum 300), returning early on
+   completion. Repeat while still active, or use `timeout_seconds=0` for an
+   immediate check. Do not use terminal `sleep` to wait for jobs. Report
+   success only for `state=succeeded` and `exit_code=0`, whether returned
+   by start or result.
 3. For failures, inspect `log_tail` and use
    `apex_blog__automation_logs(job_id="...")` for more output. To read a SQLcl
    diagnostic, pass `sqlcl_file` with an exact filename from the result's

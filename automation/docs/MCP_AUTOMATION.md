@@ -10,7 +10,8 @@ commands. It does **not** implement a second deployment path. The full
 preflight inside `import_apps_to_dev.sh` and the DEV/TEST schema/workspace
 verification in the Bash scripts remain mandatory.
 
-The service returns a job ID instead of waiting for SQLcl and application tests.
+The service runs jobs independently of MCP requests. Starting a job can wait briefly
+for a quick result and always returns a job ID for later retrieval.
 
 Its **single worker** serializes all jobs submitted through this
 MCP service, retains stdout/stderr and SQLcl diagnostics in a Docker volume,
@@ -225,7 +226,7 @@ Cline. Other clients may present the raw `automation_*` tool names.
 | Tool name as exposed in this configuration | Purpose |
 | --- | --- |
 | `apex_blog__automation_capabilities` | Return target metadata and side effects without starting work |
-| `apex_blog__automation_start` | Queue an allowed target and return its job ID |
+| `apex_blog__automation_start` | Queue an allowed target; wait up to 30 seconds by default and return its ID plus progress or final result |
 | `apex_blog__automation_result` | Wait for completion or return current progress; on completion, return exit code, output tail and diagnostic filenames |
 | `apex_blog__automation_logs` | Read combined output or a retained SQLcl diagnostic by byte offset |
 | `apex_blog__automation_list` | List recent jobs and recover job IDs |
@@ -234,13 +235,18 @@ Cline. Other clients may present the raw `automation_*` tool names.
 The job lifecycle has active states `queued` and `running`, and terminal states
 `succeeded`, `failed`, `cancelled`, and `interrupted`. A job only succeeds when
 its terminal state is `succeeded` and its exit code is `0`.
+`apex_blog__automation_start(target, wait_seconds=30)` submits the job and waits
+up to 30 seconds by default (maximum 60), returning early if finished. Set
+`wait_seconds=0` to submit without waiting. The response always includes `id`
+and `is_terminal`; when terminal it also includes exit code and diagnostics.
+Call `automation_result` only when the start response is not terminal.
 `apex_blog__automation_result(job_id, timeout_seconds=120)` waits for completion
 and returns as soon as it is detected (maximum 300 seconds per request). Set
 `timeout_seconds=0` for an immediate status snapshot. If still queued/running at
 its deadline, it returns `is_terminal=false` and `wait_timed_out=true`; call it
 again for the same ID. Terminal results include `exit_code`, `log_tail`, and
-`sqlcl_log_files`; progress-only responses omit these diagnostics. The initial
-`automation_start` response uses `id`, which is passed as `job_id` to subsequent
+`sqlcl_log_files`; progress-only responses omit these diagnostics. Both start
+and result return `id`, which is passed as `job_id` to subsequent
 tools. Waiting never cancels the underlying job, even on client disconnect.
 The Cline request timeout is set above the maximum 300-second tool wait.
 A running offline cancellation is asynchronous. The API

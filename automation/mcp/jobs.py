@@ -97,6 +97,8 @@ def capabilities() -> dict:
 
 JOB_ID = re.compile(r'^[0-9a-f]{24}$')
 FINISHED = frozenset({'succeeded', 'failed', 'cancelled', 'interrupted'})
+DEFAULT_START_WAIT_SECONDS = 30
+MAX_START_WAIT_SECONDS = 60
 DEFAULT_RESULT_TIMEOUT_SECONDS = 120
 MAX_RESULT_TIMEOUT_SECONDS = 300
 RESULT_POLL_INTERVAL_SECONDS = 1.0
@@ -316,6 +318,24 @@ class JobStore:
             job['log_tail'] = ''
         job['sqlcl_log_files'] = self.sqlcl_files(job_id)
         return job
+
+    async def submit_and_wait(
+        self, target: str, wait_seconds: int = DEFAULT_START_WAIT_SECONDS,
+    ) -> dict:
+        """Submit once, then reuse result waiting without tying the job to the request.
+
+        Validate the short wait BEFORE submission so invalid options never
+        leave a newly queued job behind. Cancelling the wait leaves the job
+        in the durable worker queue.
+        """
+        if (type(wait_seconds) is not int
+                or not 0 <= wait_seconds <= MAX_START_WAIT_SECONDS):
+            raise ValueError(
+                f'wait_seconds must be between 0 and {MAX_START_WAIT_SECONDS}'
+            )
+
+        job = self.submit(target)
+        return await self.wait_for_result(job['id'], timeout_seconds=wait_seconds)
 
     async def wait_for_result(
         self, job_id: str, timeout_seconds: int = DEFAULT_RESULT_TIMEOUT_SECONDS,

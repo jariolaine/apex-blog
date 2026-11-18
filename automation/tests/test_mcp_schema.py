@@ -53,7 +53,11 @@ class MCPToolSchemaTests(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn('automation_wait', tools)
         self.assertEqual(tools['automation_list'].inputSchema['properties']['limit']['maximum'], 50)
         self.assertEqual(tools['automation_list'].inputSchema['properties']['limit']['default'], 20)
-        self.assertIn('target', tools['automation_start'].inputSchema['required'])
+        start_schema = tools['automation_start'].inputSchema
+        self.assertEqual(start_schema['required'], ['target'])
+        self.assertEqual(start_schema['properties']['wait_seconds']['minimum'], 0)
+        self.assertEqual(start_schema['properties']['wait_seconds']['maximum'], 60)
+        self.assertEqual(start_schema['properties']['wait_seconds']['default'], 30)
         log_schema = tools['automation_logs'].inputSchema
         self.assertEqual(log_schema['required'], ['job_id'])
         sqlcl_file = log_schema['properties']['sqlcl_file']

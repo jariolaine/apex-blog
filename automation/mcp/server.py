@@ -7,7 +7,8 @@ from mcp.server.fastmcp import FastMCP
 from pydantic import Field
 
 from .jobs import (
-    ALLOWED_TARGETS, DEFAULT_RESULT_TIMEOUT_SECONDS, MAX_RESULT_TIMEOUT_SECONDS,
+    ALLOWED_TARGETS, DEFAULT_START_WAIT_SECONDS, MAX_START_WAIT_SECONDS,
+    DEFAULT_RESULT_TIMEOUT_SECONDS, MAX_RESULT_TIMEOUT_SECONDS,
     JobStore, capabilities,
 )
 
@@ -71,32 +72,48 @@ def automation_capabilities() -> dict:
 
 
 @mcp.tool()
-def automation_start(
+async def automation_start(
     target: Annotated[
         AutomationTarget,
         Field(
             description='Exact allowlisted Make target (select an enum value). '
                         'Use automation_capabilities for effects and authorization. '
-                        'Only the target is accepted: no Make variables, shell commands, '
-                        'custom paths, build, QA, or PROD targets. DEV/TEST changes '
+                        'No Make variables, shell commands, custom paths, or deployment '
+                        'targets are accepted. DEV/TEST changes '
                         'require prior human authorization as specified in AGENTS.md.',
         ),
     ],
+    wait_seconds: Annotated[
+        int,
+        Field(
+            ge=0, le=MAX_START_WAIT_SECONDS,
+            description='Maximum seconds to wait after submitting the job (0-60; '
+                        'default 30). Returns early if the job completes. '
+                        '0 queues the job and returns immediately. If still active '
+                        'after the wait, use automation_result with the returned id. '
+                        'A timeout or cancelled request does not cancel the job.',
+        ),
+    ] = DEFAULT_START_WAIT_SECONDS,
 ) -> dict:
-    """Submit one supported Make target to the serialized background job queue.
+    """Submit an allowlisted Make target and briefly wait for its outcome.
 
     Before calling, check target effects via automation_capabilities and follow
     AGENTS.md authorization rules. For 'source', check local uncommitted .apx
     changes first; DEV/TEST-changing jobs require explicit approval. The job
     queue does not implement an additional approval step.
 
-    Returns a record with 'id' (pass it as 'job_id' to automation_result), NOT
-    a completed result. Call automation_result to wait for the outcome, then
-    inspect logs if needed. Never blindly retry interrupted database work.
-    Unsupported Make options require a documented project command,
-    not shell arguments here. Do not configure unavailable tooling.
+    Waits up to 30 seconds by default (maximum 60), returning early when
+    finished. Always returns 'id' plus state/is_terminal. Terminal results
+    contain exit_code, successful, log_tail and SQLcl diagnostic filenames.
+    If still queued/running, pass the returned 'id' as 'job_id' to
+    automation_result, which waits longer. Set wait_seconds=0 to submit and
+    return immediately. Cancelling this request never cancels the queued job;
+    recover its ID with automation_list if the client loses the response.
+
+    Never blindly retry interrupted database work. Unsupported Make options
+    require a documented project command, not shell arguments here.
     """
-    return store().submit(target.value)
+    return await store().submit_and_wait(target.value, wait_seconds)
 
 
 @mcp.tool()
@@ -144,8 +161,9 @@ async def automation_result(
 ) -> dict:
     """Wait for a queued/running automation job and return its outcome or progress.
 
-    Call after automation_start, using the returned 'id' as 'job_id'. Waits up
-    to 120 seconds by default (maximum 300), returning early on completion.
+    Call when automation_start returns is_terminal=false, using its 'id' as
+    'job_id'. Waits up to 120 seconds by default (maximum 300), returning
+    early on completion.
     Terminal states are succeeded, failed, cancelled and interrupted; the
     completed response includes exit_code, log_tail and sqlcl_log_files.
     Success requires state='succeeded' and exit_code=0 (successful=true).

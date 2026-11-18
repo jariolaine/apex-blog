@@ -129,6 +129,122 @@ def test_end_of_log_does_not_mean_job_is_complete(tmp_path: Path):
     assert store.status(job_id)['is_terminal'] is False
 
 
+def test_start_immediate_response_has_id_and_current_state(tmp_path: Path):
+    store = JobStore(tmp_path / 'jobs')
+    response = asyncio.run(store.submit_and_wait('lint', wait_seconds=0))
+    assert len(response['id']) == 24
+    assert response['target'] == 'lint'
+    assert response['state'] == 'queued'
+    assert response['is_terminal'] is False
+    assert response['successful'] is None
+    assert response['wait_timed_out'] is True
+    assert 'log_tail' not in response
+    assert 'sqlcl_log_files' not in response
+    assert len(store.list_recent()) == 1
+
+
+@pytest.mark.parametrize(('terminal_state', 'exit_code', 'successful'), [
+    ('succeeded', 0, True),
+    ('failed', 3, False),
+])
+def test_start_wait_returns_early_with_final_result(
+    tmp_path: Path, monkeypatch, terminal_state: str, exit_code: int,
+    successful: bool,
+):
+    from automation.mcp import jobs
+
+    monkeypatch.setattr(jobs, 'RESULT_POLL_INTERVAL_SECONDS', 0.01)
+    store = JobStore(tmp_path / 'jobs')
+
+    async def scenario():
+        waiting = asyncio.create_task(store.submit_and_wait('test', wait_seconds=30))
+        await asyncio.sleep(0.04)
+        assert not waiting.done()
+        job = store.claim_next()
+        assert job is not None and job['target'] == 'test'
+        (store.job_dir(job['id']) / 'output.log').write_text('application tests complete')
+        store.finish(job['id'], terminal_state, exit_code)
+        return await waiting
+
+    result = asyncio.run(scenario())
+    assert result['is_terminal'] is True
+    assert result['state'] == terminal_state
+    assert result['successful'] is successful
+    assert result['exit_code'] == exit_code
+    assert result['wait_timed_out'] is False
+    assert result['waited_seconds'] < 30
+    assert 'application tests complete' in result['log_tail']
+    assert result['sqlcl_log_files'] == []
+    assert store.get(result['id'])['state'] == terminal_state
+    assert len(store.list_recent()) == 1  # no duplicate submission on completion
+
+
+@pytest.mark.parametrize(('requested', 'effective'), [
+    (None, 30),
+    (60, 60),
+])
+def test_start_default_and_max_wait_are_forwarded(
+    tmp_path: Path, monkeypatch, requested, effective,
+):
+    store = JobStore(tmp_path / 'jobs')
+
+    async def fake_wait_for_result(job_id: str, timeout_seconds: int):
+        return {'id': job_id, 'timeout_used': timeout_seconds}
+
+    monkeypatch.setattr(store, 'wait_for_result', fake_wait_for_result)
+    if requested is None:
+        response = asyncio.run(store.submit_and_wait('check'))
+    else:
+        response = asyncio.run(store.submit_and_wait('check', wait_seconds=requested))
+    assert response['timeout_used'] == effective
+    assert len(response['id']) == 24
+    assert len(store.list_recent()) == 1
+
+
+def test_start_wait_timeout_keeps_background_job(tmp_path: Path):
+    store = JobStore(tmp_path / 'jobs')
+    result = asyncio.run(store.submit_and_wait('test-upgrade', wait_seconds=1))
+    assert result['state'] == 'queued'
+    assert result['is_terminal'] is False
+    assert result['wait_timed_out'] is True
+    assert result['waited_seconds'] >= 0.95
+    assert 'log_tail' not in result
+    assert store.get(result['id'])['cancel_requested'] is False
+    assert len(store.list_recent()) == 1
+
+
+def test_cancelling_start_wait_does_not_cancel_submitted_job(tmp_path: Path):
+    store = JobStore(tmp_path / 'jobs')
+
+    async def scenario():
+        waiting = asyncio.create_task(store.submit_and_wait('sync-dev', wait_seconds=60))
+        await asyncio.sleep(0.02)
+        job_id = store.list_recent(limit=1)[0]['id']
+        waiting.cancel()
+        with pytest.raises(asyncio.CancelledError):
+            await waiting
+        return job_id
+
+    job_id = asyncio.run(scenario())
+    assert store.get(job_id)['state'] == 'queued'
+    assert store.get(job_id)['cancel_requested'] is False
+
+
+@pytest.mark.parametrize('invalid', [-1, 61, 0.5, True, False, None, '30'])
+def test_start_wait_rejects_invalid_seconds_without_submitting(tmp_path: Path, invalid):
+    store = JobStore(tmp_path / 'jobs')
+    with pytest.raises(ValueError, match='wait_seconds must be between 0 and 60'):
+        asyncio.run(store.submit_and_wait('lint', invalid))
+    assert store.list_recent() == []
+
+
+def test_start_wait_rejects_unsupported_target_without_submitting(tmp_path: Path):
+    store = JobStore(tmp_path / 'jobs')
+    with pytest.raises(ValueError, match='disallowed'):
+        asyncio.run(store.submit_and_wait('build', wait_seconds=0))
+    assert store.list_recent() == []
+
+
 def test_result_immediate_check_is_progress_only(tmp_path: Path):
     store = JobStore(tmp_path / 'jobs')
     job_id = store.submit('doctor')['id']
