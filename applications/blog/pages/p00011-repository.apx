@@ -53,12 +53,15 @@ page 11 (
         layout {
             sequence: 10
             slot: body
+            columnCssClasses: margin-bottom-md
         }
         appearance {
-            template: @/search-results-container
+            template: @/standard
             templateOptions: [
                 #DEFAULT#
-                t-ResultsRegion--boxed
+                t-Region--noPadding
+                t-Region--hideHeader js-addHiddenHeadingRoleDesc
+                t-Region--scrollBody
             ]
             cssClasses: [
                 blog-MediaList--files

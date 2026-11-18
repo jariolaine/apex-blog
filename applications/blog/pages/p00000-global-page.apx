@@ -300,16 +300,21 @@ page 0 (
         type: staticContent
         layout {
             sequence: 10
-            slot: afterNavigationBar
+            parentRegion: @global-column
+            slot: regionBody
         }
         appearance {
-            template: @/item-container
+            template: @/standard
             templateOptions: [
                 #DEFAULT#
-                t-ItemContainer--stackMobile
-                t-ItemContainer--wrap
+                t-Region--noPadding
+                t-Region--removeHeader js-removeLandmark
+                t-Region--scrollBody
+                t-Form--noPadding
+                t-Form--stretchInputs
                 t-Form--labelsAbove
             ]
+            cssClasses: blog-shadow-md
         }
         advanced {
             excludeTitleFromTranslation: true
@@ -526,7 +531,7 @@ page 0 (
         layout {
             sequence: 10
             region: @search-container
-            slot: item
+            slot: regionBody
             alignment: left
         }
         appearance {
@@ -537,6 +542,7 @@ page 0 (
                 t-Form-fieldContainer--xlarge
                 margin-bottom-none
             ]
+            cssClasses: padding-sm
             icon: fa-search
             valuePlaceholder: Search...
         }
