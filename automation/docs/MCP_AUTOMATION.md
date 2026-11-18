@@ -107,7 +107,7 @@ Cline's existing `mcpServers` object (preserve other servers):
 ```json
 {
   "mcpServers": {
-    "APEX Blog Automation": {
+    "apex_blog": {
       "type": "streamableHttp",
       "url": "http://127.0.0.1:8765/mcp",
       "disabled": false,
