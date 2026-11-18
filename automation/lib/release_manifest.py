@@ -12,7 +12,7 @@ import zipfile
 
 SOURCE_DIRS = (
     "applications", "Database", "frontend",
-    "automation/lib", "automation/schema", "automation/sql", "automation/templates", "Stack/terraform",
+    "automation/lib", "automation/sql", "automation/templates", "Stack/terraform",
 )
 RELEASE_FILES = ("VERSION.txt", "README.md", "LICENSE.txt")
 ROOT_FILES = (*RELEASE_FILES, "automation/export_application.sh", "automation/supporting_objects.sh", "automation/variables.sh")

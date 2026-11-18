@@ -13,14 +13,14 @@ trap 'rm -rf -- "$run_dir"' EXIT
 mkdir -p -- "$run_dir/out"
 # Validate ALL Git-owned inputs before writing any tracked Supporting Objects.
 python3 "$SCRIPT_DIR/lib/assemble_objects.py" \
-    "$SCRIPT_DIR/schema/install.list" "$scriptSourceDir" "$run_dir/out/database-objects.sql" \
+    "$scriptSourceDir/install.list" "$scriptSourceDir" "$run_dir/out/database-objects.sql" \
     --check-inventory || die 'Install schema manifest validation failed'
 python3 "$SCRIPT_DIR/lib/assemble_objects.py" \
-    "$SCRIPT_DIR/schema/upgrade.list" "$scriptSourceDir" "$run_dir/out/database-objects-upgrade.sql" \
+    "$scriptSourceDir/upgrade.list" "$scriptSourceDir" "$run_dir/out/database-objects-upgrade.sql" \
     --header $'-- Database objects upgrade\n-- --------------------------------------------------------\n' \
     || die 'Upgrade schema manifest validation failed'
 python3 "$SCRIPT_DIR/lib/check_deinstall.py" \
-    "$SCRIPT_DIR/schema/install.list" "$scriptSourceDir" "$deinstallSqlScript" \
+    "$scriptSourceDir/install.list" "$scriptSourceDir" "$deinstallSqlScript" \
     || die 'Checked-in deinstall script is inconsistent with install.list'
 # Metadata source and dynamic APEX installation IDs stay in Git. Only the
 # G_APP_VERSION string literal is rendered from VERSION.txt into staging.

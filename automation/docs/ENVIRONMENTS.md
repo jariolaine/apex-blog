@@ -76,18 +76,19 @@ SQLcl/database access process. `make doctor` checks that SQLcl exists; it does
 
 ## Release flow
 
-```text
-Git-owned schema, metadata and APEXLang ↔ DEV (reviewed source synchronization)
-                     │
-   make build: generate SQL, prepare DEV versions,
-      export, check, publish and verify candidate
-                     │
-       TEST install / upgrade / deinstall acceptance
-           (part of make build)
-                     │
-           QA/UAT (same candidate)
-                     │
-          PROD (same candidate)
+```mermaid
+flowchart TD
+    git["Git-owned schema, metadata and APEXLang"]
+    dev["DEV"]
+    build["make build: generate SQL, prepare DEV versions,<br/>export, check, publish and verify candidate"]
+    test["TEST install / upgrade / deinstall acceptance<br/>(part of make build)"]
+    qa["QA/UAT (same candidate)"]
+    prod["PROD (same candidate)"]
+
+    git <-->|Reviewed source synchronization| dev
+    git --> build
+    dev --> build
+    build --> test --> qa --> prod
 ```
 
 TEST/QA/PROD install the **packaged SQL application exports** from the

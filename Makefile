@@ -7,16 +7,12 @@ OBJECTS ?= YES
 
 help:
 	@printf '%s\n' \
-	  'Setup and diagnostics:' \
-	  '  make setup                         Install local CI tools and Git hook (RESET=YES reinstalls from scratch)' \
-	  '  make doctor                        Read-only checks of local tools and setup' \
-	  '' \
 	  'Quality checks:' \
 	  '  make lint                          Run repository linters (pre-commit)' \
-	  '  make test                          Run focused offline release-safety tests' \
-	  '  make test-fast                     Run schema, metadata and parity tests' \
+	  '  make test                          Run application tests (currently frontend JavaScript)' \
+	  '  make test-fast                     Run fast application tests (currently same as test)' \
 	  '  make validate                      Validate APEXLang with SQLcl' \
-	  '  make check                         Lint + schema/source + full tests + APEXLang' \
+	  '  make check                         Lint + schema/source + application tests + APEXLang' \
 	  '  make check-source                  Check local APEXLang references and DEV app IDs' \
 	  '  make check-schema                  Validate manifests, metadata and deinstall SQL' \
 	  '' \
@@ -58,18 +54,17 @@ doctor:
 lint:
 	bash ./automation/ci/run_pre_commit.sh run --all-files
 
-test-fast:
-	python3 -m unittest discover -s automation/tests -p 'test_preserved_parity.py' -v
-	python3 -m unittest discover -s automation/tests -p 'test_schema_manifests.py' -v
-	python3 -m unittest discover -s automation/tests -p 'test_metadata_source.py' -v
+# Application tests only. Infrastructure regressions are maintainer-only and
+# never run through Make or MCP. No separate fast subset exists yet.
+test-fast: test
 
 test:
-	python3 -m unittest discover -s automation/tests -v
+	node --test tests/frontend/*.test.cjs
 
 check-schema:
-	python3 $(SCRIPTS)/lib/assemble_objects.py $(SCRIPTS)/schema/install.list Database --check-only --check-inventory
-	python3 $(SCRIPTS)/lib/assemble_objects.py $(SCRIPTS)/schema/upgrade.list Database --check-only
-	python3 $(SCRIPTS)/lib/check_deinstall.py $(SCRIPTS)/schema/install.list Database applications/blog-admin/supporting-objects/deinstall-script.sql
+	python3 $(SCRIPTS)/lib/assemble_objects.py Database/install.list Database --check-only --check-inventory
+	python3 $(SCRIPTS)/lib/assemble_objects.py Database/upgrade.list Database --check-only
+	python3 $(SCRIPTS)/lib/check_deinstall.py Database/install.list Database applications/blog-admin/supporting-objects/deinstall-script.sql
 	python3 $(SCRIPTS)/lib/metadata_source.py check --repo .
 
 preflight:

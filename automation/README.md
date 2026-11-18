@@ -1,26 +1,34 @@
 # APEX Blog automation
 
-Run commands from the repository root. **`make help` is the authoritative command
-reference**; this page intentionally lists only the everyday workflows. When a
-Make target changes, update its help text and the relevant runbook procedure,
-not a separate copy of every command in every document.
+Run commands from the repository root. `make help` lists application development,
+validation, release, and deployment commands. Automation setup and diagnostics
+are documented here for maintainers.
 
-## Optional MCP agent runner
+## Setup and diagnostics
 
-For long-running `make source`, `make sync-dev` and real disposable-TEST
-acceptance, the [Dockerized MCP runner](docs/MCP_AUTOMATION.md) provides job IDs,
-progress polling and persistent SQLcl logs. It uses the existing Compose
-`automation` service with a one-shot volume initializer, and wraps Make targets;
-DEV writes and TEST resets follow the existing human-authorization rules in
-`AGENTS.md` (no second MCP approval gate), and QA/PROD are not exposed.
-Existing human and CI Make commands are unchanged.
+These commands maintain or diagnose development tooling. They remain callable
+Make targets but are intentionally omitted from `make help`.
+
+- `make setup` — Install local CI tools and the Git hook. Use
+  `make setup RESET=YES` to reinstall from scratch.
+- `make doctor` — Read-only checks of local tools and setup; does not check
+  database connections. Also available through the automation MCP service.
+
+## Optional MCP service
+
+The optional MCP service exposes a controlled subset of Make targets as queued
+jobs with retained output and SQLcl diagnostics. It does not replace the existing
+Make scripts or their validation and deployment safeguards. Service installation,
+configuration, API reference, and troubleshooting are documented in
+[`MCP_AUTOMATION.md`](docs/MCP_AUTOMATION.md).
+
+The application coding-agent workflow and authorization policy are in
+[`AGENTS.md`](../AGENTS.md).
 
 ## Everyday workflow
 
 ```bash
-make doctor        # Check local tools (does not test database connections)
-make setup         # Install local CI tools and Git hooks (RESET=YES to reinstall)
-make check         # Lint, schema/source, Python and APEXLang checks (no DB)
+make check         # Lint, schema/source, application tests, APEXLang (no DB)
 make build         # Prepare DEV, build and verify SQL, then accept in TEST
 ```
 
@@ -45,6 +53,11 @@ replaced. `make build OVERWRITE=YES` is only for an **unpromoted, local**
 candidate; never overwrite a tested, approved or publicly released version.
 `make verify-release` checks an existing candidate without rebuilding it.
 
+Application tests live in `tests/`; `make test` and `make test-fast` run only
+those tests. Infrastructure regression suites in `automation/tests/` and
+`automation/mcp/tests/` are maintained and invoked separately, not by Make
+commands or the MCP server.
+
 ## Release acceptance and deployment
 
 `make build` includes `make test-release`. To repeat acceptance independently,
@@ -65,10 +78,11 @@ separate and bypasses the normal release pipeline; see the runbook.
 - [Architecture](docs/ARCHITECTURE.md) — Git-owned inputs, artifact integrity,
   implementation and CI checks
 - [Environments](docs/ENVIRONMENTS.md) — saved connections and environment guards
-- [Docker/MCP automation](docs/MCP_AUTOMATION.md) — first-start volume setup,
-  Cline connection, long-running jobs and recovery
+- [Docker/MCP automation](docs/MCP_AUTOMATION.md) — maintainer setup,
+  configuration, service API, diagnostics, and recovery
 - [Project README](../README.md) — end-user installation and upgrade
-- [Agent safety rules](../AGENTS.md) — instructions for coding agents
+- [Application coding-agent instructions](../AGENTS.md) — source conventions,
+  project checks, and authorization
 
 The source repository owns the automation. Downloadable application ZIPs contain
 full SQL application exports, not the automation scripts. Legacy Terraform is

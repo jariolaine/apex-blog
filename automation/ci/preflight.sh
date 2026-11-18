@@ -11,7 +11,7 @@ printf '[apex-blog] Preflight: repository schema and metadata\n' >&2
 make --no-print-directory check-schema
 printf '[apex-blog] Preflight: APEXLang source references\n' >&2
 make --no-print-directory check-source
-printf '[apex-blog] Preflight: full automation tests\n' >&2
+printf '[apex-blog] Preflight: application tests\n' >&2
 make --no-print-directory test
 printf '[apex-blog] Preflight: validate both APEXLang applications\n' >&2
 make --no-print-directory validate

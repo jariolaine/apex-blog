@@ -10,8 +10,7 @@ environments. See [automation README](../README.md) for commands,
 | Source | Owner and purpose |
 | --- | --- |
 | `applications/blog-admin/`, `applications/blog/` | Git-tracked **APEXLang** sources, Supporting Objects and static assets |
-| `Database/` | Git-tracked schema SQL; package specs and bodies are `.pks` / `.pkb` |
-| `automation/schema/install.list`, `upgrade.list` | Explicit database object order; packages must have paired spec/body files |
+| `Database/` | Git-tracked schema DDL and `install.list` / `upgrade.list` execution order; package specs and bodies are `.pks` / `.pkb` |
 | `Database/Tables/foreign_keys.sql`, `Database/Indexes/foreign_key_indexes.sql` | Authoritative constraints and FK index definitions |
 | `applications/*/supporting-objects/install-scripts/metadata.sql` | Git-owned installation metadata; dynamic APEX application IDs must remain dynamic |
 | `applications/blog-admin/supporting-objects/deinstall-script.sql` | **Manually maintained** deinstallation SQL |
@@ -62,8 +61,8 @@ directories. See [safe candidate handling](RUNBOOK.md#candidate-integrity-and-ov
 
 `make build` assembles Git-owned Supporting Objects SQL, updates DEV versions,
 exports both applications to temporary space and compares them with Git. Only
-then does the exporter run the full `make check` gate (including all Python
-tests), **before publication**. The build verifies the candidate and runs real
+then does the exporter run the full `make check` gate (including application
+tests, not automation regression suites), **before publication**. The build verifies the candidate and runs real
 TEST acceptance; it fails if either gate fails. Stages remain sequential even
 under parallel Make. It never runs `source` or `sync-dev` automatically, and
 never silently resolves DEV/Git differences. Generated Supporting Objects may
@@ -83,15 +82,20 @@ moved forward, subject to approval and compatibility.
 1. `make lint`: pre-commit static lint/format checks (no tests).
 2. `make check-schema`: offline manifest, metadata and deinstall validation.
 3. `make check-source`: work-in-progress-safe local APEXLang reference check.
-4. `make test`: focused application-specific offline safety tests **once**.
+4. `make test`: run application tests from `tests/` **once** (currently
+   Node.js frontend tests).
 5. `make validate`: SQLcl APEXLang validation **without a DB login**.
 
-`make test-fast` runs schema, metadata and source-parity tests on demand; it is
-not also run inside pre-commit. The selected workflow tests execute real
-Bash/Make entry points using isolated files and a **mock SQLcl**. Generic CI
-bootstrap and tool behavior is checked by actually running those tools, not by
-Python mock regressions. These tests do not prove Oracle DDL, APEX installation
-or PL/SQL compilation succeeds. See [offline safety tests](RUNBOOK.md#offline-safety-tests).
+`make test-fast` currently runs the same application tests as `make test`;
+there is no separate fast subset yet. `automation/tests/` and
+`automation/mcp/tests/` contain tests of the automation implementation.
+Maintainers run those Python suites directly; they are **not** invoked by
+Make targets, MCP jobs, preflight, builds or application CI.
+`make check-schema` and `make check-source` remain direct repository-source
+validators, not automation unit-test runners. Application frontend tests run
+against the tracked JavaScript with mocked APEX browser APIs; they do not
+prove Oracle DDL, APEX installation or PL/SQL compilation succeeds.
+See [testing procedures](RUNBOOK.md#testing-and-troubleshooting).
 Real acceptance runs inside `make build` via `make test-release`, and can
 also be repeated separately against an existing candidate in disposable TEST. It downloads the
 latest published GitHub release unless `PREVIOUS_ZIP=path` is supplied, and

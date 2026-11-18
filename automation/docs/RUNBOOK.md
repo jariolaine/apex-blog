@@ -18,17 +18,17 @@ reinstall. It recreates `.venv/` and `node_modules/` and reinstalls the Git
 hook; tracked files such as `package-lock.json`, local configuration and
 shared user caches are preserved. This never accesses a database.
 
-`make check` runs lint, schema/source checks, focused **offline release-safety**
-tests and SQLcl APEXLang validation. It requires local SQLcl (and its supported Java
+`make check` runs lint, schema/source validation, **application tests** and
+SQLcl APEXLang validation. It requires local SQLcl (and its supported Java
 runtime), but **does not run** a real TEST install, upgrade or deinstall.
-`make test-fast` runs the small schema/metadata/parity selection; `make test`
-runs all selected offline safety tests, and `make validate` runs APEXLang
-validation only. Generic CI tool behavior is verified by running the real
-tools. See [offline safety tests](#offline-safety-tests) for their scope.
-Pre-commit runs static lint without the Python tests. If setup fails because
-Python cannot create `.venv/`, install the system Python `venv` package (for
-example `python3-venv` on Ubuntu). SQLcl needs a compatible Java runtime;
-`SQLCL_BIN` can select a nonstandard SQLcl executable.
+`make test` runs application tests from `tests/` (currently frontend JavaScript),
+and `make test-fast` currently runs the same suite. Automation regression tests
+are not part of these commands, the MCP server, builds or application CI.
+See [testing and troubleshooting](#testing-and-troubleshooting) for how
+maintainers run those tests separately. Pre-commit runs static lint only.
+If setup fails because Python cannot create `.venv/`, install the system Python
+`venv` package (for example `python3-venv` on Ubuntu). SQLcl needs a
+compatible Java runtime; `SQLCL_BIN` can select a nonstandard SQLcl executable.
 
 If necessary, configure named SQLcl connections in your local environment.
 Use the ignored `automation/variables.local.sh` to override effective shell
@@ -74,7 +74,7 @@ matching DEV applications. Use a new version in `VERSION.txt` and keep both
 APEX application versions synchronized. Do **not** edit old upgrade-patch
 versions simply to match the current version.
 
-1. Review changes in `Database/`, `automation/schema/` and `applications/`.
+1. Review changes in `Database/` and `applications/`.
    Update `VERSION.txt` to the intended release version (format
    `Release x.y.z.YYYYMMDD`, with the actual approved version components).
 2. Reconcile reviewed application changes deliberately: use `make source`
@@ -83,7 +83,7 @@ versions simply to match the current version.
 3. After confirming the saved DEV and disposable TEST connections and obtaining
    approval for both, run `make build` (optional `PREVIOUS_ZIP=path`). It
    assembles Supporting Objects from Git, prepares DEV versions, exports and
-   checks both applications against Git, then runs all offline checks and Python
+   checks both applications against Git, then runs all offline checks and application
    tests **after exporting but before publishing**. Finally, it packages and
    verifies the candidate and performs real TEST upgrade/install/deinstall.
 4. Review generated Supporting Objects changes and the resulting candidate.
@@ -149,34 +149,44 @@ uploaded outside the local repository. Never manually edit candidate files.
 
 ## Testing and troubleshooting
 
-### Offline safety tests
+### Application tests
 
-The small Python suite in `automation/tests/` protects **APEX Blog-specific
-release risks**, not generic CI tooling:
-
-- Schema manifests, generated SQL ordering, metadata and deinstall inventory.
-- Preservation of Git-owned Supporting Objects and binary/static assets.
-- Candidate locks, safe paths, release integrity and rollback after failures.
-- Environment boundaries, production hotfix options and safe command sequencing
-  for install, upgrade and deinstall operations.
-
-Workflow tests invoke Bash/Make with `automation/tests/mock_sqlcl.py` as a
-**command recorder and response stub**. It does not emulate Oracle, compile
-PL/SQL, install APEX applications or prove that TEST is empty after deinstall.
-Mocked tests are **not** real database acceptance tests.
+Application tests belong in `tests/`. They validate application behavior rather
+than the automation that runs checks or builds releases. The current suite uses
+Node.js's built-in test runner to exercise tracked frontend JavaScript with
+mocked browser/APEX interfaces. It does **not** exercise PL/SQL, Oracle DDL,
+APEX runtime behavior, or database connections; those need separate tests and
+real Oracle acceptance where appropriate.
 
 ```bash
-make test-fast   # Schema, metadata and source parity checks
-make test        # All focused offline safety tests
-make check       # Real linters, offline tests and APEXLang validation
+make test        # Application tests (currently frontend JavaScript)
+make test-fast   # Same application suite until a fast subset is introduced
+make check       # Lint, schema/source checks, application tests, APEXLang
 ```
 
-CI verifies generic tooling by running the actual linters, ShellCheck,
-actionlint, Ruff, SQLcl validation and source checks; it does not maintain
-Python regression suites for npm bootstrap, pre-commit wrappers or Terraform.
-One focused CI test ensures the public workflow cannot deploy. Add new offline
-tests only for distinct APEX Blog risks, not exact log output, Make syntax,
-tool versions or GitHub Actions layout. Legacy Terraform remains separate.
+### Automation maintainer regression tests
+
+The Python suites under `automation/tests/` and `automation/mcp/tests/` test the
+**automation implementation**, including:
+
+- Schema assembly, metadata processing, source parity and deinstall validators.
+- Candidate integrity, safe paths, locks, rollback and release workflows.
+- Environment restrictions, TEST acceptance orchestration and hotfix safeguards.
+- MCP queue, API schemas, worker behavior and bootstrap.
+
+These are **not application tests**. They are intentionally excluded from all
+Make targets, MCP jobs, application preflight, builds and normal CI. Automation
+maintainers can run them directly using their configured Python environment:
+
+```bash
+python3 -m unittest discover -s automation/tests -v
+python3 -m pytest -q automation/mcp/tests/
+```
+
+Some tests require optional development dependencies such as `pytest` and the
+MCP SDK. Workflow tests use `automation/tests/mock_sqlcl.py` as a mock SQLcl
+command recorder, not a real Oracle database. Passing these suites does not
+prove an actual Oracle installation, PL/SQL compile or successful deinstall.
 
 ### Real Oracle TEST acceptance
 
@@ -332,9 +342,9 @@ confirmed. Record approvals and resulting versions.
 
 1. Add or edit the authoritative source under `Database/`; package
    specifications and bodies use paired `.pks` / `.pkb` files.
-2. Maintain **both** explicit `automation/schema/install.list` and
-   `upgrade.list` according to their different purposes. Upgrade DDL must be
-   reviewed as a migration; do not blindly add every install file to it.
+2. Maintain **both** `Database/install.list` and `Database/upgrade.list`
+   for their different purposes. Upgrade DDL must be reviewed as a migration;
+   do not blindly add every install file to it.
 3. If a table, view, package, FK, or Oracle Text preference is added or
    removed, edit
    `applications/blog-admin/supporting-objects/deinstall-script.sql`

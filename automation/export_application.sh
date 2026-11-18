@@ -34,7 +34,7 @@ require_tool python3
 if [[ "$mode" == build ]]; then
     # Reject incomplete Git-owned uninstall SQL before contacting DEV or building.
     python3 "$SCRIPT_DIR/lib/check_deinstall.py" \
-        "$SCRIPT_DIR/schema/install.list" "$scriptSourceDir" "$deinstallSqlScript" \
+        "$scriptSourceDir/install.list" "$scriptSourceDir" "$deinstallSqlScript" \
         || die 'Release deinstall SQL is inconsistent with schema sources'
     python3 "$SCRIPT_DIR/lib/metadata_source.py" check --repo "$repoHome" \
         || die 'Release metadata is inconsistent with VERSION.txt or missing'

@@ -6,9 +6,8 @@
 | --- | --- |
 | `applications/blog/` | Public Pages app APEXLang source + Supporting Objects + static files |
 | `applications/blog-admin/` | Admin APEXLang, Supporting Objects, manual deinstall SQL |
-| `Database/` | Schema SQL: tables, packages (`.pks`, `.pkb`), views, triggers, etc. |
+| `Database/` | Schema DDL and `install.list` / `upgrade.list` execution order |
 | `automation/` | All release/CI automation scripts, docs, offline tests (see below) |
-| `automation/schema/*.list` | Schema install and upgrade order |
 | `build/releases/<version>/` | Generated candidate: manifest, checksums, SQL, ZIPs |
 | `build/hotfix/` | Generated emergency QA/UAT → PROD exports and logs |
 | `frontend/less/` | LESS sources for generated app CSS files |
@@ -110,8 +109,7 @@ export and compare APEXLang with Git, run offline checks, publish a
 checksummed candidate) → disposable-TEST upgrade/install/deinstall acceptance
 → promotion of the **same candidate** to QA/UAT and PROD (Admin/Public IDs
 102/101). Candidate publication uses per-version `flock` locks in
-`build/releases/.locks/` and rollback backups; see
-[`automation/docs/ARCHITECTURE.md`](../automation/docs/ARCHITECTURE.md).
+`build/releases/.locks/` and rollback backups.
 
 There is no STAGING environment. The emergency QA/UAT → PROD hotfix path is
 separate from the normal candidate flow.

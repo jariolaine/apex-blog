@@ -8,7 +8,7 @@ mode="${1:-source}"
 [[ $# -le 1 ]] || die 'Usage: check_source.sh [source|release]'
 if [[ "$mode" == release ]]; then
     python3 "$SCRIPT_DIR/lib/check_deinstall.py" \
-        "$SCRIPT_DIR/schema/install.list" "$scriptSourceDir" "$deinstallSqlScript" \
+        "$scriptSourceDir/install.list" "$scriptSourceDir" "$deinstallSqlScript" \
         || die 'Release deinstall SQL is inconsistent with schema sources'
     python3 "$SCRIPT_DIR/lib/metadata_source.py" check --repo "$repoHome" \
         || die 'Release metadata is inconsistent with VERSION.txt or missing'

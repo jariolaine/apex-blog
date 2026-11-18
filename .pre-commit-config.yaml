@@ -1,5 +1,5 @@
 # Run locally with `make setup-ci` and in CI with `make lint`.
-# Pre-commit runs static checks only. `make check` runs full regression tests once.
+# Pre-commit runs static checks only. `make check` runs application tests once.
 # Hooks report failures; none rewrites version-controlled source files.
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks

@@ -12,14 +12,13 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 ASSEMBLER = ROOT / 'automation/lib/assemble_objects.py'
-SCHEMA = ROOT / 'automation/schema'
 DATABASE = ROOT / 'Database'
 
 
 class RepositorySchemaTests(unittest.TestCase):
     def assemble(self, manifest: str, *args: str) -> subprocess.CompletedProcess:
         return subprocess.run(
-            [sys.executable, str(ASSEMBLER), str(SCHEMA / manifest),
+            [sys.executable, str(ASSEMBLER), str(DATABASE / manifest),
              str(DATABASE), *map(str, args)],
             text=True, capture_output=True,
         )
@@ -30,7 +29,7 @@ class RepositorySchemaTests(unittest.TestCase):
             dest = Path(directory) / 'install.sql'
             result = self.assemble('install.list', str(dest), '--check-inventory')
             self.assertEqual(result.returncode, 0, result.stderr)
-            entries = (SCHEMA / 'install.list').read_text().splitlines()
+            entries = (DATABASE / 'install.list').read_text().splitlines()
             expected = ''.join(
                 (content if content.endswith('\n') else content + '\n')
                 for path in entries if path and not path.startswith(('#', '--'))
@@ -73,7 +72,7 @@ class DeinstallSourceTests(unittest.TestCase):
     def validate(self) -> subprocess.CompletedProcess:
         return subprocess.run(
             [sys.executable, str(ROOT / 'automation/lib/check_deinstall.py'),
-             str(SCHEMA / 'install.list'), str(DATABASE), str(self.script)],
+             str(DATABASE / 'install.list'), str(DATABASE), str(self.script)],
             text=True, capture_output=True,
         )
 
@@ -91,7 +90,7 @@ class DeinstallSourceTests(unittest.TestCase):
         )
         manifest = Path(self.temp.name) / 'install.list'
         manifest.write_text(
-            (SCHEMA / 'install.list').read_text() + 'Tables/BLOG_NEW_TABLE.sql\n',
+            (DATABASE / 'install.list').read_text() + 'Tables/BLOG_NEW_TABLE.sql\n',
             encoding='utf-8',
         )
         result = subprocess.run(

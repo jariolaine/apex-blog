@@ -2,32 +2,104 @@
 
 from __future__ import annotations
 
+import asyncio
 from contextlib import contextmanager
+from dataclasses import asdict, dataclass
 import os
 from pathlib import Path
 import re
 import sqlite3
 import time
 import uuid
+from typing import Literal
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_JOB_DIR = Path(os.environ.get('AUTOMATION_JOB_DIR', '/var/lib/apex-blog/jobs'))
 
-# These targets never connect to a database. `source` reads DEV and modifies
-# tracked local APEXLang, so it is intentionally listed separately.
-# Database-mutating targets are accepted only after the agent has followed
-# AGENTS.md's existing human-authorization rules; MCP adds no approval queue.
-OFFLINE_TARGETS = frozenset({
-    'doctor', 'lint', 'test-fast', 'test', 'check-schema', 'check-source',
-    'validate', 'check',
-})
-SOURCE_TARGETS = frozenset({'source'})
-DATABASE_TARGETS = frozenset({
-    'sync-dev', 'test-release', 'test-install', 'test-upgrade', 'test-deinstall',
-})
-ALLOWED_TARGETS = OFFLINE_TARGETS | SOURCE_TARGETS | DATABASE_TARGETS
+# This registry is the single source of truth for the MCP allowlist and its
+# discoverable metadata. Make/scripts remain authoritative for execution and
+# their actual environment preflight checks. Keep this list intentionally narrow.
+@dataclass(frozen=True)
+class TargetSpec:
+    description: str
+    category: Literal['offline', 'source', 'database'] = 'offline'
+    database_effect: Literal['none', 'read_dev', 'write_dev', 'reset_test'] = 'none'
+    local_source_effect: Literal['none', 'may_overwrite_apx'] = 'none'
+    authorization: Literal['none', 'before_overwriting_uncommitted_changes',
+                           'required'] = 'none'
+
+
+def _database_target(description: str, effect: Literal['write_dev', 'reset_test']) -> TargetSpec:
+    return TargetSpec(description, category='database', database_effect=effect,
+                      authorization='required')
+
+
+TARGET_SPECS: dict[str, TargetSpec] = {
+    'doctor': TargetSpec('Inspect local automation prerequisites and configuration.'),
+    'lint': TargetSpec('Run repository lint checks without database changes.'),
+    'test-fast': TargetSpec('Run application tests (currently the same frontend suite as test).'),
+    'test': TargetSpec('Run application tests; excludes automation infrastructure tests.'),
+    'check-schema': TargetSpec('Run offline schema consistency checks.'),
+    'check-source': TargetSpec('Run offline application source checks.'),
+    'validate': TargetSpec('Validate APEXLang locally using SQLcl; no database connection.'),
+    'check': TargetSpec('Run the full offline quality gate, including validation.'),
+    'source': TargetSpec(
+        'Export APEXLang application source from DEV into local files; may overwrite .apx changes.',
+        category='source', database_effect='read_dev',
+        local_source_effect='may_overwrite_apx',
+        authorization='before_overwriting_uncommitted_changes',
+    ),
+    'sync-dev': _database_target('Synchronize local application definitions to DEV.',
+                                 'write_dev'),
+    'test-release': _database_target('Run release acceptance on an approved disposable TEST schema.',
+                                     'reset_test'),
+    'test-install': _database_target('Test installation on an approved disposable TEST schema.',
+                                     'reset_test'),
+    'test-upgrade': _database_target('Test upgrade on an approved disposable TEST schema.',
+                                     'reset_test'),
+    'test-deinstall': _database_target('Test deinstallation on an approved disposable TEST schema.',
+                                       'reset_test'),
+}
+
+OFFLINE_TARGETS = frozenset(name for name, spec in TARGET_SPECS.items()
+                            if spec.category == 'offline')
+SOURCE_TARGETS = frozenset(name for name, spec in TARGET_SPECS.items()
+                           if spec.category == 'source')
+DATABASE_TARGETS = frozenset(name for name, spec in TARGET_SPECS.items()
+                             if spec.category == 'database')
+ALLOWED_TARGETS = frozenset(TARGET_SPECS)
+
+
+def capabilities() -> dict:
+    """Return public metadata for MCP clients, without creating a job."""
+    targets = []
+    for name, spec in sorted(TARGET_SPECS.items()):
+        details = asdict(spec)
+        details.update({
+            'name': name,
+            'cancellable': name in OFFLINE_TARGETS,
+            'modifies_database': spec.database_effect in ('write_dev', 'reset_test'),
+            'modifies_local_source': spec.local_source_effect != 'none',
+            'mcp_make_variables': [],
+        })
+        targets.append(details)
+    return {
+        'targets': targets,
+        'mcp_accepts_make_variables': False,
+        'authorization_enforced_by_mcp': False,
+        'authorization_policy': 'Follow AGENTS.md before DEV/TEST changes or local overwrites.',
+        'unsupported_targets': 'Use documented project commands under AGENTS.md when available; otherwise report the blocker.',
+        'terminal_states': sorted(FINISHED),
+        'active_states': ['queued', 'running'],
+        'execution': 'One MCP worker; direct make is not covered by the worker lock.',
+    }
+
+
 JOB_ID = re.compile(r'^[0-9a-f]{24}$')
 FINISHED = frozenset({'succeeded', 'failed', 'cancelled', 'interrupted'})
+DEFAULT_RESULT_TIMEOUT_SECONDS = 120
+MAX_RESULT_TIMEOUT_SECONDS = 300
+RESULT_POLL_INTERVAL_SECONDS = 1.0
 
 
 class JobStore:
@@ -187,7 +259,10 @@ class JobStore:
             'next_offset': next_offset, 'end_of_log': next_offset == size,
         }
 
-    def logs(self, job_id: str, offset: int = 0, max_bytes: int = 8192) -> dict:
+    def logs(self, job_id: str, offset: int = 0, max_bytes: int = 8192,
+             sqlcl_file: str | None = None) -> dict:
+        if sqlcl_file is not None:
+            return self.sqlcl_logs(job_id, sqlcl_file, offset, max_bytes)
         self.get(job_id)
         return {'job_id': job_id, **self._read_log(
             self.job_dir(job_id) / 'output.log', offset, max_bytes,
@@ -212,6 +287,10 @@ class JobStore:
 
     def status(self, job_id: str) -> dict:
         job = self.get(job_id)
+        job['is_terminal'] = job['state'] in FINISHED
+        job['successful'] = (
+            job['state'] == 'succeeded' and job['exit_code'] == 0
+        ) if job['is_terminal'] else None
         path = self.job_dir(job_id) / 'output.log'
         if path.is_file():
             with path.open('rb') as log_file:
@@ -237,3 +316,36 @@ class JobStore:
             job['log_tail'] = ''
         job['sqlcl_log_files'] = self.sqlcl_files(job_id)
         return job
+
+    async def wait_for_result(
+        self, job_id: str, timeout_seconds: int = DEFAULT_RESULT_TIMEOUT_SECONDS,
+    ) -> dict:
+        """Wait for an outcome without cancelling or blocking the worker.
+
+        Return the full result once terminal, or just current progress when the
+        requested wait expires. A zero timeout performs an immediate check.
+        Cancelling this coroutine never changes the underlying job state.
+        """
+        if (type(timeout_seconds) is not int
+                or not 0 <= timeout_seconds <= MAX_RESULT_TIMEOUT_SECONDS):
+            raise ValueError(
+                f'timeout_seconds must be between 0 and {MAX_RESULT_TIMEOUT_SECONDS}'
+            )
+
+        started = time.monotonic()
+        deadline = started + timeout_seconds
+        while True:
+            status = self.status(job_id)
+            if status['is_terminal']:
+                outcome = self.result(job_id)
+                outcome['wait_timed_out'] = False
+                outcome['waited_seconds'] = round(time.monotonic() - started, 2)
+                return outcome
+
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                status['wait_timed_out'] = True
+                status['waited_seconds'] = round(time.monotonic() - started, 2)
+                return status
+
+            await asyncio.sleep(min(RESULT_POLL_INTERVAL_SECONDS, remaining))
