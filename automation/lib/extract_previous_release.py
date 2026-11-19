@@ -49,10 +49,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--candidate-version-file', type=Path,
                         help='Require ZIP VERSION.txt strictly older than this candidate')
+    parser.add_argument('--allow-equal-version', action='store_true',
+                        help='For ephemeral DEV pretests only; permit a matching release version')
     parser.add_argument('zipfile', type=Path)
     parser.add_argument('output', type=Path)
     parser.add_argument('names', nargs='+')
     args = parser.parse_args()
+    if args.allow_equal_version and not args.candidate_version_file:
+        parser.error('--allow-equal-version requires --candidate-version-file')
     with ZipFile(args.zipfile) as archive:
         entries = [checked_entry(archive, name, 100 * 1024 * 1024)
                    for name in args.names]
@@ -62,8 +66,9 @@ def main():
             version_entry = checked_entry(archive, 'VERSION.txt', 256)
             previous_data = archive.read(version_entry)
             previous = version_key(previous_data, 'previous release VERSION.txt')
-            if previous >= expected:
-                raise ValueError('Previous release must be older than the selected candidate')
+            if previous > expected or (previous == expected and not args.allow_equal_version):
+                raise ValueError('Previous release must be older than the selected candidate'
+                                 + (' (or equal for pretest)' if args.allow_equal_version else ''))
             entries.append(version_entry)
         args.output.mkdir(parents=True, exist_ok=True)
         for info in entries:

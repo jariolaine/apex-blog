@@ -22,7 +22,7 @@ class ReleaseCommandTests(unittest.TestCase):
         base_env = os.environ.copy()
         # Do not inherit OVERWRITE=YES from the outer Make invocation.
         for name in ('MAKEFLAGS', 'MAKEOVERRIDES', 'MFLAGS', 'GNUMAKEFLAGS',
-                     'MAKELEVEL', 'OVERWRITE', 'RELEASE_DIR', 'PREVIOUS_ZIP'):
+                     'MAKELEVEL', 'OVERWRITE', 'RELEASE_DIR', 'PREVIOUS_ZIP', 'TEST'):
             base_env.pop(name, None)
         self.env = dict(base_env, AUTOMATION_CALLS=str(self.calls))
         # The Makefile runs this read-only guard before any release stage.
@@ -42,6 +42,7 @@ class ReleaseCommandTests(unittest.TestCase):
         self.stub("automation/check_source.sh", "check-source:$*", failure="FAIL_CHECK_SOURCE")
         self.stub("automation/verify_release.sh", "verify-release:$*", failure="FAIL_VERIFY_RELEASE")
         self.stub("automation/export_application.sh", "export:$*", failure="FAIL_BUILD")
+        self.stub("automation/pretest.sh", "pretest:$*", failure="FAIL_PRETEST")
         self.stub("automation/run_upgrade_test.sh", "upgrade:$*", failure="FAIL_UPGRADE")
         self.stub("automation/run_install_test.sh", "install:$*", failure="FAIL_INSTALL")
         self.stub("automation/run_deinstall_test.sh", "deinstall:$*", failure="FAIL_DEINSTALL")
@@ -107,28 +108,47 @@ class ReleaseCommandTests(unittest.TestCase):
                                  stages[:count])
 
     def test_test_release_runs_upgrade_fresh_install_deinstall_in_order(self):
-        older = self.repo / 'older.zip'
-        older.write_bytes(b'test Make orchestration only')
-        for previous, upgrade_args in (
-            ((), '--release-dir build/releases/old'),
-            ((f'PREVIOUS_ZIP={older}',),
-             f'--previous-zip {older} --release-dir build/releases/old'),
+        result = self.run_make('-j4', 'test-release',
+                               'RELEASE_DIR=build/releases/old')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.lines(), [
+            'verify-release:--release-dir build/releases/old',
+            'upgrade:--release-dir build/releases/old',
+            'install:--release-dir build/releases/old',
+            'deinstall:',
+        ])
+
+    def test_pretest_stage_is_optional_and_limited_to_three_values(self):
+        for selection, expected in (
+            (None, 'pretest:'),
+            ('install', 'pretest:--test install'),
+            ('upgrade', 'pretest:--test upgrade'),
+            ('deinstall', 'pretest:--test deinstall'),
         ):
-            with self.subTest(previous_zip=bool(previous)):
+            with self.subTest(selection=selection):
                 if self.calls.exists():
                     self.calls.unlink()
-                result = self.run_make('-j4', 'test-release', *previous,
-                                       'RELEASE_DIR=build/releases/old')
+                args = ['pretest'] + ([f'TEST={selection}'] if selection else [])
+                result = self.run_make(*args)
                 self.assertEqual(result.returncode, 0, result.stderr)
-                self.assertEqual(self.lines(), [
-                    'verify-release:--release-dir build/releases/old',
-                    f'upgrade:{upgrade_args}',
-                    'install:--release-dir build/releases/old',
-                    'deinstall:',
-                ])
+                self.assertEqual(self.lines(), [expected])
+        if self.calls.exists():
+            self.calls.unlink()
+        invalid = self.run_make('pretest', 'TEST=oops')
+        self.assertNotEqual(invalid.returncode, 0)
+        self.assertFalse(self.calls.exists())
+
+    def test_removed_make_shortcuts_are_not_public_targets(self):
+        help_text = self.run_make('help').stdout
+        for target in ('test-fast', 'test-install', 'test-upgrade', 'test-deinstall'):
+            self.assertNotIn('make ' + target, help_text)
+            self.assertNotEqual(self.run_make(target).returncode, 0)
+        for command in ('make assets', 'make pretest', 'make test-release',
+                        'make release-check'):
+            self.assertIn(command, help_text)
 
     def test_test_release_failure_stops_before_next_destructive_stage(self):
-        # Missing PREVIOUS_ZIP is valid: the upgrade script fetches GitHub latest.
+        # The upgrade script always resolves the official GitHub release.
         for setting, expected in (
             ('FAIL_VERIFY_RELEASE', ['verify-release:']),
             ('FAIL_UPGRADE', ['verify-release:', 'upgrade:']),

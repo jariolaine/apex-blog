@@ -67,7 +67,7 @@ jobs without inspecting actual state.
 
 ## Commands and authorization
 
-**Non-destructive checks:** `make test` and `make test-fast` run application
+**Non-destructive checks:** `make test` runs application
 tests only. `check-source` supports changes in progress; `check-release` verifies
 release consistency. `validate` requires SQLcl but does not connect to a
 database. `check` runs the full offline quality gate, including APEXLang
@@ -86,23 +86,29 @@ DEV/Git parity. `make source` (DEV → Git) and `make sync-dev` (Git → DEV) mu
 blindly. Direct `automation/export_application.sh` calls require an explicit `--source-only` or
 `--build-only` mode.
 
-**Obtain explicit human authorization before any of these database-changing operations**
+**Disposable TEST is preauthorized:** `make pretest` (all stages or
+`TEST=install|upgrade|deinstall`) and `make test-release` may reset and
+recreate only the dedicated `BLOG_TST` schema and its test applications without
+asking for approval. Verify the saved TEST connection and workspace; never infer
+that DEV, QA or PROD is disposable. `pretest` reads DEV SQL, installs it on TEST
+and deletes temporary exports; it does not create or approve a release candidate.
+For APEX runtime upgrades it can test the same application release version.
+
+**Obtain explicit human authorization before these operations**
 (including equivalent direct scripts or MCP jobs):
 
 - `make prepare-release` — changes DEV application versions.
 - `make sync-dev` — replaces both application definitions in DEV.
-- `make test-release`, `make test-install`, `make test-upgrade`, `make test-deinstall` — reset
-  an **approved disposable TEST** schema. `test-deinstall` installs first, then verifies zero
-  remaining user objects.
 - `make build` — assembles Supporting Objects, updates DEV versions, compares DEV exports with
   Git, runs the full gate, publishes a candidate, and runs real TEST acceptance.
-  `PREVIOUS_ZIP=path` is optional; without it, the upgrade input is GitHub's latest published
-  release. Never run without DEV and TEST authorization. Do not recreate this
-  workflow by chaining separate MCP jobs.
+  Upgrade tests always use the latest stable published GitHub release tagged on
+  `master`, never a local previous ZIP. Never run without DEV authorization. Do not recreate this
+  workflow by chaining separate MCP jobs. The full development command flow
+  is documented in [`automation/docs/DEVELOPMENT_FLOW.md`](automation/docs/DEVELOPMENT_FLOW.md).
 - `make qa`, `make production`, `make hotfix-production` — deploy application definitions; the
   emergency hotfix has different safeguards (below).
 
-Before an authorized database operation, verify the effective saved SQLcl connection, schema,
+Before any database operation, verify the effective saved SQLcl connection, schema,
 workspace, and intended target. Never run destructive SQL merely because it is listed in a
 runbook. The existing scripts enforce their own environment checks. `make sync-dev` and
 `make qa` also enforce mandatory preflight **inside the scripts**, without a bypass flag; do not

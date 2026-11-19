@@ -1,11 +1,12 @@
 """Offline, negative-path regressions for authoritative metadata SQL."""
 
-from pathlib import Path
+import re
 import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
+from pathlib import Path
 
 
 SOURCE = Path(__file__).resolve().parents[2]
@@ -47,20 +48,29 @@ class MetadataSourceTests(unittest.TestCase):
     def test_render_updates_only_version_without_touching_inputs(self):
         original_public = self.public().read_bytes()
         original_admin = self.admin().read_bytes()
-        old_version = (self.repo / "VERSION.txt").read_text().strip()
+        # The checked-in SQL may temporarily lag VERSION.txt during development.
+        # Rendering must replace the version actually in the SQL source, without
+        # modifying any other bytes or relying on the checkout being in sync.
+        current = re.search(
+            rb"(?m)^[ \t]*blog_install\.settings_merge\('G_APP_VERSION',"
+            rb"[^\r\n]*,'(?P<version>Release [0-9.]+)'\);[ \t]*$",
+            original_public,
+        )
+        self.assertIsNotNone(current, "Missing G_APP_VERSION statement in fixture")
         new_version = "Release 26.1.6.20261102"
+        expected = (
+            original_public[:current.start('version')]
+            + new_version.encode()
+            + original_public[current.end('version'):]
+        )
         (self.repo / "VERSION.txt").write_text(new_version + "\n")
         self.call("check", ok=False)
         self.call("render")
-        self.assertEqual(self.out.read_bytes(), original_public.replace(
-            old_version.encode(), new_version.encode(), 1
-        ))
+        self.assertEqual(self.out.read_bytes(), expected)
         self.assertEqual(self.public().read_bytes(), original_public)
         self.assertEqual(self.admin().read_bytes(), original_admin)
         self.call("render")
-        self.assertEqual(self.out.read_bytes(), original_public.replace(
-            old_version.encode(), new_version.encode(), 1
-        ))
+        self.assertEqual(self.out.read_bytes(), expected)
 
     def test_rejects_duplicate_metadata_key(self):
         path = self.public()

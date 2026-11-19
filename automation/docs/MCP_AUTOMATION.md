@@ -443,7 +443,7 @@ connected server and exposed tools. The configured server name **APEX Blog**
 produces the Cline tool prefix `apex_blog__`: for example,
 `apex_blog__automation_capabilities` and `apex_blog__automation_start`.
 Start with the read-only `apex_blog__automation_capabilities`, not a
-DEV/TEST-changing target. The raw MCP tool names are `automation_*`; Cline adds
+database-changing target. The raw MCP tool names are `automation_*`; Cline adds
 the server prefix, so use the complete `apex_blog__...` names in agent instructions.
 
 Because this Cline registration is global, its tools may remain visible in
@@ -491,7 +491,7 @@ The repository targets **APEX 26.1**. Select Oracle's corresponding
 APEXlang reference guidance and treat `AGENTS.md`, `.clinerules/`, and
 `automation/` as authoritative for release restrictions. The Oracle skill's
 optional direct SQLcl import/connection workflows must not bypass the
-existing human-authorization requirements for DEV/TEST changes.
+authorization requirements for DEV writes (disposable TEST resets are preauthorized).
 
 `make doctor` skips the optional Git-hook installation check inside
 image-managed containers. Git hooks are not installed in the host checkout at
@@ -562,9 +562,11 @@ tests when changing the API.
 ### Direct Make access for maintainers
 
 The optional MCP interface does not replace `make help`, the existing Make
-scripts, or their environment checks. In particular, custom Make variables
-such as `PREVIOUS_ZIP=...`, `OVERWRITE=YES`, and `RELEASE_DIR=...` require a
-direct Make invocation. `make build` remains the complete release workflow and
+scripts, or their environment checks. The authoritative command sequence is in
+[development flow](DEVELOPMENT_FLOW.md). In particular, custom Make variables
+such as `OVERWRITE=YES` and `RELEASE_DIR=...` require a
+direct Make invocation. Previous-release ZIP overrides are not supported even
+through direct Make; GitHub is authoritative. `make build` remains the complete release workflow and
 should not be reimplemented as a series of MCP jobs.
 
 For a manually run check, when the Docker Compose service is already running
@@ -576,8 +578,16 @@ docker compose exec -T mcp make check-release
 
 MCP worker locking serializes only MCP jobs; external Make processes are not
 covered. Prevent concurrent operations against the same checkout or DEV/TEST.
-No additional approval is implemented in the MCP queue; DEV writes and TEST
-resets still require authorization and the Make/Bash preflight checks.
+No additional approval is implemented in the MCP queue. DEV writes and
+promotion still require human authorization; resetting the verified disposable
+TEST environment is preauthorized. Every Make/Bash environment guard remains
+mandatory. `pretest` is an allowlisted MCP target with one validated, optional `test`
+selector (`install`, `upgrade`, `deinstall`); omitting it runs all stages.
+For example, `apex_blog__automation_start(target="pretest", test="upgrade")`.
+Only `pretest` accepts this option; MCP still rejects arbitrary Make variables
+and paths. Both MCP and Make use the latest verified GitHub release on `master`
+for upgrade tests. See [development flow](DEVELOPMENT_FLOW.md#optional-pretest-from-live-dev)
+for stage selection and release-policy differences.
 
 **Upgrading from an older MCP image:** Previously stored
 `awaiting_approval` jobs are automatically **cancelled**, not executed.

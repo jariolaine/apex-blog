@@ -98,6 +98,9 @@ class WorkflowFixture(unittest.TestCase):
         self.mock = self.bin / 'sql'
         shutil.copy2(SOURCE/'automation/tests/mock_sqlcl.py', self.mock)
         self.mock.chmod(0o755)
+        curl = self.bin / 'curl'
+        shutil.copy2(SOURCE / 'automation/tests/mock_curl.py', curl)
+        curl.chmod(0o755)
         self.template = self.root / 'db-snapshot'
         if self.needs_dev_snapshot:
             shutil.copytree(self.repo/'applications', self.template)
@@ -106,10 +109,12 @@ class WorkflowFixture(unittest.TestCase):
         # Isolate this fixture so only flags explicitly passed by a test apply.
         base_env = os.environ.copy()
         for name in ('MAKEFLAGS', 'MAKEOVERRIDES', 'MFLAGS', 'GNUMAKEFLAGS',
-                     'MAKELEVEL', 'OVERWRITE', 'RELEASE_DIR'):
+                     'MAKELEVEL', 'OVERWRITE', 'RELEASE_DIR', 'PREVIOUS_ZIP'):
             base_env.pop(name, None)
         self.env = dict(base_env,
                         SQLCL_BIN=str(self.mock),
+                        PATH=str(self.bin) + os.pathsep + base_env.get('PATH', ''),
+                        MOCK_CURL_LOG=str(self.root / 'github-calls.log'),
                         MOCK_SQLCL_LOG=str(self.calls),
                         MOCK_APEX_TEMPLATE=str(self.template),
                         MOCK_PREFLIGHT_LOG=str(self.root / 'preflight.log'),
@@ -117,6 +122,7 @@ class WorkflowFixture(unittest.TestCase):
                         APEX_BLOG_UAT_CONNECTION='QA_TEST_SAVED',
                         APEX_BLOG_PRD_CONNECTION='PROD_TEST_SAVED',
                         APEX_BLOG_TST_CONNECTION='DISPOSABLE_TEST_SAVED')
+        self.github_release(self.older_version())
 
     def script(self, name, *args, ok=True):
         p = subprocess.run(['bash', str(self.repo/'automation'/name), *args],
@@ -188,6 +194,18 @@ class WorkflowFixture(unittest.TestCase):
             archive.writestr('blog-administration-latest.sql', 'prompt previous admin\n')
             archive.writestr('blog-public-pages-latest.sql', 'prompt previous public\n')
 
+
+    def github_release(self, version, include_version=True):
+        # The mock API announces a published, master-tagged asset, not a local
+        # previous-release override. Digest is computed from the ZIP bytes.
+        archive = self.root / 'official-github-release.zip'
+        self.previous_zip(archive, version if include_version else None)
+        self.env['MOCK_GITHUB_ARCHIVE'] = str(archive)
+        self.env['MOCK_GITHUB_TAG'] = 'v' + version.removeprefix('Release ')
+
+    def github_calls(self):
+        log = self.root / 'github-calls.log'
+        return log.read_text().splitlines() if log.exists() else []
 
     def calls_data(self):
         if not self.calls.exists():

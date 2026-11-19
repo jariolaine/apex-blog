@@ -27,8 +27,7 @@ class MCPJobTests(unittest.TestCase):
         self.assertIn('source', ALLOWED_TARGETS)
 
     def test_dev_and_test_queue_immediately(self):
-        for target in ('sync-dev', 'test-release', 'test-upgrade',
-                       'test-install', 'test-deinstall'):
+        for target in ('sync-dev', 'pretest', 'test-release'):
             with self.subTest(target=target):
                 job = self.store.submit(target)
                 self.assertEqual(job['state'], 'queued')
@@ -66,6 +65,44 @@ class MCPJobTests(unittest.TestCase):
         self.assertEqual(result['state'], 'succeeded')
         self.assertEqual(result['exit_code'], 0)
         self.assertIn('sync-dev', result['log_tail'])
+
+    def test_pretest_option_persists_and_worker_passes_only_validated_make_argument(self):
+        fake_make = self.root / 'fake-make'
+        fake_make.write_text('#!/bin/sh\nprintf "%s\n" "$@"\n', encoding='utf-8')
+        fake_make.chmod(0o755)
+        job = self.store.submit('pretest', test='upgrade')
+        self.assertEqual(self.store.get(job['id'])['test_selection'], 'upgrade')
+        reopened = JobStore(self.store.directory)
+        with patch.object(worker, 'REPO_ROOT', self.root):
+            worker.process_next(reopened, str(fake_make))
+        self.assertIn('TEST=upgrade', reopened.result(job['id'])['log_tail'])
+        default = reopened.submit('pretest')
+        with patch.object(worker, 'REPO_ROOT', self.root):
+            worker.process_next(reopened, str(fake_make))
+        self.assertNotIn('TEST=', reopened.result(default['id'])['log_tail'])
+        for target, selected in (('check', 'install'), ('pretest', 'all'),
+                                 ('pretest', 'upgrade; id'), ('pretest', 7)):
+            with self.subTest(target=target, selected=selected), self.assertRaises(ValueError):
+                reopened.submit(target, test=selected)
+
+    def test_old_jobs_schema_migrates_and_retired_targets_are_cancelled(self):
+        # Simulate a database created before the test selector existed.
+        with self.store.connect() as connection:
+            connection.execute('ALTER TABLE jobs RENAME TO newer_jobs')
+            connection.execute("""CREATE TABLE jobs (
+                id TEXT PRIMARY KEY, target TEXT NOT NULL, state TEXT NOT NULL,
+                submitted_at REAL NOT NULL, started_at REAL, finished_at REAL,
+                updated_at REAL NOT NULL, exit_code INTEGER, pid INTEGER,
+                cancel_requested INTEGER NOT NULL DEFAULT 0, note TEXT
+            )""")
+            connection.execute("""INSERT INTO jobs (id,target,state,submitted_at,updated_at)
+                                  VALUES ('aaaaaaaaaaaaaaaaaaaaaaaa','test-upgrade','queued',1,1)""")
+            connection.execute('DROP TABLE newer_jobs')
+        reopened = JobStore(self.store.directory)
+        self.assertEqual(reopened.get('aaaaaaaaaaaaaaaaaaaaaaaa')['state'], 'cancelled')
+        self.assertIsNone(reopened.get('aaaaaaaaaaaaaaaaaaaaaaaa')['test_selection'])
+        with self.assertRaises(ValueError):
+            reopened.submit('test-upgrade')
 
     def test_log_chunks_and_path_validation(self):
         job = self.store.submit('doctor')
@@ -115,7 +152,7 @@ class MCPJobTests(unittest.TestCase):
         self.assertEqual(self.store.get(job['id'])['exit_code'], 7)
 
     def test_cancel_offline_only_and_restart_is_not_retry(self):
-        offline = self.store.submit('test-fast')
+        offline = self.store.submit('test')
         self.assertEqual(self.store.request_cancel(offline['id'])['state'], 'cancelled')
         self.assertIsNone(self.store.claim_next())
         protected = self.store.submit('test-release')
@@ -130,7 +167,7 @@ class MCPJobTests(unittest.TestCase):
         fake_make = self.root / 'fake-make'
         fake_make.write_text('#!/bin/sh\necho "[apex-blog] running"\nsleep 30\n')
         fake_make.chmod(0o755)
-        job = self.store.submit('test-fast')
+        job = self.store.submit('test')
         with patch.object(worker, 'REPO_ROOT', self.root):
             thread = threading.Thread(
                 target=worker.process_next, args=(self.store, str(fake_make)),

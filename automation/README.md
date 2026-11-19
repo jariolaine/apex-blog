@@ -82,54 +82,21 @@ Optional ADB-S wallet mounts and organization root CA certificates for both
 containers are documented in the
 [Oracle wallet and CA configuration](docs/MCP_AUTOMATION.md#optional-adb-s-wallet-and-private-root-ca-certificates).
 
-## Everyday workflow
+## Development and release flow
 
-```bash
-make check         # Lint, schema/source, application tests, APEXLang (no DB)
-make build         # Prepare DEV, build and verify SQL, then accept in TEST
-```
+See [**Development flow**](docs/DEVELOPMENT_FLOW.md) for the Mermaid diagrams,
+command selection, optional `make pretest TEST=...`, full `make build`
+sequence, and promotion steps. This is the authoritative command-order guide;
+this README covers setup, tooling and entry points only.
 
-`make build` is the **only** release-build command. It regenerates Git-owned
-Supporting Objects SQL, updates DEV application versions from `VERSION.txt`,
-exports and compares both DEV applications to Git, runs the full offline quality
-gate, packages/verifies the release, then performs upgrade, fresh-install and
-deinstallation acceptance against **disposable TEST**. It modifies DEV versions,
-tracked Supporting Objects and TEST. **Check both database connections before
-running it.** The GitHub latest published release is the default upgrade input;
-`PREVIOUS_ZIP=path` optionally selects a strictly older release ZIP.
-
-If DEV and Git differ, build stops instead of automatically invoking `make source`
-(DEV → Git) or `make sync-dev` (Git → DEV). Resolve the difference deliberately,
-review the changes and retry. A candidate may already exist if TEST acceptance
-fails; it is **not accepted**, and must not be promoted. After fixing the TEST
-problem, `make test-release` can retest that existing candidate without
-rebuilding.
-
-A candidate is versioned under `build/releases/<version>/` and cannot be silently
-replaced. `make build OVERWRITE=YES` is only for an **unpromoted, local**
-candidate; never overwrite a tested, approved or publicly released version.
-`make verify-release` checks an existing candidate without rebuilding it.
-
-Application tests live in `tests/`; `make test` and `make test-fast` run only
-those tests. Infrastructure regression suites in `automation/tests/` and
-`automation/mcp/tests/` are maintained and invoked separately, not by Make
-commands or the MCP server.
-
-## Release acceptance and deployment
-
-`make build` includes `make test-release`. To repeat acceptance independently,
-run `make test-release` (with optional `PREVIOUS_ZIP=path`). An older ZIP must
-exist and be strictly older than the candidate; otherwise the upgrade fails
-before resetting TEST. If no older public release exists, use
-`make test-deinstall` for install/deinstall checks and record that a complete
-end-to-end build cannot yet pass the upgrade acceptance step.
-
-Promote the **same tested candidate**, only after environment-specific approval,
-using `make qa` and `make production`. The emergency hotfix path is
-separate and bypasses the normal release pipeline; see the runbook.
+`make help` lists the everyday Make interface. `make test` runs application
+tests only; automation-maintainer suites in `automation/tests/` and
+`automation/mcp/tests/` are invoked separately, not by Make or MCP.
 
 ## Detailed reference
 
+- [Development flow](docs/DEVELOPMENT_FLOW.md) — when to run each Make command,
+  with Mermaid diagrams and the pretest selector
 - [Runbook](docs/RUNBOOK.md) — DEV synchronization, preparing releases,
   destructive TEST operations, promotion, hotfix and recovery
 - [Architecture](docs/ARCHITECTURE.md) — Git-owned inputs, artifact integrity,

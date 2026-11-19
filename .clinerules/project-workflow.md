@@ -24,8 +24,10 @@ For example, `make check` maps to `apex_blog__automation_start(target="check")`.
 Use `apex_blog__automation_capabilities` if support or side effects are unclear;
 do not guess valid targets.
 
-MCP accepts only a target, not Make variables (such as `PREVIOUS_ZIP=...` or
-`RELEASE_DIR=...`). For unsupported targets or options, use an existing
+MCP accepts only a target and, for `pretest` only, a validated optional
+`test` selection (`install`, `upgrade`, `deinstall`; omission runs all). It
+cannot accept arbitrary Make variables (such as `RELEASE_DIR=...`).
+Previous-release ZIP overrides are also not supported by direct Make. For unsupported targets or options, use an existing
 project command only when a suitable execution method is available; otherwise
 report the blocker. Do not invent alternative commands, rebuild multi-step
 release/deployment workflows by chaining MCP jobs, or configure automation

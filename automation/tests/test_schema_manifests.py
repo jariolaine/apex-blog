@@ -1,7 +1,7 @@
 """Offline regression checks for Git-owned schema inventories and SQL assembly.
 
-Does not prove compilation or installation in Oracle; use make test-install and
-make test-upgrade against the disposable TEST schema for that.
+Does not prove compilation or installation in Oracle; use make pretest or make test-release
+against the disposable TEST schema for that.
 """
 from pathlib import Path
 import shutil

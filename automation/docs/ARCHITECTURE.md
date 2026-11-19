@@ -31,17 +31,16 @@ with Supporting Objects**. It does not change the tracked APEXLang. These are
 separate modes of `automation/export_application.sh`; no combined default mode
 exists.
 
-## Normal release flow
+## Release implementation
 
-```mermaid
-graph TD
-    Git[Git APEXLang, schema manifests and metadata] --> Sync[Review source and synchronize with DEV as authorized]
-    Sync --> Build[make build: Supporting Objects, DEV version, export and full checks]
-    Build --> Candidate[Versioned candidate: manifest and SHA256SUMS]
-    Candidate --> TEST[Disposable TEST upgrade, install and deinstall]
-    TEST --> QA[QA/UAT: full preflight and source fingerprint]
-    QA --> PROD[PROD: approved promotion of the same candidate]
-```
+The step-by-step Make command sequence and Mermaid diagrams are maintained in
+[development flow](DEVELOPMENT_FLOW.md). This section describes release
+integrity and implementation details, not a second workflow definition.
+
+The previous-release TEST baseline is selected and validated exclusively
+from the latest stable GitHub release tagged on `master`; implementation and
+version policy are in [development flow](DEVELOPMENT_FLOW.md). Candidate
+publication remains local until approved and published.
 
 The candidate contains Admin and Public full SQL exports, the application
 release ZIP, the legacy stack ZIP, `README.md`, `LICENSE.txt`, `VERSION.txt`,
@@ -88,8 +87,7 @@ moved forward, subject to approval and compatibility.
    Node.js frontend tests).
 6. `make validate`: SQLcl APEXLang validation **without a DB login**.
 
-`make test-fast` currently runs the same application tests as `make test`;
-there is no separate fast subset yet. `automation/tests/` and
+`automation/tests/` and
 `automation/mcp/tests/` contain tests of the automation implementation.
 Maintainers run those Python suites directly; they are **not** invoked by
 Make targets, MCP jobs, preflight, builds or application CI.
@@ -97,12 +95,11 @@ Make targets, MCP jobs, preflight, builds or application CI.
 validators, not automation unit-test runners. Application frontend tests run
 against the tracked JavaScript with mocked APEX browser APIs; they do not
 prove Oracle DDL, APEX installation or PL/SQL compilation succeeds.
-See [testing procedures](RUNBOOK.md#testing-and-troubleshooting).
-Real acceptance runs inside `make build` via `make test-release`, and can
-also be repeated separately against an existing candidate in disposable TEST. It downloads the
-latest published GitHub release unless `PREVIOUS_ZIP=path` is supplied, and
-invokes upgrade, then fresh-install and deinstall checks;
-individual TEST commands remain available. None runs in CI.
+See [testing procedures](RUNBOOK.md#testing-and-troubleshooting) and the
+[DEV-to-TEST pretest flow](DEVELOPMENT_FLOW.md#optional-pretest-from-live-dev).
+Real candidate acceptance is part of `make build` and can be repeated using
+`make test-release` (all stages, never a selective subset). It runs on
+disposable TEST, not in CI.
 
 Direct `make sync-dev` and `make qa` enforce the full preflight before
 database mutations. `make build` has its own strict source/version/parity

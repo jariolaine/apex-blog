@@ -3,42 +3,38 @@
 SCRIPTS := automation
 # Hotfix import defaults to running Supporting Objects install/upgrade scripts.
 OBJECTS ?= YES
-.PHONY: help setup setup-ci doctor lint test test-fast assets check-assets check-schema preflight check ci prepare-release supporting source sync-dev build validate qa production test-install test-deinstall test-upgrade test-release hotfix-export hotfix-production check-source check-release verify-release release-check
+.PHONY: help setup setup-ci doctor lint test assets check-assets check-schema preflight check ci prepare-release supporting source sync-dev build validate qa production test-release pretest hotfix-export hotfix-production check-source check-release verify-release release-check reject-previous-zip
 
 help:
 	@printf '%s\n' \
+	  'Development:' \
+	  '  make assets                        Generate application CSS/JS from frontend/' \
+	  '  make supporting                    Generate Supporting Objects from Git' \
+	  '  make source                        Export APEXLang from DEV to applications/' \
+	  '  make sync-dev                      Import local APEXLang into DEV (authorization required)' \
+	  '' \
 	  'Quality checks:' \
 	  '  make lint                          Run repository linters (pre-commit)' \
-	  '  make assets                        Compile LESS and generate application CSS/JS' \
-	  '  make check-assets                  Verify generated application static files (read-only)' \
-	  '  make test                          Run application tests (currently frontend JavaScript)' \
-	  '  make test-fast                     Run fast application tests (currently same as test)' \
-	  '  make validate                      Validate APEXLang with SQLcl' \
-	  '  make check                         Lint + schema/source + application tests + APEXLang' \
-	  '  make check-source                  Check local APEXLang references and DEV app IDs' \
-	  '  make check-schema                  Validate manifests, metadata and deinstall SQL' \
+	  '  make check-assets                  Verify generated CSS/JS (read-only)' \
+	  '  make test                          Run application tests (not automation regression tests)' \
+	  '  make check-schema                  Check manifests, metadata and deinstall SQL' \
+	  '  make check-source                  Validate local APEXLang source references' \
+	  '  make validate                      Validate APEXLang locally using SQLcl' \
+	  '  make check                         Run the full offline quality gate' \
 	  '' \
-	  'Development and releases:' \
-	  '  make prepare-release               Set DEV versions from VERSION.txt' \
-	  '  make supporting                    Assemble schema and metadata from Git' \
-	  '  make source                        Export APEXLang from DEV to applications/' \
-	  '  make sync-dev                      Overwrite DEV with local APEXLang' \
-	  '  make build                         Prepare DEV, export, check, publish, test TEST (OVERWRITE=YES; PREVIOUS_ZIP=path optional)' \
-	  '  make check-release                 Check versions and Supporting Objects sources' \
-	  '  make verify-release                Verify manifest and checksums (RELEASE_DIR=path optional)' \
-	  '  make release-check                 Verify source and candidate (RELEASE_DIR=path optional)' \
+	  'Disposable TEST:' \
+	  '  make pretest                       Test live DEV SQL on TEST (TEST=install|upgrade|deinstall; default all; GitHub baseline)' \
+	  '  make test-release                  Test verified candidate: all three stages (RELEASE_DIR=path optional; GitHub baseline)' \
 	  '' \
-	  'Installation and deployment:' \
-	  '  make test-install                  Fresh TEST install (RELEASE_DIR=path optional)' \
-	  '  make test-deinstall                Install, deinstall, verify empty TEST (RELEASE_DIR=path optional)' \
-	  '  make test-upgrade                  Upgrade TEST from GitHub latest (PREVIOUS_ZIP=path, RELEASE_DIR=path optional)' \
-	  '  make test-release                  TEST acceptance from GitHub latest (PREVIOUS_ZIP=path, RELEASE_DIR=path optional)' \
-	  '  make qa                            Deploy to QA (RELEASE_DIR=path optional)' \
-	  '  make production                    Deploy to PROD (RELEASE_DIR=path optional)' \
+	  'Release and deployment:' \
+	  '  make build                         Build and test candidate (OVERWRITE=YES optional; GitHub baseline)' \
+	  '  make release-check                 Check release source and candidate (RELEASE_DIR=path optional)' \
+	  '  make qa                            Deploy candidate to QA (RELEASE_DIR=path optional)' \
+	  '  make production                    Deploy approved candidate to PROD (RELEASE_DIR=path optional)' \
 	  '' \
 	  'Emergency hotfix:' \
-	  '  make hotfix-export                 Export BOTH QA/UAT apps as SQL (no build)' \
-	  '  make hotfix-production             Import both apps; OBJECTS=NO skips Supporting Objects (default YES)'
+	  '  make hotfix-export                 Export both QA/UAT apps as SQL' \
+	  '  make hotfix-production             Import hotfix into PROD (OBJECTS=YES|NO; default YES)'
 
 # The preflight is enforced INSIDE the DEV/QA scripts, so direct invocations
 # cannot bypass it. Do not duplicate it as a Makefile prerequisite.
@@ -57,9 +53,7 @@ lint:
 	bash ./automation/ci/run_pre_commit.sh run --all-files
 
 # Application tests only. Infrastructure regressions are maintainer-only and
-# never run through Make or MCP. No separate fast subset exists yet.
-test-fast: test
-
+# never run through Make or MCP.
 test:
 	node --test tests/frontend/*.test.cjs
 
@@ -100,7 +94,7 @@ sync-dev:
 # directions. The exporter refuses DEV/Git drift instead of choosing a winner.
 # Its full quality gate runs AFTER temporary DEV exports but BEFORE publication.
 # Recursive Make stages stay sequential, including when the caller uses -j.
-build:
+build: reject-previous-zip
 	@$(MAKE) --no-print-directory check-assets
 	@case "$(OVERWRITE)" in ""|NO|YES) ;; *) echo 'OVERWRITE must be YES (or omitted): make build OVERWRITE=YES' >&2; exit 2 ;; esac
 	@test -z "$(RELEASE_DIR)" || { echo 'build uses current VERSION.txt; omit RELEASE_DIR' >&2; exit 2; }
@@ -129,24 +123,24 @@ release-check:
 validate:
 	./$(SCRIPTS)/validate_apexlang.sh
 
-test-install:
-	./$(SCRIPTS)/run_install_test.sh $(if $(RELEASE_DIR),--release-dir "$(RELEASE_DIR)",)
+# Only official GitHub published releases can be upgrade baselines.
+# Reject the retired local ZIP override rather than silently ignoring it.
+reject-previous-zip:
+	@test -z "$(PREVIOUS_ZIP)" || { echo "PREVIOUS_ZIP is obsolete; GitHub is the sole source of previous releases" >&2; exit 2; }
 
-# Always run a fresh install first. The prerequisite is sequential, even with -j.
-# RELEASE_DIR also applies to test-install when supplied on the command line.
-test-deinstall: test-install
-	./$(SCRIPTS)/run_deinstall_test.sh
+# Optional disposable TEST verification of live DEV packaged SQL; no candidate.
+# Only one optional selector is accepted. Omitting TEST runs every stage.
+pretest: reject-previous-zip
+	@case "$(TEST)" in ""|install|upgrade|deinstall) ;; *) echo 'TEST must be install, upgrade, deinstall (or omitted for all)' >&2; exit 2 ;; esac
+	./$(SCRIPTS)/pretest.sh $(if $(TEST),--test "$(TEST)",)
 
-test-upgrade:
-	./$(SCRIPTS)/run_upgrade_test.sh $(if $(PREVIOUS_ZIP),--previous-zip "$(PREVIOUS_ZIP)",) $(if $(RELEASE_DIR),--release-dir "$(RELEASE_DIR)",)
-
-# Combined TEST acceptance uses GitHub latest by default, or PREVIOUS_ZIP.
-# The upgrade script verifies that it is older than the candidate before TEST reset.
-# Database target identity and saved connection separation are checked by the scripts.
-test-release:
+# Formal release acceptance is never selective. Keep the low-level scripts
+# as internal implementation details rather than individual Make targets.
+test-release: reject-previous-zip
 	@$(MAKE) --no-print-directory verify-release
-	@$(MAKE) --no-print-directory test-upgrade
-	@$(MAKE) --no-print-directory test-deinstall
+	./$(SCRIPTS)/run_upgrade_test.sh $(if $(RELEASE_DIR),--release-dir "$(RELEASE_DIR)",)
+	./$(SCRIPTS)/run_install_test.sh $(if $(RELEASE_DIR),--release-dir "$(RELEASE_DIR)",)
+	./$(SCRIPTS)/run_deinstall_test.sh
 
 qa:
 	./$(SCRIPTS)/import_apps_to_qa.sh $(if $(RELEASE_DIR),--release-dir "$(RELEASE_DIR)",)

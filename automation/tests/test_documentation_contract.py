@@ -47,6 +47,21 @@ class DocumentationLinksTests(unittest.TestCase):
                         self.assertIn(unquote(parts.fragment), markdown_anchors(resolved),
                                       f'{doc.relative_to(ROOT)}: broken anchor {raw}')
 
+    def test_one_authoritative_mermaid_development_flow(self):
+        flow = ROOT / 'automation/docs/DEVELOPMENT_FLOW.md'
+        content = flow.read_text(encoding='utf-8')
+        self.assertEqual(content.count('```mermaid'), 2)
+        for command in ('make assets', 'make check', 'make source',
+                        'make sync-dev', 'make pretest', 'make build',
+                        'make test-release', 'make qa', 'make production'):
+            self.assertIn(command, content)
+        for doc in (ROOT / 'automation/docs/ARCHITECTURE.md',
+                    ROOT / 'automation/docs/ENVIRONMENTS.md',
+                    ROOT / 'automation/README.md'):
+            text = doc.read_text(encoding='utf-8')
+            self.assertIn('DEVELOPMENT_FLOW.md', text)
+            self.assertNotIn('```mermaid', text)
+
     def test_maintainer_commands_have_actual_entrypoints(self):
         self.assertTrue((ROOT / 'automation/tests').is_dir())
         self.assertTrue((ROOT / 'automation/mcp/tests').is_dir())

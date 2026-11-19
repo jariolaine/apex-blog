@@ -132,14 +132,16 @@ class ReleaseWorkflows(WorkflowFixture):
             f'exec {shlex.quote(sys.executable)} "$@"\n', encoding='utf-8',
         )
         python.chmod(0o755)
-        self.env['PATH'] = f"{self.bin}{os.pathsep}{self.env.get('PATH', '')}"
+        # WorkflowFixture already prepends self.bin to PATH.
         out = self.script('export_application.sh', '--build-only', '--overwrite', ok=False)
         self.assertIn('mock final verification failure', out.stderr)
         self.assertIn('Restored previous release candidate', out.stderr)
         self.assertEqual(original, {f.name: f.read_bytes() for f in current.iterdir() if f.is_file()})
         self.assertEqual(list(current.parent.glob('.candidate.*')), [])
         self.assertEqual(list(current.parent.glob('.backup.*')), [])
-        self.env['PATH'] = self.env['PATH'].removeprefix(f"{self.bin}{os.pathsep}")
+        # Remove the failure-injection command before verifying the restored
+        # candidate; leave other fixture mocks (sql, curl) available on PATH.
+        python.unlink()
         self.script('verify_release.sh')
 
 

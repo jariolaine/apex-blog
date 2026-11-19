@@ -15,8 +15,9 @@ in order: **Admin**, then **Public**.
 `automation/variables.sh` exposes connection-name environment overrides:
 `APEX_BLOG_DEV_CONNECTION`, `APEX_BLOG_TST_CONNECTION`,
 `APEX_BLOG_UAT_CONNECTION`, and `APEX_BLOG_PRD_CONNECTION`.
-`APEX_BLOG_UPGRADE_DOWNLOAD_URL` overrides the previous-release ZIP download
-URL used by TEST upgrade checks.
+Previous-release upgrade baselines always come from the official GitHub
+releases tagged on `master`; see [development flow](DEVELOPMENT_FLOW.md).
+Local ZIP and download URL overrides are intentionally unsupported.
 
 ## Local configuration
 
@@ -52,54 +53,24 @@ connection names and authorization rules do not change. `make doctor` checks tha
 
 ## Which environments are modified?
 
-- **DEV:** `make source` reads the two applications and refreshes local APEXLang.
-  `make prepare-release` changes DEV application versions;
-  `make sync-dev` overwrites DEV application definitions. `make build`
-  updates DEV versions via `prepare-release`, but never automatically imports
-  APEXLang changes. Review both connections before running a build.
-- **TEST:** `make build` invokes `make test-release`, which sequentially tests
-  upgrade from the latest
-  published GitHub release (or `PREVIOUS_ZIP=path`), then fresh installation
-  and verified deinstallation. It
-  resets the approved disposable TEST schema and leaves it empty on success.
-  `make test-install` resets the schema, removes prior test apps,
-  then installs a release. `make test-upgrade` resets TEST and installs an older
-  release before upgrading. `make test-deinstall` runs a fresh install **first**,
-  removes Supporting Objects and both applications, and verifies **zero**
-  `USER_OBJECTS` plus absence of both APEX apps. These are destructive.
-- **QA/UAT:** `make qa` enforces preflight and verifies both the release and
-  candidate/source fingerprint before importing. `make hotfix-export` reads
-  QA/UAT without creating a normal candidate.
-- **PROD:** `make production` deploys the previously verified
-  candidate, without rebuilding. `make hotfix-production` imports saved QA/UAT
-  exports directly and deliberately skips normal quality/release gates.
-  Supporting Objects are installed by default; `OBJECTS=NO` disables their
-  **automatic** installation.
+See [development flow](DEVELOPMENT_FLOW.md) for the actual command sequence.
+The key environment boundaries are:
 
-## Release flow
-
-```mermaid
-flowchart TD
-    git["Git-owned schema, metadata and APEXLang"]
-    dev["DEV"]
-    build["make build: generate SQL, prepare DEV versions,<br/>export, check, publish and verify candidate"]
-    test["TEST install / upgrade / deinstall acceptance<br/>(part of make build)"]
-    qa["QA/UAT (same candidate)"]
-    prod["PROD (same candidate)"]
-
-    git <-->|Reviewed source synchronization| dev
-    git --> build
-    dev --> build
-    build --> test --> qa --> prod
-```
-
-TEST/QA/PROD install the **packaged SQL application exports** from the
-selected candidate directory, not a fresh export from DEV. Neither
-`make test` nor `make check` executes these Oracle installation checks.
+- **DEV:** `make source` reads APEXLang; `make sync-dev` overwrites DEV app
+  definitions after authorization; `make build` changes DEV application
+  versions but never automatically imports APEXLang from Git.
+- **TEST:** `make pretest` exports SQL from DEV to disposable TEST; an optional
+  `TEST=install|upgrade|deinstall` selects one stage (default all). `make build`
+  and `make test-release` run **all** candidate TEST acceptance stages.
+  TEST resets are preauthorized only for the configured dedicated schema.
+- **QA/UAT:** `make qa` checks source fingerprint and uses the verified candidate;
+  `make hotfix-export` only reads QA/UAT application definitions.
+- **PROD:** `make production` promotes the same approved candidate;
+  `make hotfix-production` performs the separately authorized emergency path.
 
 **STAGING is not implemented.** There is no `stgDbConnName`,
 `make staging` or `deploy.sh stg` path. Do not add an imagined staging step to
 release instructions. The Terraform stack is legacy and is not changed by this
 review; see [Stack README](../../Stack/README.md) for its separate context.
 
-For the operational sequence, see the [runbook](RUNBOOK.md).
+For the operational sequence, see [development flow](DEVELOPMENT_FLOW.md).

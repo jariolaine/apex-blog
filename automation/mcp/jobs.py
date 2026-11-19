@@ -1,4 +1,4 @@
-"""Durable, allowlisted automation jobs; no arbitrary shell commands or Make variables."""
+"""Durable, allowlisted automation jobs; only pretest has a validated option."""
 
 from __future__ import annotations
 
@@ -30,8 +30,10 @@ class TargetSpec:
 
 
 def _database_target(description: str, effect: Literal['write_dev', 'reset_test']) -> TargetSpec:
+    # Dedicated TEST is explicitly disposable and does not need an approval
+    # prompt. DEV writes and promotions retain their separate authorization.
     return TargetSpec(description, category='database', database_effect=effect,
-                      authorization='required')
+                      authorization='none' if effect == 'reset_test' else 'required')
 
 
 TARGET_SPECS: dict[str, TargetSpec] = {
@@ -42,7 +44,6 @@ TARGET_SPECS: dict[str, TargetSpec] = {
         category='generation', local_source_effect='generated_assets',
     ),
     'check-assets': TargetSpec('Verify application CSS/JS outputs match frontend sources (read-only).'),
-    'test-fast': TargetSpec('Run application tests (currently the same frontend suite as test).'),
     'test': TargetSpec('Run application tests; excludes automation infrastructure tests.'),
     'check-schema': TargetSpec('Run offline schema consistency checks.'),
     'check-source': TargetSpec('Run offline application source checks.'),
@@ -56,14 +57,11 @@ TARGET_SPECS: dict[str, TargetSpec] = {
     ),
     'sync-dev': _database_target('Synchronize local application definitions to DEV.',
                                  'write_dev'),
-    'test-release': _database_target('Run release acceptance on an approved disposable TEST schema.',
+    'pretest': _database_target(
+        'Export packaged SQL from DEV; test all stages on disposable TEST by default or select one stage. No saved release candidate.',
+        'reset_test'),
+    'test-release': _database_target('Run release acceptance on a dedicated disposable TEST schema.',
                                      'reset_test'),
-    'test-install': _database_target('Test installation on an approved disposable TEST schema.',
-                                     'reset_test'),
-    'test-upgrade': _database_target('Test upgrade on an approved disposable TEST schema.',
-                                     'reset_test'),
-    'test-deinstall': _database_target('Test deinstallation on an approved disposable TEST schema.',
-                                       'reset_test'),
 }
 
 OFFLINE_TARGETS = frozenset(name for name, spec in TARGET_SPECS.items()
@@ -86,13 +84,15 @@ def capabilities() -> dict:
             'modifies_database': spec.database_effect in ('write_dev', 'reset_test'),
             'modifies_local_source': spec.local_source_effect != 'none',
             'mcp_make_variables': [],
+            'allowed_test_values': sorted(PRETEST_SELECTIONS) if name == 'pretest' else [],
         })
         targets.append(details)
     return {
         'targets': targets,
         'mcp_accepts_make_variables': False,
+        'mcp_accepts_pretest_selector': True,
         'authorization_enforced_by_mcp': False,
-        'authorization_policy': 'Follow AGENTS.md before DEV/TEST changes or local overwrites.',
+        'authorization_policy': 'Dedicated TEST resets are preauthorized; DEV writes, deployments and local overwrites follow AGENTS.md.',
         'unsupported_targets': 'Use documented project commands under AGENTS.md when available; otherwise report the blocker.',
         'terminal_states': sorted(FINISHED),
         'active_states': ['queued', 'running'],
@@ -100,6 +100,7 @@ def capabilities() -> dict:
     }
 
 
+PRETEST_SELECTIONS = frozenset({'install', 'upgrade', 'deinstall'})
 JOB_ID = re.compile(r'^[0-9a-f]{24}$')
 FINISHED = frozenset({'succeeded', 'failed', 'cancelled', 'interrupted'})
 DEFAULT_START_WAIT_SECONDS = 30
@@ -128,9 +129,27 @@ class JobStore:
                     exit_code INTEGER,
                     pid INTEGER,
                     cancel_requested INTEGER NOT NULL DEFAULT 0,
-                    note TEXT
+                    note TEXT,
+                    test_selection TEXT
                 )
             ''')
+            # Existing persisted jobs gain the optional selector without data loss.
+            columns = {row[1] for row in connection.execute('PRAGMA table_info(jobs)')}
+            if 'test_selection' not in columns:
+                connection.execute('ALTER TABLE jobs ADD COLUMN test_selection TEXT')
+            # Old queued targets no longer in the allowlist must not execute.
+            obsolete = sorted({row[0] for row in connection.execute(
+                "SELECT DISTINCT target FROM jobs WHERE state = 'queued'"
+            )} - ALLOWED_TARGETS)
+            if obsolete:
+                placeholders = ','.join('?' for _ in obsolete)
+                now = time.time()
+                connection.execute(
+                    f"UPDATE jobs SET state='cancelled', finished_at=?, updated_at=?, "
+                    f"note='Target removed from MCP allowlist; resubmit explicitly' "
+                    f"WHERE state='queued' AND target IN ({placeholders})",
+                    (now, now, *obsolete),
+                )
             # Existing approval-era jobs were never authorized for execution.
             # Cancel them on upgrade rather than silently running them.
             connection.execute('''
@@ -153,9 +172,12 @@ class JobStore:
         finally:
             connection.close()
 
-    def submit(self, target: str) -> dict:
+    def submit(self, target: str, *, test: str | None = None) -> dict:
         if target not in ALLOWED_TARGETS:
             raise ValueError('Unknown or disallowed Make target; no arbitrary commands or variables')
+        if test is not None and (target != 'pretest' or type(test) is not str
+                                 or test not in PRETEST_SELECTIONS):
+            raise ValueError('test selector is allowed only for pretest: install, upgrade or deinstall')
         job_id = uuid.uuid4().hex[:24]
         state = 'queued'
         timestamp = time.time()
@@ -163,9 +185,9 @@ class JobStore:
         job_path.mkdir(mode=0o700)
         with self.connect() as connection:
             connection.execute('''
-                INSERT INTO jobs (id, target, state, submitted_at, updated_at)
-                VALUES (?, ?, ?, ?, ?)
-            ''', (job_id, target, state, timestamp, timestamp))
+                INSERT INTO jobs (id, target, state, submitted_at, updated_at, test_selection)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ''', (job_id, target, state, timestamp, timestamp, test))
         return self.get(job_id)
 
     def job_dir(self, job_id: str) -> Path:
@@ -326,6 +348,7 @@ class JobStore:
 
     async def submit_and_wait(
         self, target: str, wait_seconds: int = DEFAULT_START_WAIT_SECONDS,
+        *, test: str | None = None,
     ) -> dict:
         """Submit once, then reuse result waiting without tying the job to the request.
 
@@ -339,7 +362,7 @@ class JobStore:
                 f'wait_seconds must be between 0 and {MAX_START_WAIT_SECONDS}'
             )
 
-        job = self.submit(target)
+        job = self.submit(target, test=test)
         return await self.wait_for_result(job['id'], timeout_seconds=wait_seconds)
 
     async def wait_for_result(

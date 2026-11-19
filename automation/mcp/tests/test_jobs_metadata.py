@@ -13,13 +13,13 @@ from automation.mcp.jobs import (
 # Intentional independent contract: a new MCP command must be a deliberate
 # review, not an accidental side effect of editing metadata.
 EXPECTED_OFFLINE = {
-    'doctor', 'lint', 'check-assets', 'test-fast', 'test', 'check-schema', 'check-source',
+    'doctor', 'lint', 'check-assets', 'test', 'check-schema', 'check-source',
     'validate', 'check',
 }
 EXPECTED_SOURCE = {'source'}
 EXPECTED_GENERATION = {'assets'}
 EXPECTED_DATABASE = {
-    'sync-dev', 'test-release', 'test-install', 'test-upgrade', 'test-deinstall',
+    'sync-dev', 'pretest', 'test-release',
 }
 
 
@@ -40,6 +40,7 @@ def test_discovery_is_derived_from_runtime_allowlist():
     targets = {item['name']: item for item in result['targets']}
     assert set(targets) == ALLOWED_TARGETS
     assert result['mcp_accepts_make_variables'] is False
+    assert result['mcp_accepts_pretest_selector'] is True
     assert result['authorization_enforced_by_mcp'] is False
     assert set(result['terminal_states']) == FINISHED
     assert set(result['active_states']) == {'queued', 'running'}
@@ -58,7 +59,11 @@ def test_discovery_is_derived_from_runtime_allowlist():
     assert targets['source']['authorization'] == 'before_overwriting_uncommitted_changes'
     assert targets['sync-dev']['database_effect'] == 'write_dev'
     assert all(targets[name]['database_effect'] == 'reset_test'
+               and targets[name]['authorization'] == 'none'
                for name in DATABASE_TARGETS - {'sync-dev'})
+    assert targets['pretest']['cancellable'] is False
+    assert targets['pretest']['allowed_test_values'] == ['deinstall', 'install', 'upgrade']
+    assert targets['sync-dev']['authorization'] == 'required'
 
 
 def test_only_allowed_commands_can_be_submitted(tmp_path: Path):
@@ -105,7 +110,7 @@ def test_failed_cancelled_and_interrupted_are_not_success(tmp_path: Path):
     assert store.status(cancelled)['is_terminal'] is True
     assert store.status(cancelled)['successful'] is False
 
-    interrupted = store.submit('test-upgrade')['id']
+    interrupted = store.submit('test-release')['id']
     store.claim_next()
     store.recover_interrupted()
     assert store.status(interrupted)['state'] == 'interrupted'
@@ -211,7 +216,7 @@ def test_start_default_and_max_wait_are_forwarded(
 
 def test_start_wait_timeout_keeps_background_job(tmp_path: Path):
     store = JobStore(tmp_path / 'jobs')
-    result = asyncio.run(store.submit_and_wait('test-upgrade', wait_seconds=1))
+    result = asyncio.run(store.submit_and_wait('pretest', wait_seconds=1))
     assert result['state'] == 'queued'
     assert result['is_terminal'] is False
     assert result['wait_timed_out'] is True
@@ -295,7 +300,7 @@ def test_result_wait_returns_early_with_final_diagnostics(tmp_path: Path, monkey
 
 def test_result_wait_timeout_does_not_cancel_job(tmp_path: Path):
     store = JobStore(tmp_path / 'jobs')
-    job_id = store.submit('test-upgrade')['id']
+    job_id = store.submit('pretest', test='upgrade')['id']
     outcome = asyncio.run(store.wait_for_result(job_id, timeout_seconds=1))
     assert outcome['wait_timed_out'] is True
     assert outcome['is_terminal'] is False

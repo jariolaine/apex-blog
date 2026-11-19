@@ -1,7 +1,7 @@
 """Streamable HTTP MCP tools for allowlisted Make jobs; no MCP approval queue."""
 
 from enum import StrEnum
-from typing import Annotated
+from typing import Annotated, Literal
 
 from mcp.server.fastmcp import FastMCP
 from pydantic import Field
@@ -63,7 +63,8 @@ def automation_capabilities() -> dict:
     authorization policy, cancellation support, and terminal job states.
     Target metadata and automation_start's accepted values use one registry.
 
-    This MCP API accepts no Make variables. It does NOT enforce human approval;
+    This MCP API accepts no arbitrary Make variables; only a pretest selector.
+    It does NOT enforce human approval;
     follow AGENTS.md before database changes or overwriting local source.
     Unsupported targets/options require a documented project command under
     the same authorization rules, or must be reported as unavailable.
@@ -94,13 +95,22 @@ async def automation_start(
                         'A timeout or cancelled request does not cancel the job.',
         ),
     ] = DEFAULT_START_WAIT_SECONDS,
+    test: Annotated[
+        Literal['install', 'upgrade', 'deinstall'] | None,
+        Field(
+            description='Optional pretest stage: install, upgrade or deinstall. '
+                        'Omit to run all three in order. Only valid for '
+                        'target=pretest; rejected for other targets. '
+                        'Not a general Make variable interface.',
+        ),
+    ] = None,
 ) -> dict:
     """Submit an allowlisted Make target and briefly wait for its outcome.
 
     Before calling, check target effects via automation_capabilities and follow
     AGENTS.md authorization rules. For 'source', check local uncommitted .apx
-    changes first; DEV/TEST-changing jobs require explicit approval. The job
-    queue does not implement an additional approval step.
+    changes first; DEV writes require approval, but disposable TEST resets
+    are preauthorized. The queue has no additional approval step.
 
     Waits up to 30 seconds by default (maximum 60), returning early when
     finished. Always returns 'id' plus state/is_terminal. Terminal results
@@ -110,10 +120,12 @@ async def automation_start(
     return immediately. Cancelling this request never cancels the queued job;
     recover its ID with automation_list if the client loses the response.
 
+    Pass test=install|upgrade|deinstall only with target=pretest to select
+    a single disposable TEST stage; omit it to run all three.
     Never blindly retry interrupted database work. Unsupported Make options
     require a documented project command, not shell arguments here.
     """
-    return await store().submit_and_wait(target.value, wait_seconds)
+    return await store().submit_and_wait(target.value, wait_seconds, test=test)
 
 
 @mcp.tool()

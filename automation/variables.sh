@@ -35,12 +35,16 @@ prdAppIds=(102 101)
 tstAppIds=(102 101)
 releaseSqlNames=(blog-administration-latest.sql blog-public-pages-latest.sql)
 
-# Release and previous-release test inputs.
+# Release asset names. Previous-release tests always fetch the published
+# GitHub release tagged on master; no local ZIP or URL override is allowed.
 releaseZipName="apex-blog-latest.zip"
 stackZipName="apex-blog-stack-latest.zip"
-# By default, upgrade tests use the newest published release. PREVIOUS_ZIP
-# overrides the download; variables.local.sh may override this URL.
-upgDownloadUrl="${APEX_BLOG_UPGRADE_DOWNLOAD_URL:-https://github.com/jariolaine/apex-blog/releases/latest/download/apex-blog-latest.zip}"
+# Previous-release GitHub asset checksum policy (YES/NO).
+# NO accepts historical releases without published SHA-256 information,
+# while still verifying any checksum that GitHub does publish.
+# Change to YES after your next official release has a published checksum.
+# This is a repository configuration setting, not a Make/MCP option.
+requireGithubReleaseSha256="NO"
 deinstallSqlScript="$apexSourceDir/blog-admin/supporting-objects/deinstall-script.sql"
 
 # Git-owned Supporting Objects: no database exports or temporary path aliases.

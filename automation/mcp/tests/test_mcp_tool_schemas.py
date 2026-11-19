@@ -39,13 +39,18 @@ def test_mcp_tool_discovery_has_descriptions():
 def test_input_schema_enum_and_runtime_allowlist_match():
     tools = _tools()
     schema = tools['automation_start'].inputSchema
-    assert set(schema['properties']) == {'target', 'wait_seconds'}
+    assert set(schema['properties']) == {'target', 'wait_seconds', 'test'}
     assert set(schema['required']) == {'target'}
     wait = schema['properties']['wait_seconds']
     assert wait['minimum'] == 0
     assert wait['maximum'] == 60
     assert wait['default'] == 30
     assert wait.get('description')
+    option = schema['properties']['test']
+    assert option.get('description')
+    assert option['default'] is None
+    assert any(set(item.get('enum', [])) == {'install', 'upgrade', 'deinstall'}
+               for item in option['anyOf'])
     target_schema = _resolve_ref(schema, schema['properties']['target'])
     assert set(target_schema['enum']) == ALLOWED_TARGETS
     assert {item.value for item in AutomationTarget} == ALLOWED_TARGETS

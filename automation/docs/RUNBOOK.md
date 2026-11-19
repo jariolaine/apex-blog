@@ -19,11 +19,15 @@ make check     # Full offline quality gate, including application tests
 ```
 
 `make check` requires SQLcl and supported Java and validates APEXLang without
-connecting to DEV/TEST. `make test` and `make test-fast` exercise application
+connecting to DEV/TEST. `make test` exercises application
 JavaScript tests only; automation-maintainer suites are separate (see below).
 For connection overrides, use the ignored `automation/variables.local.sh` or
 `APEX_BLOG_*` variables described in [environments](ENVIRONMENTS.md#local-configuration).
 `make doctor` does not verify saved connection identities or privileges.
+
+The authoritative step order and command selection are in the
+[development flow](DEVELOPMENT_FLOW.md). This runbook focuses on safeguards,
+recovery, and exceptional operations.
 
 ## DEV synchronization
 
@@ -56,32 +60,34 @@ workspace/schema before import. It does **not** provision Oracle schema
 objects independently of the application Supporting Objects lifecycle.
 `make supporting` validates but never regenerates the Admin deinstall script.
 
+## Pretest from live DEV
+
+Use [development flow: optional pretest](DEVELOPMENT_FLOW.md#optional-pretest-from-live-dev)
+for `make pretest` selection (`TEST=install|upgrade|deinstall`, or all when
+omitted) and the temporary-export behavior. Only the configured dedicated TEST
+schema may be reset without approval. Exported DEV SQL is never a release
+candidate; successful pretest does **not** approve promotion.
+
+Before resetting TEST the script validates DEV/TEST connection identities and,
+for an upgrade, the verified published GitHub release. Equal application
+versions are valid **only** for pretest, for example when TEST has a newer
+APEX runtime; formal candidate
+acceptance remains strictly older. SQLcl diagnostics should be inspected for
+failures; exported SQL files are discarded on exit.
+
 ## Release preparation
 
-A normal release uses Git-owned schema and metadata, reviewed APEXLang and
-matching DEV applications. Use a new version in `VERSION.txt` and keep both
-APEX application versions synchronized. Do **not** edit old upgrade-patch
-versions simply to match the current version.
+A normal release uses Git-owned schema/metadata, reviewed APEXLang and
+matching DEV applications. The exact Make sequence is in
+[development flow](DEVELOPMENT_FLOW.md#formal-candidate-build-and-release-acceptance).
+Do not edit historical upgrade scripts to match a new release. Update
+`VERSION.txt` for the intended new release and obtain approval before running
+`make build`. A failed DEV/Git parity check requires an explicit decision
+between `make source` and `make sync-dev`; never perform both blindly.
 
-1. Review changes in `Database/` and `applications/`.
-   Update `VERSION.txt` to the intended release version (format
-   `Release x.y.z.YYYYMMDD`, with the actual approved version components).
-2. Reconcile reviewed application changes deliberately: use `make source`
-   when DEV should update Git, or `make sync-dev` when Git should update DEV.
-   **Never run both blindly**; inspect source changes before overwriting either.
-3. After confirming the saved DEV and disposable TEST connections and obtaining
-   approval for both, run `make build` (optional `PREVIOUS_ZIP=path`). It
-   assembles Supporting Objects from Git, prepares DEV versions, exports and
-   checks both applications against Git, then runs all offline checks and application
-   tests **after exporting but before publishing**. Finally, it packages and
-   verifies the candidate and performs real TEST upgrade/install/deinstall.
-4. Review generated Supporting Objects changes and the resulting candidate.
-   If DEV differs from Git, build stops with source-reconciliation guidance;
-   it never automatically imports or overwrites application definitions.
-   A failed TEST acceptance makes the build fail, even if its checksummed
-   candidate was already published locally. That candidate is **not approved**.
-   Resolve the TEST issue and run `make test-release` to retest it without
-   rebuilding; don't promote it until acceptance succeeds.
+If TEST acceptance fails after candidate publication, the candidate is not
+approved. Fix the TEST issue and rerun `make test-release` against the
+existing candidate without rebuilding or overwriting it.
 
 The candidate directory is `build/releases/<version-without-Release-prefix>/`.
 It contains:
@@ -149,7 +155,6 @@ real Oracle acceptance where appropriate.
 
 ```bash
 make test        # Application tests (currently frontend JavaScript)
-make test-fast   # Same application suite until a fast subset is introduced
 make check       # Lint, schema/source checks, application tests, APEXLang
 ```
 
@@ -186,47 +191,27 @@ run by `make build` after candidate verification, or independently on an existin
 candidate. They are not part of `make test`, `make check` or GitHub CI. Verify that the saved TEST
 connection points to an approved, dedicated disposable schema first.
 
-The complete acceptance command validates an existing candidate, installs a
-**strictly older** release and upgrades it, then performs another fresh install,
-deinstalls and asserts the disposable TEST schema and both applications are
-gone. It is sequential even when Make uses `-j`. By default the upgrade test
-downloads the latest published GitHub release (`apex-blog-latest.zip`). To
-select a specific older ZIP instead, set `PREVIOUS_ZIP=path`:
+The complete acceptance command validates an existing candidate, upgrades
+TEST from the **latest stable published GitHub release** (tag on `master`),
+then performs a fresh install, deinstalls and verifies TEST is empty. The
+previous release is checked for tag ancestry, integrity and version **before**
+TEST reset. The formal candidate must be strictly newer than that published
+release. See [development flow](DEVELOPMENT_FLOW.md#formal-candidate-build-and-release-acceptance)
+for the authoritative version and provenance policy.
 
 ```bash
 make test-release
-# Optional overrides:
-make test-release PREVIOUS_ZIP=/path/to/older/apex-blog-latest.zip \
-  RELEASE_DIR=build/releases/26.1.5.20261101
+make test-release RELEASE_DIR=build/releases/26.1.5.20261101
 ```
 
-The downloaded or supplied ZIP must identify a release **strictly older** than
-the candidate. A download failure, missing published release, or non-older ZIP
-stops the upgrade test **before TEST is reset**. Consequently, `make build`
-also fails when no suitable older release exists (for example before first
-public publication). The built candidate remains unapproved. Run
-`make test-deinstall` for fresh installation and cleanup, and record that
-upgrade compatibility is **not yet verified**. Individual TEST operations remain
-available for diagnosis:
-
-```bash
-make test-install RELEASE_DIR=build/releases/26.1.5.20261101
-make test-upgrade RELEASE_DIR=build/releases/26.1.5.20261101
-make test-deinstall RELEASE_DIR=build/releases/26.1.5.20261101
-```
-
-- **Install:** resets TEST and installs both applications and Supporting
-  Objects from the verified candidate.
-- **Upgrade:** validates an older ZIP **before resetting TEST**, installs the
-  older release, then imports the selected candidate. By default it downloads
-  the latest published GitHub release; if that release is equal to or newer
-  than your candidate, supply `PREVIOUS_ZIP` with a **strictly older** release.
-- **Deinstall:** `make test-deinstall` first runs `make test-install`, then
-  uses the **current tracked Admin deinstall SQL**, removes both applications,
-  and verifies **zero** `USER_OBJECTS` plus neither test application remaining.
-  On success, TEST is empty; rerun `make test-install` to repopulate it.
-  For older `RELEASE_DIR` values, review the tracked deinstall script's
-  compatibility with that candidate before this test.
+No local `PREVIOUS_ZIP` or download URL override is accepted. If a verified,
+older published GitHub release is unavailable, formal acceptance fails. For preliminary installation
+or cleanup diagnostics use `make pretest TEST=install` or
+`make pretest TEST=deinstall` against live DEV, but record clearly that these
+do **not** test the candidate or replace formal release acceptance. There are
+no separate public `make test-install`, `test-upgrade` or `test-deinstall`
+commands. `make test-release` runs all three scripts sequentially and leaves
+TEST empty on success.
 
 These scripts use temporary working directories under `${TMPDIR:-/tmp}` and
 remove them when they exit; **do not rely on persistent TEST logs under

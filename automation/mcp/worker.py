@@ -10,7 +10,7 @@ import subprocess
 import sys
 import time
 
-from .jobs import JobStore, OFFLINE_TARGETS, REPO_ROOT
+from .jobs import ALLOWED_TARGETS, JobStore, OFFLINE_TARGETS, PRETEST_SELECTIONS, REPO_ROOT
 
 STOP = False
 
@@ -42,6 +42,7 @@ def process_next(store: JobStore, make_executable: str = 'make') -> bool:
     if job is None:
         return False
     job_id, target = job['id'], job['target']
+    selection = job['test_selection']
     directory = store.job_dir(job_id)
     log_path = directory / 'output.log'
     sqlcl_path = directory / 'sqlcl'
@@ -51,11 +52,18 @@ def process_next(store: JobStore, make_executable: str = 'make') -> bool:
     process = None
     state, exit_code, note = 'interrupted', None, 'Worker stopped unexpectedly'
     try:
+        if target not in ALLOWED_TARGETS or (selection is not None and
+                (target != 'pretest' or selection not in PRETEST_SELECTIONS)):
+            raise ValueError('Queued job has an invalid target or pretest selector')
+        argv = [make_executable, '--no-print-directory', target]
+        if selection is not None:
+            argv.append(f'TEST={selection}')
         with log_path.open('ab', buffering=0) as output:
             os.chmod(log_path, 0o600)
-            output.write(f'[MCP job] Starting make {target}\n'.encode())
+            output.write(f'[MCP job] Starting make {target}'
+                         f'{" TEST=" + selection if selection else ""}\n'.encode())
             process = subprocess.Popen(
-                [make_executable, '--no-print-directory', target],
+                argv,
                 cwd=REPO_ROOT, env=env, stdin=subprocess.DEVNULL,
                 stdout=output, stderr=subprocess.STDOUT,
                 start_new_session=True,

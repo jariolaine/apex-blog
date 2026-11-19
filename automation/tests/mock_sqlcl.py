@@ -60,6 +60,9 @@ if match:
             with metadata.open('a') as f:
                 f.write('\nfile "css/new-from-dev.css" (\n    mimeType: text/css\n    charSet: utf-8\n)\n')
     elif kind == 'APPLICATION_SOURCE':
+        if os.environ.get('MOCK_FAIL_SQL_EXPORT_FOR') == app_id:
+            print('Mock packaged SQL export failure', file=sys.stderr)
+            sys.exit(8)
         # SQLcl's packaged, single-file application SQL export (not APEXLang).
         (out / f'f{app_id}.sql').write_text(f'prompt Release app {app_id} with Supporting Objects\n')
     else:

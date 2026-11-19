@@ -4,22 +4,15 @@ set -Eeuo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 source "$SCRIPT_DIR/lib/common.sh"
 
-previous_zip=''
 release_dir="$(current_release_dir)"
 while (( $# )); do
     case "$1" in
         --release-dir)
             (( $# >= 2 )) || die '--release-dir requires a directory'
             release_dir="$2"; shift 2 ;;
-        --previous-zip)
-            (( $# >= 2 )) || die '--previous-zip requires a file'
-            previous_zip="$2"; shift 2 ;;
         *) die "Unknown option: $1" ;;
     esac
 done
-if [[ -n "$previous_zip" ]]; then
-    require_file "$previous_zip"
-fi
 [[ -n "$tstDbConnName" ]] || die 'Set APEX_BLOG_TST_CONNECTION to a disposable TEST saved connection'
 [[ "$tstDbConnName" != "$devDbConnName" && "$tstDbConnName" != "$uatDbConnName" && "$tstDbConnName" != "$prdDbConnName" ]] \
     || die 'TEST saved connection must differ from DEV, QA and production'
@@ -28,25 +21,17 @@ require_tool python3
 verify_release "$release_dir"
 run_dir="$(mktemp -d "${TMPDIR:-/tmp}/apex-blog-upgrade-test.XXXXXXXX")"
 trap 'rm -rf -- "$run_dir"' EXIT
-mkdir -p "$run_dir/previous"
 
-if [[ -n "$previous_zip" ]]; then
-    log "Using previous release ZIP: $previous_zip"
-    cp -- "$previous_zip" "$run_dir/previous.zip"
-else
-    require_tool curl
-    [[ -n "$upgDownloadUrl" ]] || die 'Set upgDownloadUrl in automation/variables.local.sh or supply PREVIOUS_ZIP'
-    log "Downloading previous release: $upgDownloadUrl"
-    curl --fail --silent --show-error --location --retry 3 \
-        --output "$run_dir/previous.zip" "$upgDownloadUrl" \
-        || die "Could not download previous release from $upgDownloadUrl; provide PREVIOUS_ZIP to use a local archive"
-fi
-# The candidate's VERSION.txt is checksum-verified by verify_release. Require
-# the previous ZIP to identify an OLDER release before resetting TEST.
-python3 "$SCRIPT_DIR/lib/extract_previous_release.py" \
+# GitHub's latest stable published release must be tagged on master and
+# identify an OLDER application release. The SHA-256 requirement is configured
+# in variables.sh; published checksums are always verified when available.
+# Abort before
+# destructive TEST changes if the official baseline is missing or invalid.
+APEX_BLOG_REQUIRE_GITHUB_SHA256="$requireGithubReleaseSha256" \
+    python3 "$SCRIPT_DIR/lib/fetch_previous_release.py" \
     --candidate-version-file "$release_dir/VERSION.txt" \
-    "$run_dir/previous.zip" "$run_dir/previous" "${releaseSqlNames[@]}" \
-    || die 'Previous release ZIP must identify a release older than the candidate; provide PREVIOUS_ZIP if GitHub latest is not older'
+    --output-dir "$run_dir/previous" \
+    || die 'Official GitHub release must be older than this candidate and pass verification'
 check_environment "$tstDbConnName" "$tstWorkspace" "$tstDbSchema" "$run_dir/preflight.log"
 
 {
