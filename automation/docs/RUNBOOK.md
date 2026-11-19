@@ -1,29 +1,34 @@
 # Automation runbook
 
 Use these procedures from the **repository root**, after checking the actual
-[Make targets](../../Makefile). Read [environment safeguards](ENVIRONMENTS.md)
-before accessing a database. This runbook consolidates the earlier automation
-README, release-candidate guide and emergency hotfix guide.
+[Make targets](../../Makefile). The developer prepares the environment using
+the [connection configuration guide](ENVIRONMENTS.md); routine operations use
+those configured mappings. This runbook covers release procedures, recovery,
+and automation maintenance. The [maintenance guide](MAINTENANCE.md) defines
+roles, task boundaries, environment authorization and documentation ownership.
 
 ## Before running release commands
 
-For host-only tooling installation and diagnosis, see the
+For developer/maintainer tooling installation and diagnosis, see the
 [automation setup instructions](../README.md#setup-and-diagnostics). The
 [Dev Container guide](MCP_AUTOMATION.md#vs-code-development-container)
 describes image-managed tools: rebuild that image to change them;
 `make setup RESET=YES` is **not** a container repair command.
 
 ```bash
-make doctor    # Check tool presence; does not test database connections
 make check     # Full offline quality gate, including application tests
 ```
 
 `make check` requires SQLcl and supported Java and validates APEXLang without
 connecting to DEV/TEST. `make test` exercises application
 JavaScript tests only; automation-maintainer suites are separate (see below).
-For connection overrides, use the ignored `automation/variables.local.sh` or
+For developer-managed connection overrides, use the ignored
+`automation/variables.local.sh` or
 `APEX_BLOG_*` variables described in [environments](ENVIRONMENTS.md#local-configuration).
-`make doctor` does not verify saved connection identities or privileges.
+`make doctor` is a developer setup/diagnostic command, not a prerequisite for
+each application task. It checks tool presence, not connection identities or
+privileges. Environment-failure handling follows the
+[role boundaries](MAINTENANCE.md#roles-and-task-boundaries).
 
 The authoritative step order and command selection are in the
 [development flow](DEVELOPMENT_FLOW.md). This runbook focuses on safeguards,
@@ -45,34 +50,44 @@ assets. It does not prove that DEV and Git are identical afterward; inspect
 the exported changes before committing. Avoid running it over uncommitted
 APEXLang edits without reviewing how they will be reconciled.
 
-**When reviewed Git source must be imported into DEV:** obtain approval,
-verify the saved DEV connection, and only then use:
+**When reviewed Git source must be imported into DEV:** use the configured
+DEV connection under the task's authorization:
 
 ```bash
-make check-schema
-make supporting              # Offline; updates tracked Supporting Objects SQL
-make check                  # Full preflight, no database mutation
-make sync-dev               # DESTRUCTIVE TO DEV app definitions; approval required
+make supporting             # When schema, metadata or version inputs changed
+# Review the generated Supporting Objects diff before import.
+make sync-dev               # Replaces DEV definitions under task authorization
 ```
 
-`make sync-dev` performs its own mandatory preflight and validates the DEV
-workspace/schema before import. It does **not** provision Oracle schema
-objects independently of the application Supporting Objects lifecycle.
-`make supporting` validates but never regenerates the Admin deinstall script.
+Generate before checking: after a `VERSION.txt` change, `make check-schema`
+rejects the old Public metadata version until `make supporting` renders it.
+The generator validates its inputs before writing and never regenerates the
+Admin deinstall script.
+
+`make sync-dev` runs the full preflight and its automatic DEV environment
+guard before import. It imports APEXLang and Supporting Objects definitions
+with automatic Supporting Objects installation disabled. It does not apply
+the database SQL or compile PL/SQL in DEV. Apply the relevant `Database/`
+changes separately under the task's authorization, then import the reviewed
+application definitions. For release-version changes, follow
+[release-version preparation](DEVELOPMENT_FLOW.md#prepare-a-release-version).
 
 ## Pretest from live DEV
 
 Use [development flow: optional pretest](DEVELOPMENT_FLOW.md#optional-pretest-from-live-dev)
 for `make pretest` selection (`TEST=install|upgrade|deinstall`, or all when
-omitted) and the temporary-export behavior. Only the configured dedicated TEST
-schema may be reset without approval. Exported DEV SQL is never a release
-candidate; successful pretest does **not** approve promotion.
+omitted), version prerequisites and temporary-export behavior. Resets of the
+configured disposable TEST environment are preauthorized under the
+[environment policy](MAINTENANCE.md#application-data-and-environment-policy).
+Exported DEV SQL is never a release candidate; successful pretest does
+**not** approve promotion.
 
-Before resetting TEST the script validates DEV/TEST connection identities and,
-for an upgrade, the verified published GitHub release. Equal application
-versions are valid **only** for pretest, for example when TEST has a newer
-APEX runtime; formal candidate
-acceptance remains strictly older. SQLcl diagnostics should be inspected for
+Before exporting, the script automatically checks the configured DEV/TEST
+mappings and requires DEV application versions and `BLOG_SETTINGS.G_APP_VERSION`
+to match local `VERSION.txt`. Before an upgrade reset it also validates the
+published GitHub release. Equal application versions are valid **only** for
+pretest, for example when TEST has a newer APEX runtime; formal candidate
+acceptance requires a strictly older baseline. SQLcl diagnostics should be inspected for
 failures; exported SQL files are discarded on exit.
 
 ## Release preparation
@@ -80,14 +95,20 @@ failures; exported SQL files are discarded on exit.
 A normal release uses Git-owned schema/metadata, reviewed APEXLang and
 matching DEV applications. The exact Make sequence is in
 [development flow](DEVELOPMENT_FLOW.md#formal-candidate-build-and-release-acceptance).
-Do not edit historical upgrade scripts to match a new release. Update
-`VERSION.txt` for the intended new release and obtain approval before running
-`make build`. A failed DEV/Git parity check requires an explicit decision
-between `make source` and `make sync-dev`; never perform both blindly.
+Follow [release-version preparation](DEVELOPMENT_FLOW.md#prepare-a-release-version)
+to align `VERSION.txt`, both tracked application versions, generated SQL and
+DEV definitions. Leave historical upgrade conditions and version dates
+unchanged. Run `make build` under the task's DEV authorization. A failed
+DEV/Git parity check requires an explicit decision between `make source`
+and `make sync-dev`; never perform both blindly.
 
-If TEST acceptance fails after candidate publication, the candidate is not
-approved. Fix the TEST issue and rerun `make test-release` against the
-existing candidate without rebuilding or overwriting it.
+If TEST acceptance fails after candidate publication, the candidate has not
+passed acceptance. For an environment or transient problem, correct the cause
+and rerun `make test-release` against the same candidate. For a defect in its
+packaged application or schema SQL, correct and reconcile the source, then
+build a corrected candidate under the
+[overwrite/version procedure](#candidate-integrity-and-overwrite). Editing
+working-tree files does not repair SQL already packaged in a candidate.
 
 The candidate directory is `build/releases/<version-without-Release-prefix>/`.
 It contains:
@@ -139,19 +160,26 @@ removing them can bypass locking. Inspect an interrupted build's
 `build/releases/.backup.*` directories for recovery instead of deleting them.
 
 After TEST/QA approval or public release publication, **never overwrite that
-version**; build a new version. Automation cannot detect a candidate that was
-uploaded outside the local repository. Never manually edit candidate files.
+version**; build a new version. These restrictions are operator procedures:
+the scripts do not track or enforce TEST/QA acceptance, approvals, promotion
+or GitHub publication history. The overwrite helper checks paths, files,
+version and locking; those checks do not establish eligibility. Record the
+candidate's acceptance and promotion history before deciding whether it may
+be replaced. Never manually edit candidate files.
 
 ## Testing and troubleshooting
 
 ### Application tests
 
-Application tests belong in `tests/`. They validate application behavior rather
-than the automation that runs checks or builds releases. The current suite uses
-Node.js's built-in test runner to exercise tracked frontend JavaScript with
+Existing application tests are in `tests/`. They validate application behavior
+rather than the automation that runs checks or builds releases. The current
+suite uses Node.js's built-in test runner to exercise tracked frontend JavaScript with
 mocked browser/APEX interfaces. It does **not** exercise PL/SQL, Oracle DDL,
 APEX runtime behavior, or database connections; those need separate tests and
 real Oracle acceptance where appropriate.
+
+Responsibility for running existing checks versus developing test suites is
+defined in [role boundaries](MAINTENANCE.md#roles-and-task-boundaries).
 
 ```bash
 make test        # Application tests (currently frontend JavaScript)
@@ -188,15 +216,18 @@ prove an actual Oracle installation, PL/SQL compile or successful deinstall.
 
 The following commands are **real, destructive database acceptance tests**,
 run by `make build` after candidate verification, or independently on an existing
-candidate. They are not part of `make test`, `make check` or GitHub CI. Verify that the saved TEST
-connection points to an approved, dedicated disposable schema first.
+candidate. They are not part of `make test`, `make check` or GitHub CI. Use the
+developer-configured disposable TEST connection. These resets are
+preauthorized, and the commands perform automatic environment guards before
+reset; no separate connection-identity investigation is required.
 
 The complete acceptance command validates an existing candidate, upgrades
 TEST from the **latest stable published GitHub release** (tag on `master`),
 then performs a fresh install, deinstalls and verifies TEST is empty. The
-previous release is checked for tag ancestry, integrity and version **before**
-TEST reset. The formal candidate must be strictly newer than that published
-release. See [development flow](DEVELOPMENT_FLOW.md#formal-candidate-build-and-release-acceptance)
+previous release is checked for tag ancestry, version and available published
+checksums **before** TEST reset. The formal candidate must be strictly newer
+than that published release. See
+[development flow](DEVELOPMENT_FLOW.md#formal-candidate-build-and-release-acceptance)
 for the authoritative version and provenance policy.
 
 ```bash
@@ -213,6 +244,14 @@ no separate public `make test-install`, `test-upgrade` or `test-deinstall`
 commands. `make test-release` runs all three scripts sequentially and leaves
 TEST empty on success.
 
+Reset and deinstallation use the current checkout's
+`applications/blog-admin/supporting-objects/deinstall-script.sql`, not SQL
+extracted from the selected candidate. When selecting an older `RELEASE_DIR`,
+use a checkout whose deinstall script can clean up that candidate's objects.
+Installation checks each app's packaged version and rejects invalid `BLOG_`
+objects after both imports. The final deinstall check requires zero schema
+user objects and neither configured TEST application to remain.
+
 These scripts use temporary working directories under `${TMPDIR:-/tmp}` and
 remove them when they exit; **do not rely on persistent TEST logs under
 `build/deploy-logs/`**. Capture terminal/SQLcl diagnostics when troubleshooting.
@@ -224,8 +263,8 @@ If a check fails, use the smallest relevant command:
 
 | Symptom | First check |
 | --- | --- |
-| Missing tool or Git hook | Run `make doctor`; use `make setup RESET=YES` on a host, or rebuild the Dev/MCP image for container-installed tools |
-| Source/metadata/manifest inconsistency | `make check-schema`, then `make supporting` and review the diff |
+| Missing tool or Git hook | Application agent: report the failure. Developer/maintainer: run `make doctor`, use `make setup RESET=YES` on a host, or rebuild the relevant image for container-installed tools |
+| Source/metadata/manifest inconsistency | Correct authored inputs, run `make supporting` when generation is needed, review its diff, then run `make check-schema` |
 | Local APEXLang reference error | `make check-source` |
 | DEV/parity or release-version failure | `make check-release`; reconcile Git/DEV deliberately |
 | Corrupt candidate or unexpected ZIP content | `make verify-release RELEASE_DIR=...` |
@@ -242,7 +281,7 @@ a public GitHub release. Never rebuild between promotions.
 
 ```bash
 make qa RELEASE_DIR=build/releases/26.1.5.20261101
-# After QA acceptance and explicit production approval:
+# After QA acceptance, under the task's production authorization:
 make production RELEASE_DIR=build/releases/26.1.5.20261101
 ```
 
@@ -251,6 +290,8 @@ Git sources before connecting to the database. Production checks the candidate a
 does not re-run the full preflight or
 require Git to remain at the original version. Both import **packaged full SQL
 exports** (Admin first). `make production` is not a rollback command.
+Neither promotion command establishes that prior TEST/QA acceptance or
+authorization occurred; retain that evidence as part of the release record.
 
 For a GitHub release, publish both **prebuilt** ZIPs and `SHA256SUMS` from
 the selected candidate. Preserve `manifest.json` alongside the release assets
@@ -264,8 +305,9 @@ public `-latest` asset URLs only work after a GitHub release is published.
 Use the QA/UAT-to-PROD hotfix **only after explicit production approval**, when
 normal release promotion cannot safely carry a critical fix (for example when
 DEV is already ahead of PROD). The script does **not** run the normal preflight,
-version compatibility checks, candidate checksums or backup. It verifies the configured
-PROD target, schema and workspace before the first import. There is no
+version compatibility checks, candidate checksums or backup. It automatically
+verifies the configured PROD target, schema and workspace before the first
+import. There is no
 command-line confirmation flag; obtaining authorization is a separate process.
 A verified target does not replace the bypassed release gates.
 
@@ -317,20 +359,34 @@ confirmed. Record approvals and resulting versions.
 ## Schema changes
 
 1. Add or edit the authoritative source under `Database/`; package
-   specifications and bodies use paired `.pks` / `.pkb` files.
-2. Maintain **both** `Database/install.list` and `Database/upgrade.list`
-   for their different purposes. Upgrade DDL must be reviewed as a migration;
-   do not blindly add every install file to it.
+   specifications use `.pks` and bodies use `.pkb`.
+2. Update `Database/install.list` and `Database/upgrade.list` when their file
+   membership or execution order changes. Editing an already listed file
+   does not itself require a manifest change. Review upgrade DDL as a
+   migration; do not copy every fresh-install file into the upgrade list.
 3. If a table, view, package, FK, or Oracle Text preference is added or
    removed, edit
    `applications/blog-admin/supporting-objects/deinstall-script.sql`
    with the appropriate **DROP** and cleanup statements. This is SQL source,
    not an `@Database/...` include file.
-4. Run `make check-schema`, `make supporting`, then `make check-schema` again;
+4. Run `make supporting`, then `make check-schema`;
    review `git diff -- applications/`.
-5. Before release, execute fresh-install, upgrade and deinstall tests on the
-   **approved disposable TEST** environment.
+5. Apply the relevant SQL and compile PL/SQL in DEV under the task's
+   authorization. Import updated APEXLang/Supporting Objects definitions as
+   described in [DEV synchronization](#dev-synchronization); importing these
+   definitions does not execute the database scripts.
+6. For release work, `make build` includes upgrade, fresh-install and
+   deinstall acceptance on preauthorized disposable TEST. Retest an existing
+   candidate with `make test-release` when appropriate.
 
-The two metadata SQL files are Git authoritative. Preserve dynamic APEX
-application-ID expressions. The Public metadata `G_APP_VERSION` is rendered
-from `VERSION.txt`, never exported from a `BUILD_API` package.
+Manifest validation requires a specification and body for each included
+package, with all specifications before bodies. This validates source
+membership/order; it does not require changing a specification whenever its
+body changes.
+
+The two metadata SQL files are Git authoritative. `G_ADMIN_APP_ID` and
+`G_PUB_APP_ID` use
+`blog_util.int_to_vc2(apex_application_install.get_application_id)` so the
+installed values follow the target application's ID. Keep those expressions
+when changing metadata. Generation renders only the Public `G_APP_VERSION`
+literal from `VERSION.txt`.

@@ -3,7 +3,9 @@
 This describes the implemented automation, not a proposal for additional
 environments. See [automation README](../README.md) for commands,
 [environments](ENVIRONMENTS.md) for connection settings and the
-[runbook](RUNBOOK.md) for operational procedures.
+[runbook](RUNBOOK.md) for operational procedures. The
+[maintenance guide](MAINTENANCE.md) defines roles, task boundaries and
+documentation ownership.
 
 ## Source and build ownership
 
@@ -12,17 +14,26 @@ environments. See [automation README](../README.md) for commands,
 | `applications/blog-admin/`, `applications/blog/` | Git-tracked **APEXLang** sources, Supporting Objects and static assets |
 | `Database/` | Git-tracked schema DDL and `install.list` / `upgrade.list` execution order; package specs and bodies are `.pks` / `.pkb` |
 | `Database/Tables/foreign_keys.sql`, `Database/Indexes/foreign_key_indexes.sql` | Authoritative constraints and FK index definitions |
-| `applications/*/supporting-objects/install-scripts/metadata.sql` | Git-owned installation metadata; dynamic APEX application IDs must remain dynamic |
+| `applications/*/supporting-objects/install-scripts/metadata.sql` | Git-owned installation metadata; application-ID settings are evaluated during installation |
 | `applications/blog-admin/supporting-objects/deinstall-script.sql` | **Manually maintained** deinstallation SQL |
 | `VERSION.txt` | Release-version authority |
 | `build/releases/<version>/` | Checksummed, protected SQL release candidate (not tracked in Git) |
 
-`BUILD_API` is retired. `make supporting` assembles SQL from the repository
-without SQLcl, renders the Public `G_APP_VERSION` and postupgrade version from
-`VERSION.txt`, checks deinstall consistency and updates tracked Supporting
-Objects SQL. It never generates deinstall SQL or reads metadata from DEV.
-`Database/Views/BLOG_V_VERSION.sql` is included separately for Public.
-Changes to generated files must be reviewed before release.
+`make supporting` validates the Git-owned inputs and deinstall consistency,
+then updates the following tracked files without connecting to a database:
+
+| Input | Output under `applications/` |
+| --- | --- |
+| `Database/install.list` and its ordered source files | `blog-admin/supporting-objects/install-scripts/database-objects.sql` |
+| `Database/upgrade.list` and its ordered source files | `blog/supporting-objects/upgrade-scripts/database-objects-upgrade.sql` |
+| `Database/Views/BLOG_V_VERSION.sql` | `blog/supporting-objects/install-scripts/create-view-blog-v-version.sql` |
+| `VERSION.txt` | `G_APP_VERSION` literal in `blog/supporting-objects/install-scripts/metadata.sql` |
+| `automation/templates/postupgrade.sql.in` and `VERSION.txt` | `blog/supporting-objects/upgrade-scripts/postupgrade.sql` |
+
+The metadata files remain authored Git source; generation changes only the
+Public version literal and preserves the Admin metadata. The deinstall script
+is validated but never generated. Review the resulting diff before importing
+these definitions into DEV or building a release.
 
 `make source` explicitly exports APEXLang from DEV, preserving Git-owned
 Supporting Objects SQL and static files. `make build` reads DEV, verifies
@@ -30,6 +41,11 @@ strict release/source parity against Git, then exports **full application SQL
 with Supporting Objects**. It does not change the tracked APEXLang. These are
 separate modes of `automation/export_application.sh`; no combined default mode
 exists.
+
+`make sync-dev` imports the local APEXLang and Supporting Objects definitions
+with automatic Supporting Objects installation disabled. Applying database
+SQL and compiling PL/SQL in DEV is a separate step in the
+[development flow](DEVELOPMENT_FLOW.md#from-source-changes-to-promotion).
 
 ## Release implementation
 
@@ -51,28 +67,36 @@ exports from the candidate; they do not re-export applications in QA or PROD.
 **Release integrity:** the exporter sources
 `automation/lib/candidate_publish.sh`; an exclusive `flock` is acquired before
 DEV export. Publication stages and verifies a complete candidate on the same
-filesystem. Replacing an eligible **unpromoted** local candidate requires
-`OVERWRITE=YES`; the helper keeps backup/rollback state through final
-verification. TEST/QA/PROD/verification take shared candidate locks. Lock files
+filesystem. Replacement requires `OVERWRITE=YES` and is restricted by the
+[overwrite procedure](RUNBOOK.md#candidate-integrity-and-overwrite) to eligible
+unpromoted local candidates; the helper does not track approval or promotion
+history. It keeps backup/rollback state through final verification.
+TEST/QA/PROD/verification take shared candidate locks. Lock files
 live in `build/releases/.locks/`, are persistent and should **not** be deleted
 manually. A failed interrupted replacement can retain `.backup.*` recovery
 directories. See [safe candidate handling](RUNBOOK.md#candidate-integrity-and-overwrite).
 
 `make build` verifies application frontend assets before any DEV changes. It then
-assembles Git-owned Supporting Objects SQL, updates DEV versions,
-exports both applications to temporary space and compares them with Git. Only
+assembles Git-owned Supporting Objects SQL, updates both DEV application
+versions and live `BLOG_SETTINGS.G_APP_VERSION`, exports both applications to
+temporary space and compares them with Git. Only
 then does the exporter run the full `make check` gate (including application
 tests, not automation regression suites), **before publication**. The build verifies the candidate and runs real
 TEST acceptance; it fails if either gate fails. Stages remain sequential even
 under parallel Make. It never runs `source` or `sync-dev` automatically, and
-never silently resolves DEV/Git differences. Generated Supporting Objects may
-change tracked SQL; check the diff.
+never silently resolves DEV/Git differences. Neither generation nor DEV
+version preparation updates the tracked `application.apx` version fields;
+follow [release-version preparation](DEVELOPMENT_FLOW.md#prepare-a-release-version)
+before building. Generated Supporting Objects may change tracked SQL; check
+the diff.
 `make verify-release` checks manifest and checksums. `make release-check`
 combines strict source-version checks and artifact verification; it does **not**
 check the candidate's source fingerprint against the current tree. The QA
 promotion path **does** require that fingerprint match. PROD may promote an
 older QA-tested candidate from `RELEASE_DIR` even if the working source has
-moved forward, subject to approval and compatibility.
+moved forward, under the task's production authorization and after compatibility
+review. TEST/QA acceptance and promotion history are recorded by the operator,
+not enforced by the manifest verifier.
 
 ## Quality gates and tests
 
@@ -128,4 +152,4 @@ installation. The second import can fail after the first has already changed
 PROD. See the [emergency runbook](RUNBOOK.md#emergency-hotfix).
 
 **No staging target or automation is implemented.** Deployment code supports
-QA and production; legacy `Stack/terraform` is not part of this refactor.
+QA and production; legacy `Stack/terraform` is maintained separately.

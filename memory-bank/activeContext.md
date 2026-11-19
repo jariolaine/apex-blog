@@ -1,22 +1,27 @@
 # Active Context
 
-## PL/SQL package BLOG_AI findings
+## Current focus and recent work
 
-Status of the low-priority findings from the November 2026 review of
-`Database/Packages/BLOG_AI.pkb` (history in
-[`reference/blog-ai-remediation-2026-11.md`](reference/blog-ai-remediation-2026-11.md)):
+The remaining recorded application question is the `BLOG_AI` parameter-lookup
+contract below. Recent completed work concerned AI response handling and
+logging, application messages, and the Admin Google-authentication build option.
+The dated implementation history is in [Progress](progress.md).
 
-- **B6 — still open:** `get_param_value` re-raises `no_data_found` for unknown
-  keys.
+## Unresolved BLOG_AI parameter-lookup contract (B6)
 
-## Release follow-up
+[`BLOG_AI.get_param_value`](../Database/Packages/BLOG_AI.pkb) directly indexes
+its parameter map. An unknown key propagates `NO_DATA_FOUND`; the function
+has no existence check or exception handler.
 
-- Local candidate, `build/releases/26.1.6.20261117/`, was generated. Its
-  manifest records base commit `8db0019` with `gitDirtyAtBuild: true`; the
-  packaged exports contain the B5/B8 fixes in their final form — commit
-  `f33386fe` replaced the non-existent `apex_debug.debug()` calls with
-  `apex_debug.trace()` (payload dumps now log only at TRACE), rewrote
-  `README.md`, and bumped `VERSION.txt` to `Release 26.1.6.20261117`.
-- TEST acceptance results for this candidate were not independently verified
-  here, and no QA/PROD promotion is recorded. Do not promote or treat the
-  candidate as validated without checking the actual job outputs.
+The literal keys used by Admin
+[language-AI configuration](../applications/blog-admin/pages/p20015-language-ai-configuration.apx)
+and [generative-AI configuration](../applications/blog-admin/pages/p20016-generative-ai-configuration.apx)
+are present in `init_params`. The recorded finding does not identify a failing
+application caller, and no alternative behavior for unknown keys has been
+specified.
+
+The next decision for B6 is whether the exception is the intended contract or
+another outcome is required.
+
+Related call paths and implementation decisions are in the
+[BLOG_AI context](reference/blog-ai-remediation-2026-11.md).

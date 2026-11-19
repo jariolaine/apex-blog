@@ -37,30 +37,29 @@ def _database_target(description: str, effect: Literal['write_dev', 'reset_test'
 
 
 TARGET_SPECS: dict[str, TargetSpec] = {
-    'doctor': TargetSpec('Inspect local automation prerequisites and configuration.'),
-    'lint': TargetSpec('Run repository lint checks without database changes.'),
+    'lint': TargetSpec('Check repository formatting and lint rules.'),
     'assets': TargetSpec(
-        'Generate application CSS/JS from frontend/; modifies tracked application static files.',
+        'Generate application CSS/JS from frontend/; writes application static files.',
         category='generation', local_source_effect='generated_assets',
     ),
-    'check-assets': TargetSpec('Verify application CSS/JS outputs match frontend sources (read-only).'),
-    'test': TargetSpec('Run application tests; excludes automation infrastructure tests.'),
-    'check-schema': TargetSpec('Run offline schema consistency checks.'),
-    'check-source': TargetSpec('Run offline application source checks.'),
-    'validate': TargetSpec('Validate APEXLang locally using SQLcl; no database connection.'),
-    'check': TargetSpec('Run the full offline quality gate, including validation.'),
+    'check-assets': TargetSpec('Check generated application CSS/JS matches frontend sources without changing files.'),
+    'test': TargetSpec('Run application tests.'),
+    'check-schema': TargetSpec('Check database source lists, installation metadata, and deinstall SQL.'),
+    'check-source': TargetSpec('Check references in local APEXLang source.'),
+    'validate': TargetSpec('Validate local APEXLang without a database connection.'),
+    'check': TargetSpec('Run the full set of local project quality checks.'),
     'source': TargetSpec(
-        'Export APEXLang application source from DEV into local files; may overwrite .apx changes.',
+        'Export DEV APEXLang into applications/; may overwrite local .apx edits.',
         category='source', database_effect='read_dev',
         local_source_effect='may_overwrite_apx',
         authorization='before_overwriting_uncommitted_changes',
     ),
-    'sync-dev': _database_target('Synchronize local application definitions to DEV.',
+    'sync-dev': _database_target('Import local APEXLang application definitions into DEV.',
                                  'write_dev'),
     'pretest': _database_target(
-        'Export packaged SQL from DEV; test all stages on disposable TEST by default or select one stage. No saved release candidate.',
+        'Test current DEV applications on disposable TEST; resets TEST objects and data. No release candidate.',
         'reset_test'),
-    'test-release': _database_target('Run release acceptance on a dedicated disposable TEST schema.',
+    'test-release': _database_target('Test a saved release candidate on disposable TEST; resets TEST objects and data.',
                                      'reset_test'),
 }
 
@@ -83,20 +82,16 @@ def capabilities() -> dict:
             'cancellable': name in OFFLINE_TARGETS,
             'modifies_database': spec.database_effect in ('write_dev', 'reset_test'),
             'modifies_local_source': spec.local_source_effect != 'none',
-            'mcp_make_variables': [],
-            'allowed_test_values': sorted(PRETEST_SELECTIONS) if name == 'pretest' else [],
         })
+        if name == 'pretest':
+            details['allowed_test_values'] = sorted(PRETEST_SELECTIONS)
         targets.append(details)
     return {
         'targets': targets,
-        'mcp_accepts_make_variables': False,
-        'mcp_accepts_pretest_selector': True,
         'authorization_enforced_by_mcp': False,
-        'authorization_policy': 'Dedicated TEST resets are preauthorized; DEV writes, deployments and local overwrites follow AGENTS.md.',
-        'unsupported_targets': 'Use documented project commands under AGENTS.md when available; otherwise report the blocker.',
+        'authorization_policy': 'Follow AGENTS.md for DEV writes and local source overwrites; disposable TEST resets are preauthorized.',
         'terminal_states': sorted(FINISHED),
         'active_states': ['queued', 'running'],
-        'execution': 'One MCP worker; direct make is not covered by the worker lock.',
     }
 
 

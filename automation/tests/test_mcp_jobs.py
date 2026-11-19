@@ -20,7 +20,7 @@ class MCPJobTests(unittest.TestCase):
         self.store = JobStore(self.root / 'jobs')
 
     def test_allowlist_rejects_shell_and_production(self):
-        for target in ('production', 'qa', 'build', 'hotfix-production',
+        for target in ('doctor', 'production', 'qa', 'build', 'hotfix-production',
                        'source; echo hello', '--eval', 'sync-dev RELEASE_DIR=foo'):
             with self.subTest(target=target), self.assertRaises(ValueError):
                 self.store.submit(target)
@@ -36,7 +36,7 @@ class MCPJobTests(unittest.TestCase):
 
     def test_legacy_pending_jobs_are_cancelled_without_execution(self):
         old = self.store.submit('sync-dev')
-        queued = self.store.submit('doctor')
+        queued = self.store.submit('lint')
         with self.store.connect() as connection:
             # Old SQLite databases had an approved_by column. It must not
             # prevent startup after the new schema drops that column.
@@ -105,7 +105,7 @@ class MCPJobTests(unittest.TestCase):
             reopened.submit('test-upgrade')
 
     def test_log_chunks_and_path_validation(self):
-        job = self.store.submit('doctor')
+        job = self.store.submit('lint')
         path = self.store.job_dir(job['id']) / 'output.log'
         path.write_text('hello world', encoding='utf-8')
         part = self.store.logs(job['id'], 0, 5)

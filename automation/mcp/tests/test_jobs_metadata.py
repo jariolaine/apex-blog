@@ -13,7 +13,7 @@ from automation.mcp.jobs import (
 # Intentional independent contract: a new MCP command must be a deliberate
 # review, not an accidental side effect of editing metadata.
 EXPECTED_OFFLINE = {
-    'doctor', 'lint', 'check-assets', 'test', 'check-schema', 'check-source',
+    'lint', 'check-assets', 'test', 'check-schema', 'check-source',
     'validate', 'check',
 }
 EXPECTED_SOURCE = {'source'}
@@ -39,14 +39,11 @@ def test_discovery_is_derived_from_runtime_allowlist():
     result = capabilities()
     targets = {item['name']: item for item in result['targets']}
     assert set(targets) == ALLOWED_TARGETS
-    assert result['mcp_accepts_make_variables'] is False
-    assert result['mcp_accepts_pretest_selector'] is True
     assert result['authorization_enforced_by_mcp'] is False
     assert set(result['terminal_states']) == FINISHED
     assert set(result['active_states']) == {'queued', 'running'}
     for name, entry in targets.items():
         assert entry['description']
-        assert entry['mcp_make_variables'] == []
         assert entry['cancellable'] == (name in OFFLINE_TARGETS)
         assert entry['modifies_database'] == (name in DATABASE_TARGETS)
         assert entry['modifies_local_source'] == (name in SOURCE_TARGETS or name == 'assets')
@@ -64,18 +61,37 @@ def test_discovery_is_derived_from_runtime_allowlist():
     assert targets['pretest']['cancellable'] is False
     assert targets['pretest']['allowed_test_values'] == ['deinstall', 'install', 'upgrade']
     assert targets['sync-dev']['authorization'] == 'required'
+    assert all('allowed_test_values' not in target for name, target in targets.items()
+               if name != 'pretest')
+    assert 'doctor' not in targets
 
 
 def test_only_allowed_commands_can_be_submitted(tmp_path: Path):
     store = JobStore(tmp_path / 'jobs')
-    for value in ('build', 'qa', 'production', 'check-release', 'verify-release',
+    for value in ('doctor', 'build', 'qa', 'production', 'check-release', 'verify-release',
                   'release-check', 'check OBJECTS=NO', 'lint; echo BAD'):
         with pytest.raises(ValueError, match='disallowed'):
             store.submit(value)
-    submitted = store.submit('doctor')
-    assert submitted['target'] == 'doctor'
+    submitted = store.submit('lint')
+    assert submitted['target'] == 'lint'
     assert submitted['state'] == 'queued'
     assert len(submitted['id']) == 24
+
+
+def test_retired_doctor_job_is_cancelled_on_restart(tmp_path: Path):
+    store = JobStore(tmp_path / 'jobs')
+    # A previously queued environment check must not execute after upgrade.
+    job_id = 'd' * 24
+    with store.connect() as connection:
+        connection.execute('''
+            INSERT INTO jobs (id, target, state, submitted_at, updated_at)
+            VALUES (?, 'doctor', 'queued', 1, 1)
+        ''', (job_id,))
+    reopened = JobStore(store.directory)
+    job = reopened.get(job_id)
+    assert job['state'] == 'cancelled'
+    assert job['finished_at'] is not None
+    assert reopened.claim_next() is None
 
 
 def test_status_and_result_distinguish_queued_from_success(tmp_path: Path):
@@ -100,7 +116,7 @@ def test_status_and_result_distinguish_queued_from_success(tmp_path: Path):
 
 def test_failed_cancelled_and_interrupted_are_not_success(tmp_path: Path):
     store = JobStore(tmp_path / 'jobs')
-    failed = store.submit('doctor')['id']
+    failed = store.submit('lint')['id']
     store.claim_next()
     store.finish(failed, 'failed', 2)
     assert store.status(failed)['successful'] is False
@@ -124,7 +140,7 @@ def test_failed_cancelled_and_interrupted_are_not_success(tmp_path: Path):
 
 def test_end_of_log_does_not_mean_job_is_complete(tmp_path: Path):
     store = JobStore(tmp_path / 'jobs')
-    job_id = store.submit('doctor')['id']
+    job_id = store.submit('lint')['id']
     empty = store.logs(job_id)
     assert empty['end_of_log'] is True
     assert store.status(job_id)['is_terminal'] is False
@@ -260,7 +276,7 @@ def test_start_wait_rejects_unsupported_target_without_submitting(tmp_path: Path
 
 def test_result_immediate_check_is_progress_only(tmp_path: Path):
     store = JobStore(tmp_path / 'jobs')
-    job_id = store.submit('doctor')['id']
+    job_id = store.submit('lint')['id']
     status = asyncio.run(store.wait_for_result(job_id, timeout_seconds=0))
     assert status['state'] == 'queued'
     assert status['is_terminal'] is False
@@ -320,7 +336,7 @@ def test_result_wait_timeout_does_not_cancel_job(tmp_path: Path):
 def test_result_wait_all_terminal_states(tmp_path: Path, terminal_state, exit_code,
                                          expected_success):
     store = JobStore(tmp_path / 'jobs')
-    job_id = store.submit('doctor')['id']
+    job_id = store.submit('lint')['id']
     if terminal_state == 'cancelled':
         store.request_cancel(job_id)
     else:
@@ -399,7 +415,7 @@ def test_unified_logs_support_normal_and_sqlcl_output(tmp_path: Path):
 ])
 def test_unified_logs_reject_unlisted_sqlcl_names(tmp_path: Path, invalid_name: str):
     store = JobStore(tmp_path / 'jobs')
-    job_id = store.submit('doctor')['id']
+    job_id = store.submit('lint')['id']
     sqlcl_dir = store.job_dir(job_id) / 'sqlcl'
     sqlcl_dir.mkdir()
     (sqlcl_dir / 'known.log').write_text('ok', encoding='utf-8')
@@ -409,7 +425,7 @@ def test_unified_logs_reject_unlisted_sqlcl_names(tmp_path: Path, invalid_name: 
 
 def test_unified_logs_reject_sqlcl_symlink(tmp_path: Path):
     store = JobStore(tmp_path / 'jobs')
-    job_id = store.submit('doctor')['id']
+    job_id = store.submit('lint')['id']
     job_dir = store.job_dir(job_id)
     sqlcl_dir = job_dir / 'sqlcl'
     sqlcl_dir.mkdir()

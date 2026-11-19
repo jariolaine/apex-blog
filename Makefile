@@ -9,32 +9,34 @@ help:
 	@printf '%s\n' \
 	  'Development:' \
 	  '  make assets                        Generate application CSS/JS from frontend/' \
-	  '  make supporting                    Generate Supporting Objects from Git' \
-	  '  make source                        Export APEXLang from DEV to applications/' \
+	  '  make supporting                    Update Supporting Objects under applications/ from Database/ and VERSION.txt' \
+	  '  make source                        Export DEV APEXLang to applications/ (may overwrite local edits)' \
 	  '  make sync-dev                      Import local APEXLang into DEV (authorization required)' \
 	  '' \
 	  'Quality checks:' \
-	  '  make lint                          Run repository linters (pre-commit)' \
-	  '  make check-assets                  Verify generated CSS/JS (read-only)' \
-	  '  make test                          Run application tests (not automation regression tests)' \
-	  '  make check-schema                  Check manifests, metadata and deinstall SQL' \
-	  '  make check-source                  Validate local APEXLang source references' \
-	  '  make validate                      Validate APEXLang locally using SQLcl' \
-	  '  make check                         Run the full offline quality gate' \
+	  '  make lint                          Check repository formatting and lint rules' \
+	  '  make check-assets                  Check generated CSS/JS matches frontend sources (read-only)' \
+	  '  make test                          Run application tests' \
+	  '  make check-schema                  Check database source lists, metadata and deinstall SQL' \
+	  '  make check-source                  Check local APEXLang source references' \
+	  '  make validate                      Validate APEXLang without a database connection' \
+	  '  make check                         Run all local project quality checks' \
 	  '' \
-	  'Disposable TEST:' \
-	  '  make pretest                       Test live DEV SQL on TEST (TEST=install|upgrade|deinstall; default all; GitHub baseline)' \
-	  '  make test-release                  Test verified candidate: all three stages (RELEASE_DIR=path optional; GitHub baseline)' \
+	  'Disposable TEST (resets test objects and data):' \
+	  '  make pretest                       Test current DEV applications (TEST=install|upgrade|deinstall; default all)' \
+	  '  make test-release                  Test a saved candidate, all three stages (RELEASE_DIR=path optional)' \
 	  '' \
 	  'Release and deployment:' \
-	  '  make build                         Build and test candidate (OVERWRITE=YES optional; GitHub baseline)' \
+	  '  make build                         Build and test candidate; updates DEV and resets TEST (authorization required; OVERWRITE=YES optional)' \
 	  '  make release-check                 Check release source and candidate (RELEASE_DIR=path optional)' \
-	  '  make qa                            Deploy candidate to QA (RELEASE_DIR=path optional)' \
-	  '  make production                    Deploy approved candidate to PROD (RELEASE_DIR=path optional)' \
+	  '  make qa                            Deploy candidate to UAT (authorization required; RELEASE_DIR=path optional)' \
+	  '  make production                    Deploy approved candidate to PROD (authorization required; RELEASE_DIR=path optional)' \
 	  '' \
 	  'Emergency hotfix:' \
-	  '  make hotfix-export                 Export both QA/UAT apps as SQL' \
-	  '  make hotfix-production             Import hotfix into PROD (OBJECTS=YES|NO; default YES)'
+	  '  make hotfix-export                 Export UAT apps for a requested hotfix (overwrites saved hotfix exports)' \
+	  '  make hotfix-production             Deploy hotfix to PROD (authorization required; OBJECTS=YES|NO; default YES can change schema/data)' \
+	  '' \
+	  'Environment setup and diagnostics: automation/README.md'
 
 # The preflight is enforced INSIDE the DEV/QA scripts, so direct invocations
 # cannot bypass it. Do not duplicate it as a Makefile prerequisite.

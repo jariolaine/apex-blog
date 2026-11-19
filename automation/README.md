@@ -1,8 +1,46 @@
 # APEX Blog automation
 
-Run commands from the repository root. `make help` lists application development,
-validation, release, and deployment commands. Automation setup and diagnostics
-are documented here for maintainers.
+This automation was created to fill a tooling gap in developing and releasing
+APEX packaged applications for recipients with access only to APEX App Builder.
+The deliverable is one or more standard APEX SQL exports containing the
+application definitions and Supporting Objects scripts to install or upgrade
+the application-owned database schema. Recipients import these files and run
+Supporting Objects through App Builder using a web browser, without a SQL*Net
+connection, the source checkout, command-line tools, or separately executed
+database migration scripts.
+
+This requirement matters for environments such as Oracle Cloud APEX Service,
+where [inbound SQL*Net connectivity is unavailable](https://docs.oracle.com/en/cloud/paas/apex/gsadd/restrictions-and-limitations.html).
+Making installation and upgrade approachable for beginners and citizen
+developers is also a primary goal. APEX Blog delivers two application exports,
+installed Admin first, then Public; the end-user README owns that procedure.
+
+Oracle already provides [Supporting Objects packaging](https://docs.oracle.com/en/database/oracle/apex/26.1/htmdb/how-to-create-a-custom-packaged-application.html).
+This automation coordinates the additional project work: assembling Git-owned
+database sources into those definitions, generating frontend assets, reconciling
+APEX source, aligning versions, and checking the resulting release. Its purpose
+is to make that workflow reliable and convenient for developers and coding
+agents. The current build and acceptance commands use SQLcl against prepared
+development environments. The
+[packaged-application design and tool review](docs/PACKAGED_APPLICATIONS.md)
+distinguishes producer access from recipient requirements, explains the
+existing conditional upgrades, and assesses comparable tools and release
+practices against the App Builder delivery contract.
+
+This README is the entry point for developer setup and for maintenance of the
+automation, MCP service, and coding-agent guidance. Read
+[Maintaining automation and agent guidance](docs/MAINTENANCE.md) for the
+established roles, constraints, documentation ownership, and interface-design
+requirements before changing those components.
+
+The human developer prepares the environment, named database connections, and
+automation parameters before application work begins. Application agents use
+that prepared configuration. The maintenance guide owns the full policy and its
+rationale; the documents below explain the implemented setup and workflows.
+
+Run commands from the repository root. `make help` lists the everyday development,
+validation, release, and deployment interface. Setup and diagnostics are
+documented here for the developer.
 
 ## Setup and diagnostics
 
@@ -15,7 +53,8 @@ Make targets but are intentionally omitted from `make help`.
   and `RESET=YES` is rejected; rebuild the image when tools need updating.
   A host requires Python with `venv`, Node.js/npm, and SQLcl with supported Java.
 - `make doctor` — Read-only checks of local tools and setup; does not check
-  database connections. Also available through the automation MCP service.
+  database connections. Run it directly during developer setup or diagnostics;
+  it is not exposed through MCP.
 
 ## Optional MCP service
 
@@ -39,9 +78,9 @@ plugin static files are not part of this pipeline.
 The compiler/minifier versions are pinned in
 `automation/ci/install_frontend_tools.sh` and installed when the automation
 container image is built. CI uses the same installation script. Their direct
-versions are pinned, but transitive npm dependencies are not lockfile-pinned. After first
-introducing the pipeline, run `make assets` and review the generated CSS/JS
-diff before enabling deployment.
+versions are pinned, but transitive npm dependencies are not lockfile-pinned.
+After changing the asset map or compiler/minifier versions, regenerate the
+assets and review the resulting CSS/JS changes as part of that maintenance work.
 
 ## VS Code development container (optional)
 
@@ -87,7 +126,7 @@ containers are documented in the
 See [**Development flow**](docs/DEVELOPMENT_FLOW.md) for the Mermaid diagrams,
 command selection, optional `make pretest TEST=...`, full `make build`
 sequence, and promotion steps. This is the authoritative command-order guide;
-this README covers setup, tooling and entry points only.
+this README provides the setup and maintenance entry points.
 
 `make help` lists the everyday Make interface. `make test` runs application
 tests only; automation-maintainer suites in `automation/tests/` and
@@ -95,6 +134,11 @@ tests only; automation-maintainer suites in `automation/tests/` and
 
 ## Detailed reference
 
+- [Packaged-application design and tool review](docs/PACKAGED_APPLICATIONS.md) —
+  delivery goal, native Oracle capabilities, related tools, and release practices
+- [Maintenance and agent-guidance design](docs/MAINTENANCE.md) — roles, source and
+  environment policy, documentation boundaries, public interfaces, and Memory
+  Bank continuity
 - [Development flow](docs/DEVELOPMENT_FLOW.md) — when to run each Make command,
   with Mermaid diagrams and the pretest selector
 - [Runbook](docs/RUNBOOK.md) — DEV synchronization, preparing releases,
@@ -110,4 +154,4 @@ tests only; automation-maintainer suites in `automation/tests/` and
 
 The source repository owns the automation. Downloadable application ZIPs contain
 full SQL application exports, not the automation scripts. Legacy Terraform is
-maintained separately and is not part of this workflow refactor.
+maintained separately.

@@ -1,65 +1,41 @@
-# BLOG_AI remediation — November 2026
+# BLOG_AI application context
 
-Historical investigation and implementation details for `Database/Packages/BLOG_AI.pkb`. These
-findings were recorded on **2026-11-14–15**. Check current source before applying further
-changes.
+The November 2026 review concerned
+[`BLOG_AI`](../../Database/Packages/BLOG_AI.pkb). Its
+[package specification](../../Database/Packages/BLOG_AI.pks) exposes AI
+configuration, parameter lookup, language/translation response parsing, and
+comment sentiment persistence.
 
-## Completed work (B1–B4)
+## Application call paths
 
-The public `.pks` API was unchanged (`get_param_value`, `set_lang_ai`, `set_gen_ai`,
-`merge_sentiment`, `get_lang_code`, `get_translation`). The Git-owned Supporting Objects
-install/upgrade SQL was regenerated from the updated body.
+- [Public comment entry](../../applications/blog/pages/p01001-comment.apx) and
+  [Admin comment editing](../../applications/blog-admin/pages/p00062-comment-form.apx)
+  use the `BLOG_LANGUAGE_AI` REST source's `single_document` operation and
+  call `GET_LANG_CODE`, `GET_TRANSLATION`, and `MERGE_SENTIMENT`.
+- [Language-AI configuration](../../applications/blog-admin/pages/p20015-language-ai-configuration.apx)
+  and [generative-AI configuration](../../applications/blog-admin/pages/p20016-generative-ai-configuration.apx)
+  call `BLOG_AI` to configure the integrations.
+- [Post properties](../../applications/blog-admin/pages/p00012-post-properties.apx)
+  uses native APEX `showAiAssistant` and `generateTextWithAi` actions.
+  `blog.admin.ai.valueToAiInput` and `blog.admin.ai.useResponse` in
+  [admin.js](../../frontend/js/admin.js) connect the page items to those actions.
 
-- **B1 — dead paths removed:** Deleted body-only `get_sentiments` and `gen_ai_chat`, their
-  `param_t('gen_ai_generate_msg')` / `param_t('gen_ai_generate_prompt_msg')` keys, and related
-  debug lines. Callers were rechecked as zero. The active generative-AI flow uses APEX AI Agents
-  on Admin p12; active sentiment processing uses REST `single_document` → `get_lang_code` /
-  `get_translation` / `merge_sentiment` on Public p1001 and Admin p62. The removed
-  `get_sentiments` had an undeclared `languageCode` parameter and hardcoded
-  `p_language => 'en'`.
-- **B2 — stale configuration snapshot removed:** Deleted cached
-  `param_t('lang_ai_compartment_ocid')`. Active flows obtain the setting through
-  `blog_util.get_attribute_value` (`result_cache`, automatically invalidated); Admin p20015
-  retains the attribute *name* through `get_param_value('lang_ai_compartment_param_name')`.
-- **B3 — initialization stabilized:** As a result of B2, `init_params` assigns literals only and
-  no longer raises `no_data_found` from an absent settings row at package instantiation.
-- **B4 — JSON parsing hardened:** Parsers return early on null input and check for `documents`
-  before reading its array; `get_lang_code` also checks `languages`. `merge_sentiment` skips
-  entries with absent/non-numeric `key` using `regexp_like(key, '^[0-9]+$')` before `to_number`;
-  `get_lang_code` skips entries without `code` or `score`; `get_translation` leaves null when
-  `translatedText` is absent. Skipped positions are logged with `blog_util.int_to_vc2(i)`.
+## Implementation decisions
 
-The review found **no bug** in the checked `apex_exec.execute_rest_source` /
-`get_parameter_clob` usage, `response_body` parameter, `apex_ai.chat` signature and lowercase
-`'user'` role, `apex_credential.set_persistent_credentials` key/value signature, or spec `out`
-versus body `out nocopy` (legal; also used in `BLOG_OCI_OS`).
+- `init_params` stores static identifiers and setting names. The comment
+  pages obtain the compartment value through `BLOG_UTIL.get_attribute_value`
+  when needed, avoiding a settings-table read during package initialization.
+- `get_lang_code` defaults to `en` and selects the highest-scoring language
+  with both `code` and `score` from the first response document.
+  `get_translation` defaults to null and reads the first document's
+  `translatedText` when present.
+- `merge_sentiment` skips missing/non-digit document keys, checks that the
+  comment still exists, and handles duplicate-value and missing-parent-key
+  errors around the merge. These guards account for a comment being deleted
+  while its sentiment response is being processed.
+- The three response routines log input JSON with `apex_debug.trace`.
+- Null payloads and the specified missing fields have fallback behavior.
+  The routines do not provide general exception handling for malformed JSON.
 
-## Verification at the time
-
-Offline checks passed (`make lint`, `make check-source`, `make test` — 49 tests, and
-`make check-schema`). The new body compiled during
-**real disposable-TEST upgrade and fresh-install** acceptance. The deinstall test left zero user
-objects. This historical verification does not prove current DEV, TEST or PROD state.
-
-## Intentionally open low-severity findings
-
-Recorded as open at the time of the review:
-
-- **B5:** A possible foreign-key race if a comment is deleted before sentiment merge.
-- **B6:** `get_param_value` re-raises `no_data_found` for unknown keys.
-- **B8:** Verbose info-level logging of comment text and response JSON.
-
-**Update 2026-11-16:** B5 and B8 were resolved in Git source only (not yet
-deployed to any database); see [`../activeContext.md`](../activeContext.md).
-B6 remains open.
-
-**Update 2026-11-17:** The B8 calls committed on 2026-11-16 used
-`apex_debug.debug()`, which does not exist in the `apex_debug` API; offline
-gates do not compile PL/SQL, so this survived until commit `f33386fe`, where
-all three input-document calls became `apex_debug.trace()` and payload dumps
-now appear only at TRACE level. Deployment to any database remains
-unverified.
-
-B7 became moot when package specification `CHANGE LOG` blocks were removed on 2026-11-14.
-Continue with current source review and task-specific testing rather than treating this history
-as an execution instruction.
+The unresolved parameter-lookup behavior is recorded in
+[active context](../activeContext.md).

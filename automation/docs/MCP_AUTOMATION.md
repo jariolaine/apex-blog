@@ -4,13 +4,17 @@ This guide documents the optional VS Code Dev Container and the Docker MCP
 service. Ordinary APEX/PLSQL development follows [`AGENTS.md`](../../AGENTS.md)
 and the MCP tools' published descriptions; it does not require this guide.
 
+See [automation maintenance](MAINTENANCE.md) for developer and maintainer
+responsibilities, public-interface design, and documentation ownership.
+
 The optional MCP endpoint runs the existing `Makefile` and `automation/`
 commands. It does **not** implement a second deployment path. The full
 preflight inside `import_apps_to_dev.sh` and the DEV/TEST schema/workspace
 verification in the Bash scripts remain mandatory.
 
-The service runs jobs independently of MCP requests. Starting a job can wait briefly
-for a quick result and always returns a job ID for later retrieval.
+The service runs jobs independently of MCP requests. Starting a job can wait
+briefly for a quick result; an accepted start response includes a job ID for
+later retrieval.
 
 Its **single worker** serializes all jobs submitted through this
 MCP service, retains stdout/stderr and SQLcl diagnostics in a Docker volume,
@@ -43,11 +47,12 @@ pre-commit hook environments **during the image build**, under
 `/opt/apex-blog/`, outside the `/workspace` bind mount. Tool changes require
 image rebuilds; service startup no longer downloads dependencies.
 
-Direct Python tool versions are pinned in `automation/ci/requirements.txt` and
-npm uses the committed `package-lock.json`. Some transitive Python/frontend
-dependencies and the Oracle SQLcl/JDK `latest` URLs remain unpinned; a lockfile,
-versioned downloads and checksums are still needed for bit-for-bit image
-reproducibility.
+Direct Python lint tool versions are pinned in `automation/ci/requirements.txt`,
+and npm uses the committed `package-lock.json`. The MCP SDK uses the version
+range in `automation/mcp/requirements.txt`, so a rebuild can resolve a different
+compatible SDK version. Some transitive Python/frontend dependencies and the
+Oracle SQLcl/JDK `latest` URLs also remain unpinned; a lockfile, versioned
+downloads and checksums are still needed for bit-for-bit image reproducibility.
 
 The MCP service runs non-root as `agent`, with a configurable UID/GID. The only
 persistent MCP named volume is **`jobs_data`**, holding the SQLite job
@@ -70,9 +75,9 @@ The `.env.example` file sets `COMPOSE_FILE` to the DB file followed by the MCP
 file; both declare the **`blog_automation`** project. Continue using the
 same project name for an existing database. Changing it would create separate
 project-scoped named volumes; never delete the TEST database data volumes
-as part of the MCP tooling migration. The repository-root `docker-compose.yml` is an
-empty placeholder; the sample `.env` chooses services. Use absolute host
-paths for `APEX_BLOG_DEV_SQLCL_PROFILE_DIR` and
+as part of the MCP tooling migration. The root `.env` selects the Compose files
+through `COMPOSE_FILE`. Use absolute host paths for
+`APEX_BLOG_DEV_SQLCL_PROFILE_DIR` and
 `APEX_BLOG_MCP_SQLCL_PROFILE_DIR` because relative paths depend on Compose's
 base file. These MUST be different host directories: MCP must never mount the
 developer's broader set of connections. See [SQLcl profile isolation](#sqlcl-profile-isolation).
@@ -212,11 +217,12 @@ The Dev image never mounts the MCP profile source.
 The **MCP worker** requires `APEX_BLOG_MCP_SQLCL_PROFILE_DIR`, mounts it
 read-only at the same internal path, and copies it to its separate, private
 `/home/agent/.dbtools` before the worker starts. It does not see the Dev home
-or the Dev SQLcl profile source. MCP jobs still use the existing `blog_dev`
-and `blog_tst` saved connection names; keep only the corresponding DEV/TEST
-connections in this directory. Review the directory's contents before using
-it; the mount itself cannot classify saved profiles or stop a deliberately
-misconfigured operator from pointing at the developer's full directory.
+or the Dev SQLcl profile source. MCP jobs use the configured DEV and TEST saved
+connection names, whose defaults are `blog_dev` and `blog_tst`; keep only the
+corresponding DEV/TEST connections in this directory. Review the directory's
+contents during setup; the mount itself cannot classify saved profiles or stop
+a deliberately misconfigured operator from pointing at the developer's full
+directory.
 
 **Wallet isolation matters too:** `APEX_BLOG_EXTERNAL_DIR` is currently
 shared by both Compose configurations. If the MCP worker uses this external
@@ -356,7 +362,8 @@ SQLcl profiles so their wallet reference uses the container path above.
 The MCP worker copies its read-only `APEX_BLOG_MCP_SQLCL_PROFILE_DIR` into its
 private runtime home before running jobs. The Dev Container reads the separate
 `APEX_BLOG_DEV_SQLCL_PROFILE_DIR` source; neither source is replaced by the
-wallet mount. Authorize connection tests and all DEV/TEST writes as usual.
+wallet mount. The developer tests connectivity during setup. DEV writes require
+task authorization; application testing on disposable TEST is preauthorized.
 
 **Certificates:** `.crt` and `.pem` files under `certificates/` must contain
 one valid PEM-encoded certificate each. Only install CAs you actually trust;
@@ -415,9 +422,12 @@ BuildKit-capable Docker Compose is required.
 
 ## VS Code and Cline configuration
 
-**Cline in VS Code:** the Cline extension does not currently provide a
-repository-local MCP configuration that it automatically discovers. Its MCP
-server list is user-scoped. Open **Cline > MCP Servers > Configure > Configure
+**Cline in VS Code:** follow the official
+[Cline MCP setup instructions](https://docs.cline.bot/mcp/mcp-overview).
+The Cline extension does not currently provide a repository-local MCP
+configuration that it automatically discovers. Its MCP server list is
+[user-scoped](https://docs.cline.bot/getting-started/config).
+Open **Cline > MCP Servers > Configure > Configure
 MCP Servers** and merge the following **APEX Blog** entry into Cline's
 existing `mcpServers` object (preserve other servers). The canonical entry is
 shown below. Keep the repository's
@@ -437,14 +447,12 @@ shown below. Keep the repository's
 }
 ```
 
-The `streamableHttp` transport spelling is **Cline-specific**. Leaving the
-`type` out can select legacy SSE instead. Check the Cline MCP panel for a
-connected server and exposed tools. The configured server name **APEX Blog**
-produces the Cline tool prefix `apex_blog__`: for example,
-`apex_blog__automation_capabilities` and `apex_blog__automation_start`.
-Start with the read-only `apex_blog__automation_capabilities`, not a
-database-changing target. The raw MCP tool names are `automation_*`; Cline adds
-the server prefix, so use the complete `apex_blog__...` names in agent instructions.
+The `streamableHttp` transport spelling is **Cline-specific**. When first
+registering this server, check the Cline MCP panel for a connected server and
+exposed tools, then call the read-only `automation_capabilities` to confirm
+discovery. This is a one-time registration check.
+The server publishes raw names such as `automation_start`; clients may add a
+namespace. Use the names actually exposed by the configured client.
 
 Because this Cline registration is global, its tools may remain visible in
 other workspaces. The container is still bound to **this** checkout, so a
@@ -453,11 +461,13 @@ when working on unrelated projects, or use separate isolated Cline profiles
 where your environment supports them. The workspace rule
 [`.clinerules/project-workflow.md`](../../.clinerules/project-workflow.md) guides
 Cline in this repository but **is not an access-control boundary**. Keep
-`autoApprove` empty, especially for `apex_blog__automation_start` and
+`autoApprove` empty, especially for `automation_start` and
 potentially sensitive logs.
 
 **VS Code built-in Copilot harness (not Cline):** current VS Code uses
 workspace-root `.mcp.json` with a `mcpServers` object and `"type": "http"`.
+See the official
+[VS Code MCP configuration reference](https://code.visualstudio.com/docs/agents/reference/mcp-configuration).
 Copy [`examples/vscode-workspace-mcp.json`](../mcp/examples/vscode-workspace-mcp.json)
 into that path if you use its built-in agent:
 
@@ -476,8 +486,9 @@ Oracle publishes an APEXlang skill at
 <https://github.com/oracle/skills/tree/main/apex/apexlang>. This helps the
 **coding agent** edit `.apx` source; it is not a Docker/SQLcl runtime
 dependency. Cline discovers project skills under `.cline/skills/` and
-user-specific skills under `~/.cline/skills/`. Install the skill **where the
-Cline extension executes**:
+user-specific skills under `~/.cline/skills/`; see
+[Cline's skill discovery documentation](https://docs.cline.bot/customization/skills).
+Install the skill **where the Cline extension executes**:
 
 - If Cline runs as a remote VS Code extension in the Dev Container, use
   `/home/vscode/.cline/skills/` (persistent home) or the project skill folder.
@@ -488,65 +499,78 @@ are visible to Cline. A skill installed only in the MCP worker is not
 necessarily available to the editor's coding agent.
 
 The repository targets **APEX 26.1**. Select Oracle's corresponding
-APEXlang reference guidance and treat `AGENTS.md`, `.clinerules/`, and
-`automation/` as authoritative for release restrictions. The Oracle skill's
-optional direct SQLcl import/connection workflows must not bypass the
-authorization requirements for DEV writes (disposable TEST resets are preauthorized).
+APEXlang syntax guidance. [`AGENTS.md`](../../AGENTS.md) owns the application
+workflow, source ownership, and task authorization. Any skill instructions
+for direct SQLcl imports or connections must follow those project rules.
 
 `make doctor` skips the optional Git-hook installation check inside
 image-managed containers. Git hooks are not installed in the host checkout at
 image build/startup, but pre-commit hook environments are prewarmed in the image.
-All lint tool and repository checks still run.
+Doctor still checks tool availability and expected repository files. It does
+not run the application quality checks; use `make check` for the local quality
+gate.
 
 The Docker image needs a non-root UID that can write the checkout and Docker
 volumes. On Docker Desktop or rootless hosts, adapt the UID/GID settings.
-Saved connections are copied from the read-only host mount; configure SQLcl
-inside the container using the same `HOME` path and test connectivity only
-after human authorization. A successful `make doctor` proves only tool
-presence, **not** database connectivity or permission.
+Saved connections are copied from the read-only host mount. During setup, the
+developer configures SQLcl inside the container using the same `HOME` path and
+tests connectivity. A successful `make doctor` does not establish database
+connectivity or permission.
 
 ## Published MCP tool contract
 
 The MCP server implementation defines the supported target registry in
 `automation/mcp/jobs.py` (`TARGET_SPECS`). The
-`apex_blog__automation_capabilities` response and the enum for
-`apex_blog__automation_start.target` derive from that registry. Make targets
+`automation_capabilities` response and the enum for
+`automation_start.target` derive from that registry. Make targets
 outside the registry and arbitrary Make variables cannot be submitted through
 this interface; use normal Make commands for those operations.
 
-The configured **APEX Blog** server name produces the `apex_blog__` prefix in
-Cline. Other clients may present the raw `automation_*` tool names.
+`doctor` is deliberately not available through MCP. Environment setup and
+diagnostics are developer responsibilities: follow [automation/README.md](../README.md)
+and run `make doctor` directly when necessary. MCP capability discovery contains
+only supported application-development operations; it does not describe the
+MCP worker's infrastructure or accept arbitrary Make variables.
 
-| Tool name as exposed in this configuration | Purpose |
+The following names are the raw tool names published by the server. Use any
+client-specific namespacing shown by your configured client when invoking them.
+
+| Server tool name | Purpose |
 | --- | --- |
-| `apex_blog__automation_capabilities` | Return target metadata and side effects without starting work |
-| `apex_blog__automation_start` | Queue an allowed target; wait up to 30 seconds by default and return its ID plus progress or final result |
-| `apex_blog__automation_result` | Wait for completion or return current progress; on completion, return exit code, output tail and diagnostic filenames |
-| `apex_blog__automation_logs` | Read combined output or a retained SQLcl diagnostic by byte offset |
-| `apex_blog__automation_list` | List recent jobs and recover job IDs |
-| `apex_blog__automation_cancel` | Request cancellation for offline checks only |
+| `automation_capabilities` | Return target metadata and side effects without starting work |
+| `automation_start` | Queue an allowed target; wait up to 30 seconds by default and return its ID plus progress or final result |
+| `automation_result` | Wait for completion or return current progress; on completion, return exit code, output tail and diagnostic filenames |
+| `automation_logs` | Read combined output or a retained SQLcl diagnostic by byte offset |
+| `automation_list` | List recent jobs and recover job IDs |
+| `automation_cancel` | Request cancellation for offline checks only |
 
 The job lifecycle has active states `queued` and `running`, and terminal states
 `succeeded`, `failed`, `cancelled`, and `interrupted`. A job only succeeds when
 its terminal state is `succeeded` and its exit code is `0`.
-`apex_blog__automation_start(target, wait_seconds=30)` submits the job and waits
+The response represents that outcome as `successful=true`; active jobs have
+`successful=null`, and failed, cancelled, or interrupted jobs are not successful.
+`automation_start(target, wait_seconds=30)` submits the job and waits
 up to 30 seconds by default (maximum 60), returning early if finished. Set
 `wait_seconds=0` to submit without waiting. The response always includes `id`
-and `is_terminal`; when terminal it also includes exit code and diagnostics.
-Call `automation_result` only when the start response is not terminal.
-`apex_blog__automation_result(job_id, timeout_seconds=120)` waits for completion
+and `is_terminal`; active responses have `exit_code=null`. If the start response
+is not terminal, continue with `automation_result` using the same ID. A
+completed result can also be retrieved again with that tool. Recover a lost ID
+with `automation_list`; do not submit another job because a request timed out
+or its response was lost.
+
+`automation_result(job_id, timeout_seconds=120)` waits for completion
 and returns as soon as it is detected (maximum 300 seconds per request). Set
 `timeout_seconds=0` for an immediate status snapshot. If still queued/running at
 its deadline, it returns `is_terminal=false` and `wait_timed_out=true`; call it
-again for the same ID. Terminal results include `exit_code`, `log_tail`, and
-`sqlcl_log_files`; progress-only responses omit these diagnostics. Both start
-and result return `id`, which is passed as `job_id` to subsequent
-tools. Waiting never cancels the underlying job, even on client disconnect.
+again for the same ID. Terminal results add `log_tail` and `sqlcl_log_files`;
+active responses omit those two fields and retain `exit_code=null`. Both start
+and result return `id`, which is passed as `job_id` to subsequent tools.
+Waiting never cancels the underlying job, even on client disconnect.
 The Cline request timeout is set above the maximum 300-second tool wait.
-A running offline cancellation is asynchronous. The API
-does not enforce human approval: repository authorization rules still apply.
+A running offline cancellation is asynchronous. The API does not enforce
+task authorization: repository authorization rules still apply.
 
-`apex_blog__automation_logs(job_id="...")` reads the job's combined output.
+`automation_logs(job_id="...")` reads the job's combined output.
 For a retained SQLcl diagnostic, pass `sqlcl_file="exact-filename.log"` using
 one of the terminal result's `sqlcl_log_files`; the server rejects unlisted
 filenames and paths. The same `offset`/`max_bytes` paging applies to both logs.
@@ -556,8 +580,24 @@ Log offsets and `next_offset` count **bytes**, not characters. An
 the job. The default `max_bytes` is 8192 (allowed range 1–16384). Diagnostic
 logs may contain credentials or application data; handle them as sensitive.
 The server's `inputSchema` provides the parameter types, allowed enum values,
-bounds, and descriptions; update `automation/mcp/server.py` and the schema
-tests when changing the API.
+defaults, bounds, and descriptions.
+
+### Maintaining the published interface
+
+Tool docstrings and parameter `Field` descriptions in `automation/mcp/server.py`
+are both published to clients. Maintain their purpose, input meaning, observable
+effects, and result-handling instructions when behavior changes. Keep the target
+descriptions, effects, authorization, and derived cancellation eligibility in
+`automation/mcp/jobs.py` consistent with the actual Make/scripts, and update
+`make help` when the same command behavior changes.
+
+Inspect the actual FastMCP tool listing and input schemas for interface changes.
+The schema tests check description presence, target agreement, types, defaults,
+and bounds; they do not establish that a description accurately explains the
+behavior. Update relevant contract tests when behavior changes. See
+[automation maintenance](MAINTENANCE.md) for public-interface design and
+documentation ownership; implementation and setup details belong in
+`automation/` documentation.
 
 ### Direct Make access for maintainers
 
@@ -578,12 +618,13 @@ docker compose exec -T mcp make check-release
 
 MCP worker locking serializes only MCP jobs; external Make processes are not
 covered. Prevent concurrent operations against the same checkout or DEV/TEST.
-No additional approval is implemented in the MCP queue. DEV writes and
-promotion still require human authorization; resetting the verified disposable
-TEST environment is preauthorized. Every Make/Bash environment guard remains
-mandatory. `pretest` is an allowlisted MCP target with one validated, optional `test`
+No additional approval is implemented in the MCP queue. DEV, UAT, and PROD
+changes require authorization for the task under `AGENTS.md`; reuse authorization
+already granted. Resetting configured disposable TEST is preauthorized. Every
+Make/Bash environment guard remains mandatory. `pretest` is an allowlisted MCP
+target with one validated, optional `test`
 selector (`install`, `upgrade`, `deinstall`); omitting it runs all stages.
-For example, `apex_blog__automation_start(target="pretest", test="upgrade")`.
+For example, `automation_start(target="pretest", test="upgrade")`.
 Only `pretest` accepts this option; MCP still rejects arbitrary Make variables
 and paths. Both MCP and Make use the latest verified GitHub release on `master`
 for upgrade tests. See [development flow](DEVELOPMENT_FLOW.md#optional-pretest-from-live-dev)
@@ -591,7 +632,7 @@ for stage selection and release-policy differences.
 
 **Upgrading from an older MCP image:** Previously stored
 `awaiting_approval` jobs are automatically **cancelled**, not executed.
-Submit a fresh MCP job after normal authorization. Old job records
+Submit a fresh MCP job under the task's authorization. Old job records
 remain available for inspection. This avoids unexpectedly resetting DEV or
 TEST after upgrading the MCP service.
 
@@ -604,17 +645,20 @@ TEST after upgrading the MCP service.
   `/var/lib/apex-blog/jobs`. Each job has private `output.log` and `sqlcl/`
   files. Treat logs as sensitive; they may contain application/database data.
   The MCP API exposes log contents to any local client with access to the port.
-- `apex_blog__automation_cancel` can only stop offline checks. It is
-  deliberately disabled for `source` and DB operations, which might be
-  partially applied. Stopping
-  the container **can** interrupt DB work; the worker marks it `interrupted`
-  after restart and will not retry it.
+- `automation_cancel` can only stop offline checks. It is
+  deliberately disabled for asset generation, `source` and DB operations,
+  which might be partially applied. Stopping the container **can** interrupt
+  DB work; the worker marks it `interrupted`
+  after restart and will not retry it. Jobs that were still queued remain
+  eligible to run when the worker restarts. The queue does not pause for
+  inspection of an interrupted predecessor.
 - The runner does not speed up `make source`, mandatory preflight or real DB
-  tests. It removes client tool timeouts, provides visibility and preserves
-  diagnostics after the scripts delete their temporary directories.
+  tests. Execution continues independently of client request timeouts, with
+  results and diagnostics retained for later retrieval after the scripts delete
+  their temporary directories.
 - The same environment verification and preflight checks apply to MCP jobs
   and direct Make runs. The service is a client interface, not a second
-  deployment or human-authorization implementation.
+  deployment or task-authorization implementation.
 
 ## Local, no-database verification
 

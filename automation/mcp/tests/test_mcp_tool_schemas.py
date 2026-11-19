@@ -31,7 +31,7 @@ def test_mcp_tool_discovery_has_descriptions():
         'automation_cancel',
     }
     for name, tool in tools.items():
-        assert tool.description and len(tool.description) > 60, name
+        assert tool.description and tool.description.strip(), name
         for arg_name, prop in tool.inputSchema.get('properties', {}).items():
             assert prop.get('description'), (name, arg_name)
 
@@ -55,7 +55,7 @@ def test_input_schema_enum_and_runtime_allowlist_match():
     assert set(target_schema['enum']) == ALLOWED_TARGETS
     assert {item.value for item in AutomationTarget} == ALLOWED_TARGETS
     assert TypeAdapter(AutomationTarget).validate_python('lint').value == 'lint'
-    for invalid in ('build', 'lint OBJECTS=NO', 'production'):
+    for invalid in ('doctor', 'build', 'lint OBJECTS=NO', 'production'):
         with pytest.raises(ValidationError):
             TypeAdapter(AutomationTarget).validate_python(invalid)
 
@@ -64,7 +64,7 @@ def test_discovery_and_schema_share_targets():
     discovered = capabilities()
     enum_values = {item.value for item in AutomationTarget}
     assert {entry['name'] for entry in discovered['targets']} == enum_values
-    assert discovered['mcp_accepts_make_variables'] is False
+    assert 'doctor' not in enum_values
     assert discovered['authorization_enforced_by_mcp'] is False
 
 

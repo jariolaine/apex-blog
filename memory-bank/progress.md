@@ -1,49 +1,28 @@
 # Progress
 
-Historical milestones recorded through **2026-11-17**.
+## Completed application changes
 
-## Completed work
+These milestones record source changes from the November 2026 project notes.
+They do not describe the state of an installed application.
 
-- **2026-11-17 (Git source only):** Commit `f33386fe` completed B8: the three
-  input-document logging calls added on 2026-11-16 used `apex_debug.debug()`,
-  which does not exist in the `apex_debug` API (offline gates do not compile
-  PL/SQL, so this was not caught until review); they now use
-  `apex_debug.trace()`. The same commit rewrote `README.md` (two-application
-  architecture overview, expanded prerequisites, numbered import steps,
-  Bloggers-group setup and upgrade guidance), set the Google-authentication
-  build option status to `include`, dropped APEX-version wording from
-  `admin.js` doc comments, bumped `VERSION.txt` to `Release 26.1.6.20261117`
-  and regenerated Supporting Objects; the matching local candidate was
-  generated (manifest base commit `8db0019`, dirty at build).
-- **2026-11-16 (Git source only):** Resolved BLOG_AI findings **B5** and **B8**:
-  `merge_sentiment` now gates its merge on the comment still existing and skips
-  residual concurrent-change races with warn-level logging; payload dumps in
-  `merge_sentiment`/`get_lang_code`/`get_translation` moved from info to debug
-  level. Regenerated Supporting Objects; full offline gate passed (65 tests,
-  both apps validated). Details in [`activeContext.md`](activeContext.md).
-- **2026-11-16:** Corrected stale path references left by the `less/` →
-  `frontend/less/` relocation (commit `6dbc5c9d`): release-manifest
-  `SOURCE_DIRS`, workflow test fixture, stylelint glob, pre-commit trigger
-  regex, and documentation. This had broken 23 offline tests and blocked
-  candidate manifest create/verify.
-- **2026-11-14–15:** Implemented BLOG_AI remediation **B1–B4** in the package
-  body without changing the public specification; regenerated Git-owned
-  Supporting Objects. At that time, real disposable-TEST upgrade and fresh
-  install compiled the updated body. See
-  [`reference/blog-ai-remediation-2026-11.md`](reference/blog-ai-remediation-2026-11.md).
-- **2026-11-15:** Fast-forward merged `blog-ai-remediation` into `APEX_26.1` and
-  removed seven orphan application text messages. Authorized DEV sync followed
-  by `make source` produced no diff **at that time**. See
-  [`reference/text-message-audit-2026-11.md`](reference/text-message-audit-2026-11.md).
-- **2026-11-15 (agent-reported, not independently verified):** An MCP
-  `test-release` rerun reportedly passed upgrade from the latest published
-  release, fresh install, and deinstall, leaving TEST with zero user objects.
-  This was reported for the still-unpromoted candidate `26.1.5.20261107`;
-  no MCP job logs accompanied the report. It does not validate changes made
-  after that candidate was generated.
-- **Earlier:** Migrated to APEX 26.1/APEXLang and established offline safety
-  checks, immutable release candidates, QA/PROD promotion, and a separate
-  emergency hotfix workflow. Consult Git history for implementation details.
+- **2026-11-14–15:** Completed `BLOG_AI` findings B1–B4: removed unused
+  package-body paths and the cached compartment setting, made initialization
+  use static parameters, and added null/missing-field handling for comment-AI
+  responses. Current call paths and behavior are in the
+  [BLOG_AI context](reference/blog-ai-remediation-2026-11.md).
+- **2026-11-15:** Removed seven unused application text-message definitions.
+  The [cleanup record](reference/text-message-audit-2026-11.md) identifies
+  them and explains why Public's `BLOG_MSG_NO_DATA_FOUND` was retained.
+- **2026-11-16:** Added comment-existence and concurrency guards around
+  `BLOG_AI.merge_sentiment` (B5). Changed input-payload logging in the three
+  response routines (B8); the logging calls needed the next day's correction.
+- **2026-11-17:** Corrected those input-payload calls to `apex_debug.trace`.
+  The Admin Google-authentication build option's source status also became
+  `include`; its export default remains `exclude`, as recorded in
+  [build options](../applications/blog-admin/shared-components/build-options.apx).
 
-Outstanding BLOG_AI findings and the release candidate follow-up are in
-[`activeContext.md`](activeContext.md).
+## Remaining application question
+
+The `BLOG_AI.get_param_value` contract (B6) remains unresolved. Its current
+behavior and the pending decision are recorded in
+[Active Context](activeContext.md#unresolved-blog_ai-parameter-lookup-contract-b6).

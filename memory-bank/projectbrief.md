@@ -1,40 +1,17 @@
 # Project Brief
 
-**APEX Blog** (`jariolaine/apex-blog`, MIT license, by Jari Laine) is a
-self-hosted personal blog built entirely with Oracle APEX.
+APEX Blog is an Oracle APEX publishing application with two cooperating
+interfaces: Blog Administration for editorial work and Blog Public Pages for
+readers. They share database objects and application logic.
 
-## Requirements
+The product connects content preparation and publication with reader discovery
+and interaction. Its core workflows cover posts, their organization, comments,
+and related content and settings.
 
-- Oracle Database 19c or later (Oracle Text / `CTXAPP` required; parsing schema
-  needs `CREATE INDEXTYPE/PROCEDURE/SEQUENCE/TABLE/TRIGGER/VIEW`).
-- Oracle APEX **26.1** (current development and validation target; compatibility
-  with later releases is not established here).
-- An APEX workspace; after install, a workspace user group named **Bloggers**
-  authorizes admin application users.
+Application development spans APEX definitions, shared SQL and PL/SQL, and the
+CSS and JavaScript used by the interfaces. Changes to shared logic can affect
+both the editorial workflow and the public result.
 
-## Product shape: two APEX applications
-
-1. **Blog Administration** (`blog-admin`, DEV app id 402) — privileged content
-   and configuration management: posts, categories, tags, post-tags, links and
-   link groups, comment moderation (flags/sentiments), dynamic content, file
-   repository with OCI object-storage sync, features, settings, AI prompts,
-   generative-ai and Google/apex authentication configuration, activity and
-   error-log reports dashboards. Requires the Bloggers group.
-2. **Blog Public Pages** (`blog`, DEV app id 401) — the reader-facing blog:
-   home, single post, search (Oracle Text), tag and category pages, archives,
-   links, repository, about, comment submission/login, RSS/Atom feeds.
-
-## Notable capabilities
-
-- Full-text search via Oracle Text ctx indexes on posts and comments.
-- Comment workflow with subscribers, flags and AI-assisted sentiment.
-- OpenAI-backed APEX generative-AI service for prompt-driven features, OCI language
-  AI supports comment sentiment, and OCI Object Storage supports files.
-- Install/upgrade delivered as full SQL exports **with Supporting Objects**;
-  upgrade requires an existing version Release 24.1.0.20240714 or later.
-
-## Out of scope
-
-- `ideas/` is scratch space for drafts/fixes, not shipped code.
-- `Stack/` Terraform (OCI Resource Manager always-free stack) is legacy and
-  maintained separately from the automation workflow.
+The stable product context is in [Product Context](productContext.md),
+application relationships in [System Patterns](systemPatterns.md), and
+platform constraints in [Technical Context](techContext.md).
