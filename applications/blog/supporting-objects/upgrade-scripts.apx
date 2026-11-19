@@ -66,7 +66,7 @@ upgradeScript "Patch 24.2.20250701 part 1" (
 
 upgradeScript "Patch 24.2.20250701 part 2" (
     execution {
-        sequence: 80
+        sequence: 50
     }
     script {
         contentFile: patch-24-2-20250701-part-2.sql
@@ -85,7 +85,7 @@ upgradeScript "Patch 24.2.20250701 part 2" (
 
 upgradeScript Postupgrade (
     execution {
-        sequence: 50
+        sequence: 60
     }
     script {
         contentFile: postupgrade.sql
