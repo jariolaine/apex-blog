@@ -59,7 +59,8 @@ live in `build/releases/.locks/`, are persistent and should **not** be deleted
 manually. A failed interrupted replacement can retain `.backup.*` recovery
 directories. See [safe candidate handling](RUNBOOK.md#candidate-integrity-and-overwrite).
 
-`make build` assembles Git-owned Supporting Objects SQL, updates DEV versions,
+`make build` verifies application frontend assets before any DEV changes. It then
+assembles Git-owned Supporting Objects SQL, updates DEV versions,
 exports both applications to temporary space and compares them with Git. Only
 then does the exporter run the full `make check` gate (including application
 tests, not automation regression suites), **before publication**. The build verifies the candidate and runs real
@@ -80,11 +81,12 @@ moved forward, subject to approval and compatibility.
 `automation/ci/preflight.sh` in this order:
 
 1. `make lint`: pre-commit static lint/format checks (no tests).
-2. `make check-schema`: offline manifest, metadata and deinstall validation.
-3. `make check-source`: work-in-progress-safe local APEXLang reference check.
-4. `make test`: run application tests from `tests/` **once** (currently
+2. `make check-assets`: read-only verification of compiled application CSS/JS.
+3. `make check-schema`: offline manifest, metadata and deinstall validation.
+4. `make check-source`: work-in-progress-safe local APEXLang reference check.
+5. `make test`: run application tests from `tests/` **once** (currently
    Node.js frontend tests).
-5. `make validate`: SQLcl APEXLang validation **without a DB login**.
+6. `make validate`: SQLcl APEXLang validation **without a DB login**.
 
 `make test-fast` currently runs the same application tests as `make test`;
 there is no separate fast subset yet. `automation/tests/` and

@@ -10,7 +10,8 @@
 | `automation/` | All release/CI automation scripts, docs, offline tests (see below) |
 | `build/releases/<version>/` | Generated candidate: manifest, checksums, SQL, ZIPs |
 | `build/hotfix/` | Generated emergency QA/UAT → PROD exports and logs |
-| `frontend/less/` | LESS sources for generated app CSS files |
+| `frontend/less/` | LESS source for generated application CSS |
+| `frontend/js/` | Editable application JavaScript source (not independent plugins) |
 | `ideas/` | Non-shipping scratch notes, draft SQL/LESS |
 | `Stack/` | Legacy OCI Resource Manager Terraform stack |
 | `VERSION.txt` | Release version authority (`Release x.y.z.YYYYMMDD`) |

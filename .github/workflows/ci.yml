@@ -44,6 +44,8 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq shellcheck unzip
           bash automation/ci/bootstrap.sh --no-hooks
+      - name: Install pinned frontend build tools
+        run: bash automation/ci/install_frontend_tools.sh
       - name: Install Oracle SQLcl (no database credentials)
         run: |
           curl --fail --location --retry 3 \

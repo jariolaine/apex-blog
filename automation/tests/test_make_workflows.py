@@ -25,6 +25,17 @@ class ReleaseCommandTests(unittest.TestCase):
                      'MAKELEVEL', 'OVERWRITE', 'RELEASE_DIR', 'PREVIOUS_ZIP'):
             base_env.pop(name, None)
         self.env = dict(base_env, AUTOMATION_CALLS=str(self.calls))
+        # The Makefile runs this read-only guard before any release stage.
+        # Stub the asset generator in the isolated fixture rather than
+        # depending on the real application sources or frontend toolchain.
+        assets = self.repo / "automation/ci/build_assets.mjs"
+        assets.write_text(
+            "import { appendFileSync } from 'node:fs';\n"
+            "if (process.argv.slice(2).join(' ') !== '--check') process.exit(2);\n"
+            "appendFileSync(process.env.AUTOMATION_CALLS, 'check-assets\\n');\n"
+            "if (process.env.FAIL_ASSETS === 'YES') process.exit(42);\n",
+            encoding="utf-8",
+        )
         self.stub("automation/ci/preflight.sh", "preflight", failure="FAIL_CHECK")
         self.stub("automation/supporting_objects.sh", "supporting", failure="FAIL_SUPPORTING")
         self.stub("automation/prepare_release.sh", "prepare", failure="FAIL_PREPARE")
@@ -72,18 +83,19 @@ class ReleaseCommandTests(unittest.TestCase):
                 self.assertEqual(result.returncode, 0, result.stderr)
                 events = self.lines()
                 self.assertEqual([event.split(':', 1)[0] for event in events], [
-                    'supporting', 'prepare', 'export', 'check-source',
+                    'check-assets', 'supporting', 'prepare', 'export', 'check-source',
                     'verify-release', 'verify-release', 'upgrade', 'install', 'deinstall',
                 ])
-                self.assertEqual('--overwrite' in events[2], explicit_overwrite)
+                self.assertEqual('--overwrite' in events[3], explicit_overwrite)
 
     def test_build_stops_on_failed_stage(self):
-        stages = ['supporting', 'prepare', 'export', 'check-source',
+        stages = ['check-assets', 'supporting', 'prepare', 'export', 'check-source',
                   'verify-release', 'verify-release', 'upgrade', 'install', 'deinstall']
         failures = [
-            ('FAIL_SUPPORTING', 1), ('FAIL_PREPARE', 2), ('FAIL_BUILD', 3),
-            ('FAIL_CHECK_SOURCE', 4), ('FAIL_VERIFY_RELEASE', 5),
-            ('FAIL_UPGRADE', 7), ('FAIL_INSTALL', 8), ('FAIL_DEINSTALL', 9),
+            ('FAIL_ASSETS', 1), ('FAIL_SUPPORTING', 2), ('FAIL_PREPARE', 3),
+            ('FAIL_BUILD', 4), ('FAIL_CHECK_SOURCE', 5),
+            ('FAIL_VERIFY_RELEASE', 6), ('FAIL_UPGRADE', 8),
+            ('FAIL_INSTALL', 9), ('FAIL_DEINSTALL', 10),
         ]
         for setting, count in failures:
             with self.subTest(setting=setting):

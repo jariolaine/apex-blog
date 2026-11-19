@@ -1,6 +1,8 @@
 # Run locally with `make setup-ci` and in CI with `make lint`.
 # Pre-commit runs static checks only. `make check` runs application tests once.
 # Hooks report failures; none rewrites version-controlled source files.
+# Local Oracle APEX installation files are not project source.
+exclude: ^automation/docker/apex/
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
@@ -19,7 +21,7 @@ repos:
         entry: bash automation/ci/check_js.sh
         language: system
         pass_filenames: false
-        files: ^(applications/.*\.js|eslint\.config\.mjs)$
+        files: ^(frontend/js/.*\.js|applications/.*/plugins/.*\.js|eslint\.config\.mjs)$
       - id: css-less
         name: Stylelint CSS and LESS
         entry: npm run lint:styles
@@ -52,7 +54,7 @@ repos:
         files: ^(automation/.*\.sh|Makefile)$
       - id: ruff
         name: Ruff Python errors
-        entry: .venv/bin/ruff check automation
+        entry: bash automation/ci/run_tool.sh ruff check automation
         language: system
         pass_filenames: false
         files: ^(automation/.*\.py|pyproject\.toml)$
@@ -64,7 +66,7 @@ repos:
         files: ^(Database/.*\.(sql|pks|pkb)|automation/(database|sql)/.*\.sql)$
       - id: sqlfluff
         name: SQLFluff Oracle views (initial conservative rule)
-        entry: .venv/bin/sqlfluff lint Database/Views
+        entry: bash automation/ci/run_tool.sh sqlfluff lint Database/Views
         language: system
         pass_filenames: false
         files: ^(Database/Views/.*\.sql|\.sqlfluff)$

@@ -13,10 +13,11 @@ from automation.mcp.jobs import (
 # Intentional independent contract: a new MCP command must be a deliberate
 # review, not an accidental side effect of editing metadata.
 EXPECTED_OFFLINE = {
-    'doctor', 'lint', 'test-fast', 'test', 'check-schema', 'check-source',
+    'doctor', 'lint', 'check-assets', 'test-fast', 'test', 'check-schema', 'check-source',
     'validate', 'check',
 }
 EXPECTED_SOURCE = {'source'}
+EXPECTED_GENERATION = {'assets'}
 EXPECTED_DATABASE = {
     'sync-dev', 'test-release', 'test-install', 'test-upgrade', 'test-deinstall',
 }
@@ -27,7 +28,8 @@ def test_allowlist_categories_are_consistent_and_unchanged():
     assert SOURCE_TARGETS == EXPECTED_SOURCE
     assert DATABASE_TARGETS == EXPECTED_DATABASE
     assert ALLOWED_TARGETS == set(TARGET_SPECS)
-    assert ALLOWED_TARGETS == EXPECTED_OFFLINE | EXPECTED_SOURCE | EXPECTED_DATABASE
+    assert ALLOWED_TARGETS == EXPECTED_OFFLINE | EXPECTED_SOURCE | EXPECTED_GENERATION | EXPECTED_DATABASE
+    assert TARGET_SPECS['assets'].category == 'generation'
     assert all(TARGET_SPECS[name].category == 'offline' for name in OFFLINE_TARGETS)
     assert all(TARGET_SPECS[name].category == 'source' for name in SOURCE_TARGETS)
     assert all(TARGET_SPECS[name].category == 'database' for name in DATABASE_TARGETS)
@@ -46,9 +48,12 @@ def test_discovery_is_derived_from_runtime_allowlist():
         assert entry['mcp_make_variables'] == []
         assert entry['cancellable'] == (name in OFFLINE_TARGETS)
         assert entry['modifies_database'] == (name in DATABASE_TARGETS)
-        assert entry['modifies_local_source'] == (name in SOURCE_TARGETS)
+        assert entry['modifies_local_source'] == (name in SOURCE_TARGETS or name == 'assets')
         assert entry['authorization'] == TARGET_SPECS[name].authorization
 
+    assert targets['assets']['local_source_effect'] == 'generated_assets'
+    assert targets['assets']['cancellable'] is False
+    assert targets['check-assets']['local_source_effect'] == 'none'
     assert targets['source']['database_effect'] == 'read_dev'
     assert targets['source']['authorization'] == 'before_overwriting_uncommitted_changes'
     assert targets['sync-dev']['database_effect'] == 'write_dev'
@@ -107,6 +112,9 @@ def test_failed_cancelled_and_interrupted_are_not_success(tmp_path: Path):
     assert store.status(interrupted)['successful'] is False
     with pytest.raises(ValueError, match='disabled'):
         store.request_cancel(interrupted)
+    generated = store.submit('assets')['id']
+    with pytest.raises(ValueError, match='disabled'):
+        store.request_cancel(generated)
 
 
 def test_end_of_log_does_not_mean_job_is_complete(tmp_path: Path):

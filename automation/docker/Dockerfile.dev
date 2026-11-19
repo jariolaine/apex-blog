@@ -1,0 +1,126 @@
+# Interactive development environment. Independent of the MCP worker image.
+# Official Microsoft Dev Containers Ubuntu 26.04 base supplies the vscode user
+# and standard developer shell configuration.
+FROM node:24-bookworm-slim AS node
+FROM hashicorp/terraform:1.14.0 AS terraform
+FROM mcr.microsoft.com/devcontainers/base:ubuntu26.04
+
+ARG TARGETARCH
+ARG RUN_UID=1000
+ARG RUN_GID=1000
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    JAVA_HOME=/opt/oracle/jdk \
+    HOME=/home/vscode \
+    SHELL=/bin/bash \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    APEX_BLOG_IMAGE_TOOLS=true \
+    PRE_COMMIT_HOME=/opt/apex-blog/pre-commit-cache \
+    NODE_PATH=/opt/apex-blog/npm/node_modules
+ENV PATH="/opt/apex-blog/venv/bin:/opt/apex-blog/npm/node_modules/.bin:${JAVA_HOME}/bin:/opt/oracle/sqlcl/bin:${PATH}"
+
+USER root
+# An optional BuildKit secret can add organization roots before apt/curl,
+# pip and npm downloads. Without the secret this step is a no-op.
+COPY automation/docker/install_build_ca.sh /tmp/install_build_ca.sh
+RUN --mount=type=secret,id=apex_blog_build_ca,required=false \
+    sh /tmp/install_build_ca.sh && rm /tmp/install_build_ca.sh
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+      bash-completion bat build-essential ca-certificates curl dnsutils \
+      fd-find file findutils fzf git-lfs gzip htop iproute2 iputils-ping \
+      jq less libstdc++6 lsof make nano netcat-openbsd \
+      procps psmisc python3 python3-dev python3-pip python3-venv ripgrep rsync \
+      shellcheck tar tini tree unzip util-linux vim wget zip && \
+    rm -rf /var/lib/apt/lists/*
+
+# Use the same Node.js, Terraform and frontend versions as the MCP service.
+COPY --from=node /usr/local/bin/node /usr/local/bin/node
+COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
+RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm && \
+    ln -s /usr/local/lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx && \
+    ln -sfn /usr/bin/fdfind /usr/local/bin/fd && \
+    ln -sfn /usr/bin/batcat /usr/local/bin/bat
+COPY --from=terraform /bin/terraform /usr/local/bin/terraform
+COPY automation/ci/install_frontend_tools.sh /tmp/install_frontend_tools.sh
+RUN bash /tmp/install_frontend_tools.sh && rm /tmp/install_frontend_tools.sh
+
+# Oracle JDK 25 and SQLcl follow the existing MCP download convention.
+RUN set -eux; \
+    case "${TARGETARCH}" in \
+      amd64) oracle_arch=x64 ;; \
+      arm64) oracle_arch=aarch64 ;; \
+      *) echo "Unsupported Docker architecture: ${TARGETARCH}" >&2; exit 1 ;; \
+    esac; \
+    mkdir -p "$JAVA_HOME"; \
+    curl -fsSL --retry 3 \
+      "https://download.oracle.com/java/25/latest/jdk-25_linux-${oracle_arch}_bin.tar.gz" \
+      -o /tmp/jdk.tar.gz; \
+    tar -xzf /tmp/jdk.tar.gz -C "$JAVA_HOME" --strip-components=1; \
+    rm /tmp/jdk.tar.gz; \
+    for cert in /usr/local/share/ca-certificates/apex-blog-build-*.crt; do \
+      [ -f "$cert" ] || continue; \
+      "$JAVA_HOME/bin/keytool" -importcert -noprompt -trustcacerts \
+        -alias "apex-blog-build-$(basename "$cert" .crt)" \
+        -file "$cert" -keystore "$JAVA_HOME/lib/security/cacerts" \
+        -storepass changeit >/dev/null; \
+    done
+RUN set -eux; \
+    curl -fsSL --retry 3 \
+      'https://download.oracle.com/otn_software/java/sqldeveloper/sqlcl-latest.zip' \
+      -o /tmp/sqlcl.zip; \
+    unzip -q /tmp/sqlcl.zip -d /opt/oracle; \
+    rm /tmp/sqlcl.zip; \
+    chmod -R a-w /opt/oracle; \
+    chmod -R a+rX /opt/oracle; \
+    ln -s /opt/oracle/sqlcl/bin/sql /usr/local/bin/sql
+
+# Neither pip nor npm installs into the /workspace bind mount. Also prewarm
+# externally managed pre-commit hook environments at image build time.
+COPY automation/ci/requirements.txt /opt/apex-blog/bootstrap/requirements.txt
+COPY automation/ci/install_actionlint.sh automation/ci/install_image_dependencies.sh /opt/apex-blog/bootstrap/
+COPY package.json package-lock.json /opt/apex-blog/npm/
+COPY .pre-commit-config.yaml /opt/apex-blog/config/.pre-commit-config.yaml
+RUN bash /opt/apex-blog/bootstrap/install_image_dependencies.sh
+
+# The interactive development image additionally supports automation-maintainer
+# regression suites. MCP runtime dependencies remain defined in one place;
+# pytest is intentionally absent from the smaller MCP worker image.
+COPY automation/mcp/requirements.txt /opt/apex-blog/bootstrap/mcp-requirements.txt
+COPY automation/ci/requirements-maintainer.txt /opt/apex-blog/bootstrap/maintainer-requirements.txt
+RUN /opt/apex-blog/venv/bin/python -m pip install --no-cache-dir \
+      --disable-pip-version-check \
+      -r /opt/apex-blog/bootstrap/mcp-requirements.txt \
+      -r /opt/apex-blog/bootstrap/maintainer-requirements.txt
+
+# Linux bind-mounted source is writable by a matching host UID/GID. The
+# existing vscode user is reused; no second, conflicting developer user.
+RUN set -eux; \
+    if [ "$(id -g vscode)" != "$RUN_GID" ]; then groupmod -o -g "$RUN_GID" vscode; fi; \
+    if [ "$(id -u vscode)" != "$RUN_UID" ]; then \
+      if getent passwd "$RUN_UID" >/dev/null; then \
+        echo "RUN_UID $RUN_UID is already in use in the base image" >&2; exit 1; \
+      fi; \
+      usermod -o -u "$RUN_UID" -g "$RUN_GID" vscode; \
+    fi; \
+    chown -R vscode:vscode /home/vscode /opt/apex-blog/pre-commit-cache
+
+# Loaded by interactive Bash even if an older persistent home lacks a new
+# per-user .bashrc. Never overwrite personal shell settings in the volume.
+RUN printf '%s\n' \
+      '' \
+      '# APEX Blog: interactive Bash completion' \
+      'if [[ $- == *i* ]] && [ -f /usr/share/bash-completion/bash_completion ]; then' \
+      '  source /usr/share/bash-completion/bash_completion' \
+      'fi' >> /etc/bash.bashrc
+
+# Run-time CA import is non-root and writes only to the container's /tmp.
+COPY automation/docker/prepare_trust.sh /usr/local/lib/apex-blog/prepare_trust.sh
+COPY automation/docker/prepare_dev_sqlcl_profile.py /usr/local/lib/apex-blog/prepare_dev_sqlcl_profile.py
+
+WORKDIR /workspace
+USER vscode
+ENTRYPOINT ["tini", "--"]
+CMD ["bash", "-c", "bash /usr/local/lib/apex-blog/prepare_trust.sh && python3 /usr/local/lib/apex-blog/prepare_dev_sqlcl_profile.py /run/sqlcl-profile && exec sleep infinity"]

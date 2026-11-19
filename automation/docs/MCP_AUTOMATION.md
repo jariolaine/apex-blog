@@ -1,9 +1,8 @@
-# Local Docker MCP automation — maintainer guide (optional)
+# Docker development and MCP automation — maintainer guide
 
-This document is for developers maintaining, configuring, or troubleshooting
-the MCP service. Ordinary APEX and PL/SQL development uses the project
-instructions in [`AGENTS.md`](../../AGENTS.md) and the MCP tools' own
-published descriptions; it does not require reading this guide.
+This guide documents the optional VS Code Dev Container and the Docker MCP
+service. Ordinary APEX/PLSQL development follows [`AGENTS.md`](../../AGENTS.md)
+and the MCP tools' published descriptions; it does not require this guide.
 
 The optional MCP endpoint runs the existing `Makefile` and `automation/`
 commands. It does **not** implement a second deployment path. The full
@@ -21,107 +20,398 @@ must be inspected before a new request; they are never automatically retried.
 
 ## Where commands actually execute
 
-The coding agent and its terminal run wherever the client has been configured
-(e.g., on the developer's host). **They are not automatically inside Docker.**
-The optional `automation` Docker Compose service is started separately by the
-operator (see the setup commands below). The MCP client calls
-`http://127.0.0.1:8765/mcp` over HTTP; a worker in that running container
-executes the allowlisted Make targets against the bind-mounted checkout.
+The MCP worker runs Make targets in the **`mcp`** Compose service (project
+`blog_automation`); clients connect over `http://127.0.0.1:8765/mcp`. The client
+terminal is not automatically inside that container. The separate Ubuntu
+26.04 development environment runs as the **`dev`** service (Compose project
+`blog`), where developers can execute Make directly. See the
+[development container instructions](../README.md#vs-code-development-container-optional).
 
-A direct Make fallback is a **different invocation**: if the agent's shell has
-access to Docker Compose and the `automation` service is already running,
-execute `docker compose ... exec -T automation make TARGET` **from the host
-repository root**. The `docker compose` command runs in the caller's shell;
-only `make` executes in the container. If the shell has no Docker access or the
-service isn't running, this fallback is unavailable. Do not infer container
-access from the mere presence of an MCP connection. Do not install tooling or
-start/replace services without authorization.
+Direct Make access to the running MCP service is an operator action using
+`docker compose exec -T mcp make TARGET` from the repository root with the
+Compose configuration below. Do not infer Docker access from an MCP connection
+or run concurrent direct Make and MCP operations against the same checkout.
 
-## Image and setup
+## Images and setup
 
-The optional overlay uses `automation/docker/Dockerfile.automation`:
+The MCP service uses `automation/docker/Dockerfile.mcp` (Debian, Python 3.12).
+The independent Dev Container uses `automation/docker/Dockerfile.dev`, based
+on Microsoft's Ubuntu 26.04 Dev Container image (Python 3.14, `vscode` user).
+Both images include Node.js 24, Oracle JDK 25, SQLcl and the pinned LESS/esbuild
+installer. They also install all Python/npm lint tools, actionlint and
+pre-commit hook environments **during the image build**, under
+`/opt/apex-blog/`, outside the `/workspace` bind mount. Tool changes require
+image rebuilds; service startup no longer downloads dependencies.
 
-- Python 3.12, Oracle JDK **25**, SQLcl (currently downloaded using Oracle's
-  `sqlcl-latest.zip`), Node 24, Make, ShellCheck, Terraform, Git, rsync and
-  the official Python MCP SDK.
-- Java 25 is explicitly supported by SQLcl 26.2. The Dockerfile currently uses
-  Oracle's `latest` download URLs for JDK and SQLcl; pin versions and verify
-  download checksums when reproducible builds are required.
-- The image runs as non-root `agent` with configurable UID/GID. Repo content
-  is **bind-mounted**, not copied into the image. The optional `.dockerignore`
-  excludes local credentials and generated files from the build context.
-- A dedicated, read-only SQLcl profile is **copied into the container's private
-  writable home** at startup; this prevents SQLcl from changing the host profile.
+Direct Python tool versions are pinned in `automation/ci/requirements.txt` and
+npm uses the committed `package-lock.json`. Some transitive Python/frontend
+dependencies and the Oracle SQLcl/JDK `latest` URLs remain unpinned; a lockfile,
+versioned downloads and checksums are still needed for bit-for-bit image
+reproducibility.
 
-Start from the repository root. Create a SQLcl profile directory containing
-**DEV and disposable TEST connections only**, configured for the correct
-network hosts and schemas. No QA/PROD credentials should be accessible in
-this service. In the existing DB/ORDS Compose network the database hostname is
-`blog-tst-db`, **not** `localhost`. An external database needs an accessible
-hostname and network access from the container.
+The MCP service runs non-root as `agent`, with a configurable UID/GID. The only
+persistent MCP named volume is **`jobs_data`**, holding the SQLite job
+store, output, and SQLcl diagnostics. The repository remains bind-mounted and
+a dedicated DEV/TEST-only SQLcl profile remains an external read-only mount.
+**Do not bake database credentials into Docker images** or place QA/PROD
+credentials in the repository. `.dockerignore` does not hide files from a
+runtime bind mount.
 
-```sh
-export SQLCL_PROFILE_DIR=/absolute/path/to/dev-test-dbtools
-export HOST_UID="$(id -u)"
-export HOST_GID="$(id -g)"
+### Compose files and services
 
-# The base Compose file defines `automation`; the overlay adds a one-shot
-# volume initializer. Do not use --no-deps: it must run before the worker.
-docker compose -f automation/docker/docker-compose.yml \
-  -f automation/docker/docker-compose.mcp.yml \
-  up -d --build automation
-```
+| Compose file | Service | Purpose |
+| --- | --- | --- |
+| `automation/docker/docker-compose.mcp.yml` | `mcp` | MCP API/worker, host-local port 8765 |
+| same file | `setup` (profile `init`) | One-shot job-volume ownership repair |
+| `automation/docker/docker-compose.db.yml` | `tst-db`, `tst-ords` | Optional local TEST DB and ORDS |
+| `automation/docker/docker-compose.dev.yml` | `dev` | Independent Dev Container, project `blog` |
 
-**First startup is automatic.** `automation-mcp-volume-init` runs once as
-root in a one-shot BusyBox container that mounts **only the three named Docker
-volumes** (`.venv`, `node_modules` and job state), not the host checkout. It
-sets their ownership to `${HOST_UID}:${HOST_GID}`; Compose waits for it to
-finish successfully before starting `automation`. The long-running MCP
-service still runs as non-root `agent`, with all Linux capabilities dropped.
-The service's `automation/mcp/start.sh` installs pre-commit, actionlint and npm
-dependencies inside those volumes on first boot and when its dependency inputs
-change, always using `--no-hooks` to avoid modifying host Git hooks. Normal
-restarts reuse the already-installed tools. Network access to package
-registries is needed for the first bootstrap.
+The `.env.example` file sets `COMPOSE_FILE` to the DB file followed by the MCP
+file; both declare the **`blog_automation`** project. Continue using the
+same project name for an existing database. Changing it would create separate
+project-scoped named volumes; never delete the TEST database data volumes
+as part of the MCP tooling migration. The repository-root `docker-compose.yml` is an
+empty placeholder; the sample `.env` chooses services. Use absolute host
+paths for `APEX_BLOG_DEV_SQLCL_PROFILE_DIR` and
+`APEX_BLOG_MCP_SQLCL_PROFILE_DIR` because relative paths depend on Compose's
+base file. These MUST be different host directories: MCP must never mount the
+developer's broader set of connections. See [SQLcl profile isolation](#sqlcl-profile-isolation).
 
-To inspect progress or troubleshoot initialization:
+### First MCP startup
+
+From repository root, after configuring DEV/TEST-only saved SQLcl connections:
 
 ```sh
-docker compose -f automation/docker/docker-compose.yml \
-  -f automation/docker/docker-compose.mcp.yml logs automation-mcp-volume-init automation
+cp .env.example .env
+# Edit .env: APEX_BLOG_MCP_SQLCL_PROFILE_DIR must be an absolute host path
+# containing DEV/TEST connections only. Optionally configure the separate
+# APEX_BLOG_DEV_SQLCL_PROFILE_DIR for the developer's broader profile set.
+# Configure ORACLE_PWD only if using the optional local TEST database.
+export HOST_UID="$(id -u)" HOST_GID="$(id -g)"
 
-docker compose -f automation/docker/docker-compose.yml \
-  -f automation/docker/docker-compose.mcp.yml exec automation make doctor
+docker compose run --rm setup
+docker compose up -d --build mcp
 ```
 
-If you change `HOST_UID`/`HOST_GID` or restore Docker volumes with different
-ownership, recreate the services (without `--no-deps`):
+The `setup` service repairs **only `jobs_data` ownership**. Run it once
+before first start, and again after changing UID/GID or restoring the job volume
+from a backup. It runs as root without access to the checkout, profiles,
+network or Docker socket. `mcp` itself runs with Linux capabilities dropped.
+Do not run `setup` concurrently with active jobs.
+
+Inspect the running service:
 
 ```sh
-docker compose -f automation/docker/docker-compose.yml \
-  -f automation/docker/docker-compose.mcp.yml \
-  up -d --build --force-recreate automation
+docker compose ps
+docker compose logs -f mcp
+docker compose exec -T mcp make doctor
 ```
 
-**Do not** repair ownership via `/workspace/.venv` or
-`/workspace/node_modules` from a capability-restricted container, or run
-dependency bootstrap as root. The initializer addresses the volumes directly
-and has no access to the host checkout. `docker compose run --no-deps` bypasses
-initialization. The base Compose file defines the single `automation` MCP
-service alongside optional TEST DB/ORDS services; `up automation` starts only
-it and the initializer, not TEST/ORDS. If a container from the old overlay's
-`automation-mcp` service is still running, inspect its jobs and stop it before
-starting `automation`: both bind host port 8765.
+No `automation_venv` or `automation_node_modules` volume is needed. Stop the
+old MCP service before replacing its image, and **keep existing dependency
+volumes until** a rebuilt worker passes linting, offline Make checks, tool
+discovery, and a persisted-job check across recreation. Once the new image is
+verified, those orphaned dependency volumes can be reclaimed separately.
+Do not remove `jobs_data`; it contains irreplaceable job records/logs.
 
-Configure the coding agent to use **Streamable HTTP** at
-`http://127.0.0.1:8765/mcp`. It is bound to host localhost only, and has no
-remote authentication. **Do not publish this port to the LAN or Internet.**
-Do not mount the host Docker socket into the automation container. Docker
-access from a coding agent's *host* shell is separate and potentially privileged:
-it must be explicitly configured by the operator, not assumed or acquired as
-part of MCP setup. Without that access, the agent cannot invoke Docker Compose
-as a fallback; an operator can execute direct Make instead. MCP is a convenience
-for asynchronous execution, not an authorization boundary.
+If the MCP service's UID/GID changes, run `docker compose run --rm setup` while
+the service is stopped and recreate the service. The host-local MCP HTTP
+endpoint has no authentication: **do not expose port 8765 to the LAN or
+Internet**. Never mount the Docker socket into the worker. MCP access alone
+does not imply permission to run Docker commands on a developer's host.
+
+When using optional local TEST DB/ORDS, the database host in the Compose
+network is `blog-tst-db`, not `localhost`. External databases require
+reachable network addresses and the appropriate schema/workspace setup.
+
+## VS Code development container
+
+This is a **separate** Compose service (`dev`, project `blog`) built from
+`automation/docker/Dockerfile.dev`. It uses Microsoft's Ubuntu 26.04 Dev
+Container image, the `vscode` user, Oracle JDK 25, SQLcl, Node.js 24,
+LESS, esbuild, and the image-installed Python/npm lint tools. Bash completion,
+`fzf`, `rg`, `fd`, `bat`, `jq`, Git LFS and ShellCheck are also provided.
+The development image additionally installs the MCP SDK and pytest so
+maintainers can run the regression suites described in the
+[runbook](RUNBOOK.md#automation-maintainer-regression-tests).
+The MCP runtime image does not install pytest.
+
+Install Docker Engine/Compose and the VS Code **Dev Containers** extension,
+open the repository and choose **Dev Containers: Reopen in Container**. There
+is only one `.devcontainer/devcontainer.json` configuration. Its Compose file
+supports optional wallet/CA files automatically; no special configuration
+picker is needed. A host-side initialization step links the ignored root
+`.env` into the Compose directory when that file exists.
+Use the integrated terminal to run ordinary commands:
+
+```sh
+make assets
+make check-assets
+make test
+make check
+```
+
+Only `/home/vscode` persists (named volume `home_data`); a new volume receives
+its initial files from the image. The repository is bind-mounted at `/workspace`.
+Python/npm linters and pre-commit environments live under `/opt/apex-blog/`
+inside the **image**, not in `.venv`, `node_modules`, or any dependency volume.
+The optional Git hook is not installed into the host checkout by the image.
+Use `make lint` directly. `make setup RESET=YES` is **not** a container repair
+procedure; rebuild the image to change installed tools.
+
+### Starting without VS Code
+
+For a terminal on a Linux host, run from the repository root. If a root
+`.env` supplies external wallet or CA paths, pass `--env-file .env` to these
+commands (otherwise they use the empty placeholders):
+
+```sh
+export HOST_UID="$(id -u)" HOST_GID="$(id -g)"
+docker compose -f automation/docker/docker-compose.dev.yml up -d --build dev
+docker compose -f automation/docker/docker-compose.dev.yml exec -T dev make assets
+docker compose -f automation/docker/docker-compose.dev.yml exec -T dev make check-assets
+```
+
+The Dockerfile sets the `vscode` UID/GID using `HOST_UID`/`HOST_GID`, so
+bind-mounted files can be written as the host developer. Supply these values
+before launching VS Code/Compose if the Linux host user isn't UID/GID 1000.
+If you change the UID/GID of an existing container, check the persistent home
+volume's ownership. The old `dev-volume-init` service no longer exists.
+
+The development service uses Linux host networking for the host VPN and the
+existing localhost MCP endpoint. It does **not** mount the Docker socket.
+Its optional, read-only SQLcl profile source is **not** the MCP profile.
+Cline inside the Dev Container may need its own MCP server registration;
+see [VS Code and Cline](#vs-code-and-cline-configuration).
+Do not run competing direct Make and MCP jobs that change the same checkout.
+
+### SQLcl profile isolation
+
+Use **two different directories on the host**, each holding the *contents* of
+an SQLcl `.dbtools` directory (not the parent directory). Neither directory
+belongs in the Git checkout or a Docker image:
+
+```dotenv
+# Optional: developer's SQLcl saved connections, including QA/PROD if needed.
+APEX_BLOG_DEV_SQLCL_PROFILE_DIR=/home/your-user/.config/apex-blog/sqlcl-dev
+
+# Required: SEPARATE minimal SQLcl profile with ONLY DEV and TEST connections.
+APEX_BLOG_MCP_SQLCL_PROFILE_DIR=/home/your-user/.config/apex-blog/sqlcl-mcp
+```
+
+The **Dev Container** bind-mounts its profile source read-only at
+`/run/sqlcl-profile`. On startup, if that source contains files, it replaces
+`/home/vscode/.dbtools` in the persistent developer home with a private
+writable copy. The developer's host directory is the source of truth: changes
+saved inside the container do **not** synchronize back and will be replaced
+on the next start. Export/reconcile wanted connection changes to the host
+source before restarting. If the Dev variable is unset, an empty tracked
+placeholder is mounted and the existing persistent `.dbtools` is left alone.
+The Dev image never mounts the MCP profile source.
+
+The **MCP worker** requires `APEX_BLOG_MCP_SQLCL_PROFILE_DIR`, mounts it
+read-only at the same internal path, and copies it to its separate, private
+`/home/agent/.dbtools` before the worker starts. It does not see the Dev home
+or the Dev SQLcl profile source. MCP jobs still use the existing `blog_dev`
+and `blog_tst` saved connection names; keep only the corresponding DEV/TEST
+connections in this directory. Review the directory's contents before using
+it; the mount itself cannot classify saved profiles or stop a deliberately
+misconfigured operator from pointing at the developer's full directory.
+
+**Wallet isolation matters too:** `APEX_BLOG_EXTERNAL_DIR` is currently
+shared by both Compose configurations. If the MCP worker uses this external
+mount, its `wallet/` folder must contain **only DEV/TEST credentials**.
+Do not place QA/PROD wallets there, even if QA/PROD SQLcl profiles are isolated.
+Neither `setup` nor the Docker image build receives SQLcl profiles or wallets.
+
+### Persistent home migration
+
+The `blog` project uses the `home_data` named volume, mounted at
+`/home/vscode` rather than `/home/agent`. A previously used Compose project
+name may have created a *different* volume; check before migrating. **Back up the volume
+before migrating** and inspect any personal shell, Git and Java/SQLcl settings
+that contain absolute `/home/agent` paths. Existing home files are not
+intentionally deleted or overwritten by the change. Check the volume:
+
+```sh
+docker volume inspect blog_home_data
+docker run --rm -v blog_home_data:/existing:ro busybox:1.36.1 ls -la /existing
+```
+
+Do not use `docker compose down -v` during this migration. Previous Python
+venv and `node_modules` volumes become unused; retain them until the new
+image passes verification. The image's dependency setup does not delete
+Git-ignored dependency directories left on the host.
+
+After rebuilding in VS Code, verify:
+
+```sh
+id
+printf '%s\n' "$HOME"
+cat /etc/os-release
+python3 --version
+lessc --version
+esbuild --version
+sql -version
+make doctor
+make assets
+make check-assets
+make check
+```
+
+## Optional ADB-S wallet and private root CA certificates
+
+The standard Dev and MCP Compose files remain usable **without** a wallet
+or custom CA. For an Oracle Autonomous Database Serverless (ADB-S) mTLS
+connection, or to trust an organization's private/self-signed root CA, set
+an **optional read-only external directory**. Wallets and CA files are not
+copied into Docker images, the Git checkout, named volumes or MCP job records
+by this mount. Separately, configured Dev SQLcl profiles are intentionally
+copied into the persistent developer home as described above.
+
+### 1. Prepare the host directory
+
+On your Linux host, outside the repository:
+
+```sh
+mkdir -p "$HOME/.config/apex-blog/external/wallet" \
+         "$HOME/.config/apex-blog/external/certificates"
+chmod 700 "$HOME/.config/apex-blog/external" \
+          "$HOME/.config/apex-blog/external/wallet"
+# Place your downloaded Wallet_DEV.zip in wallet/ and private root .crt/.pem
+# certificates in certificates/ (one PEM-encoded certificate per file).
+```
+
+`wallet/` and `certificates/` are **independently optional**; an empty
+`certificates/` folder is valid for wallet-only connections. The external
+directory must be an **absolute** existing host path. For a DEV/TEST worker,
+mount **only DEV/TEST credentials**. Keep QA/PROD wallets and credentials
+outside this directory. Do not put wallet ZIP files, private keys or
+connection profiles in Git.
+
+Set this in the ignored repository-root `.env`:
+
+```dotenv
+APEX_BLOG_EXTERNAL_DIR=/home/your-user/.config/apex-blog/external
+```
+
+Use the real absolute path, not `~`. Compose does not create missing host
+folders (`create_host_path: false`). The same directory is mounted read-only
+at `/run/apex-blog/external` in **either** container.
+
+**Dev Containers and `.env`:** The first Compose file lives under
+`automation/docker/`, but the ignored `.env` lives at the repository root.
+The single Dev Container's host-side `initializeCommand` creates the
+ignored symlink `automation/docker/.env -> ../../.env` when the root `.env`
+exists. It never copies credentials or overwrites unrelated files. Without
+`.env` it uses empty, tracked wallet/CA and Dev SQLcl directories, plus an
+empty build-time CA file under `automation/docker/placeholders/`. These
+placeholders contain no credentials. The symlink is local-only and is not
+committed.
+
+For direct Compose commands, explicitly load the root file with
+`docker compose --env-file .env -f ...`. Compose `env_file:` within a service
+would **not** solve this issue because the wallet bind mount is interpolated
+before container environment variables are set. No shell export or VS Code
+launch from a special terminal is required.
+
+### 2. Enable the optional runtime mount
+
+**Dev Container:** reopen the repository using the single standard
+`.devcontainer/devcontainer.json`. Its `docker-compose.dev.yml` automatically
+uses `APEX_BLOG_EXTERNAL_DIR` from the root `.env` if configured. No alternate
+Dev Container selection or extra Compose override is needed. To start it
+manually from the repository root (after setting `.env`):
+
+```sh
+docker compose --env-file .env \
+  -f automation/docker/docker-compose.dev.yml up -d --build dev
+```
+
+**MCP:** its standard `docker-compose.mcp.yml` now uses
+`APEX_BLOG_EXTERNAL_DIR` from the same root `.env`, with the empty placeholder
+when unset. There is no external Compose override to select. Use the normal
+`docker compose up -d --build mcp` startup (and `docker compose run --rm setup`
+only if job ownership needs repair). Neither the `setup` service nor the Docker
+build receives a wallet mount. No new named volumes, services, Make targets
+or MCP tools are introduced. The Oracle wallet path is identical in
+both containers:
+
+```text
+/run/apex-blog/external/wallet/Wallet_DEV.zip
+```
+
+Inside Dev, test a wallet using **SQLcl** (replace the username and service
+with your DEV database connection; provide the password at the prompt):
+
+```text
+sql /nolog
+SQL> set cloudconfig /run/apex-blog/external/wallet/Wallet_DEV.zip
+SQL> connect BLOG_DEV@your_database_low
+```
+
+The existing MCP automation still uses saved `blog_dev` and `blog_tst`
+connection names by default. Create or update the **DEV/TEST-only** saved
+SQLcl profiles so their wallet reference uses the container path above.
+The MCP worker copies its read-only `APEX_BLOG_MCP_SQLCL_PROFILE_DIR` into its
+private runtime home before running jobs. The Dev Container reads the separate
+`APEX_BLOG_DEV_SQLCL_PROFILE_DIR` source; neither source is replaced by the
+wallet mount. Authorize connection tests and all DEV/TEST writes as usual.
+
+**Certificates:** `.crt` and `.pem` files under `certificates/` must contain
+one valid PEM-encoded certificate each. Only install CAs you actually trust;
+do not add a self-signed leaf certificate without reviewing that trust choice.
+On startup, the containers prepare a private **temporary** trust bundle from
+the default OS and JDK roots plus these extra certificates. The standard
+Compose files configure `curl`, Git, Node/npm, Python/pip and Java/SQLcl to use
+those bundles without disabling TLS verification. No system root is removed.
+A malformed certificate stops startup with an error.
+
+Check the prepared trust files inside the container:
+
+```sh
+ls -l /tmp/apex-blog-trust/ca-bundle.pem /tmp/apex-blog-trust/cacerts
+```
+
+If you update a CA file, **recreate** the relevant service to regenerate its
+trust files. Adding a root certificate cannot fix missing VPN routes, DNS or
+security-list rules. The Dev Container uses host networking, but the MCP
+container has its own Docker networking; verify ADB-S connectivity separately.
+
+### 3. Optional trust during Docker image builds
+
+The runtime mount does **not** help `apt`, `curl`, npm or pip while the image
+is being built. Only if a corporate HTTPS proxy requires a private CA during
+**Dockerfile RUN** operations, concatenate the approved public PEM root
+certificates into a host file and set its absolute path:
+
+```sh
+cat /path/to/corporate-root-1.crt /path/to/corporate-root-2.crt \
+  > "$HOME/.config/apex-blog/build-roots.pem"
+```
+
+```dotenv
+APEX_BLOG_BUILD_CA_BUNDLE=/home/your-user/.config/apex-blog/build-roots.pem
+```
+
+The **single standard Dev Container** includes an optional BuildKit CA
+secret automatically. Set `APEX_BLOG_BUILD_CA_BUNDLE` in the root `.env` and
+select **Dev Containers: Rebuild and Reopen in Container**; otherwise the
+BuildKit secret uses an empty, tracked placeholder and installs no extra CA.
+For MCP, the **standard** `docker-compose.mcp.yml` also includes the
+optional BuildKit CA secret, using the empty placeholder when unset. No
+extra Compose file is required; rebuild the image after changing the bundle
+(a no-cache rebuild is safest because BuildKit secrets are not cache-key
+inputs).
+
+The build CA is passed as a **BuildKit secret**; the original secret file is
+not stored in an image layer. Its **public CA certificates are intentionally
+installed** into the image OS and JDK trust stores so that build downloads
+and Java can validate those issuers. **Never pass a wallet, private key or
+password file** as `APEX_BLOG_BUILD_CA_BUNDLE`. Docker daemon trust for
+pulling base images (`FROM`) must be configured on the host separately; a
+Dockerfile secret cannot fix registry TLS errors before the image build starts.
+BuildKit-capable Docker Compose is required.
 
 ## VS Code and Cline configuration
 
@@ -180,19 +470,22 @@ This is **not** the Cline extension's MCP settings. The older
 Local harness and should not be used for new Copilot configuration. If you
 only use Cline, you do not need a workspace-root `.mcp.json` at all.
 
-### Oracle APEXlang skill (optional, host-side)
+### Oracle APEXlang skill (optional)
 
-Oracle publishes a full APEXlang skill at
-<https://github.com/oracle/skills/tree/main/apex/apexlang>. It helps the
-**agent** generate and edit correct `.apx` source, while SQLcl in the Docker
-image validates and executes the existing automation. The skill is not a
-Docker/SQLcl runtime dependency. Cline discovers project skills from
-`.cline/skills/` and global skills from `~/.cline/skills/`; install the
-Oracle skill on the host where **Cline runs**, not solely in the container.
-Oracle also documents `skills sync` within SQLcl as an installation method;
-verify its destination actually matches Cline's skill directories. Do not
-blindly run it in the container, where files may end up in the container's
-private home instead of VS Code's agent environment.
+Oracle publishes an APEXlang skill at
+<https://github.com/oracle/skills/tree/main/apex/apexlang>. This helps the
+**coding agent** edit `.apx` source; it is not a Docker/SQLcl runtime
+dependency. Cline discovers project skills under `.cline/skills/` and
+user-specific skills under `~/.cline/skills/`. Install the skill **where the
+Cline extension executes**:
+
+- If Cline runs as a remote VS Code extension in the Dev Container, use
+  `/home/vscode/.cline/skills/` (persistent home) or the project skill folder.
+- If Cline runs on the host, use its host-side skills directory.
+
+SQLcl's `skills sync` may choose a different destination; confirm the files
+are visible to Cline. A skill installed only in the MCP worker is not
+necessarily available to the editor's coding agent.
 
 The repository targets **APEX 26.1**. Select Oracle's corresponding
 APEXlang reference guidance and treat `AGENTS.md`, `.clinerules/`, and
@@ -200,9 +493,10 @@ APEXlang reference guidance and treat `AGENTS.md`, `.clinerules/`, and
 optional direct SQLcl import/connection workflows must not bypass the
 existing human-authorization requirements for DEV/TEST changes.
 
-`make doctor` skips the Git-hook installation check inside this container:
-bootstrap uses `--no-hooks` to avoid changing the host Git checkout. All tool
-and repository checks still run.
+`make doctor` skips the optional Git-hook installation check inside
+image-managed containers. Git hooks are not installed in the host checkout at
+image build/startup, but pre-commit hook environments are prewarmed in the image.
+All lint tool and repository checks still run.
 
 The Docker image needs a non-root UID that can write the checkout and Docker
 volumes. On Docker Desktop or rootless hosts, adapt the UID/GID settings.
@@ -277,8 +571,7 @@ For a manually run check, when the Docker Compose service is already running
 and the operator has Docker access, execute from the repository root:
 
 ```sh
-docker compose -f automation/docker/docker-compose.yml \
-  -f automation/docker/docker-compose.mcp.yml exec -T automation make check-release
+docker compose exec -T mcp make check-release
 ```
 
 MCP worker locking serializes only MCP jobs; external Make processes are not
@@ -297,7 +590,7 @@ TEST after upgrading the MCP service.
 - Jobs are serialized within this service by an exclusive worker lock.
   **Direct shell/Make invocations are not serialized by the MCP worker lock.**
   Avoid running them concurrently against DEV, TEST or the same checkout.
-- Logs and SQLite state are persisted in the `automation_jobs` volume at
+- Logs and SQLite state are persisted in the `jobs_data` volume at
   `/var/lib/apex-blog/jobs`. Each job has private `output.log` and `sqlcl/`
   files. Treat logs as sensitive; they may contain application/database data.
   The MCP API exposes log contents to any local client with access to the port.
@@ -315,18 +608,10 @@ TEST after upgrading the MCP service.
 
 ## Local, no-database verification
 
-```sh
-python3 -m unittest discover -s automation/tests -p 'test_mcp_jobs.py' -v
-# Run inside the MCP container (which has the optional Python MCP SDK):
-python3 -m unittest discover -s automation/tests -p 'test_mcp_schema.py' -v
-# Tests introduced with the shared target registry and capabilities tool:
-python3 -m pytest -q automation/mcp/tests/
-```
-
-The existing job tests cover queueing, migration, cancellation, log paging,
-interrupted state and output retention with a fake Make program. The original
-schema tests inspect published MCP tool descriptions, parameter defaults and
-bounds. The newer `automation/mcp/tests/` tests check the shared allowlist,
-capabilities, result-wait semantics and input enum. Run schema tests with the MCP
-SDK installed; `pytest` is needed for the new test directory. These checks do
-**not** validate an actual SQLcl connection, Oracle import or deployment.
+Run automation-maintainer regression suites from the **Dev Container**,
+which has both the MCP SDK and pytest. The commands and their separation
+from application checks are in the
+[runbook](RUNBOOK.md#automation-maintainer-regression-tests).
+These tests use mocks and do not validate SQLcl connectivity, actual Oracle
+imports or production deployments. The MCP runtime image does not need
+pytest; its job is to serve the six automation tools.

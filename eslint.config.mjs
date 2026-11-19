@@ -1,7 +1,7 @@
 // Initial baseline: correctness checks; no bulk reformat of checked-in assets.
 export default [
   {
-    files: ["applications/**/*.js"],
+    files: ["frontend/js/**/*.js", "applications/**/plugins/**/*.js"],
     ignores: ["**/*.min.js"],
     languageOptions: {
       ecmaVersion: "latest",

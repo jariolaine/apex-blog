@@ -21,7 +21,7 @@ class ReleaseWorkflows(WorkflowFixture):
         calls = self.calls_data()
         export = '\n'.join(c['sql'] for c in calls)
         self.assertIn('-exptype APEXLANG', export)
-        self.assertIn('-exptype SQL', export)
+        self.assertIn('-exptype APPLICATION_SOURCE', export)
         self.assertNotIn(' -split', export)
         self.assertIn('-expsupportingobjects Y', export)
         self.assertIn('apex validate -input ', export)

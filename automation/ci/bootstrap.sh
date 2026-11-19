@@ -20,6 +20,22 @@ for option in "$@"; do
   esac
 done
 
+# Image dependencies are immutable; `make setup` may install the optional Git
+# hook, but must not mutate the container image or the mounted checkout.
+if [[ "${APEX_BLOG_IMAGE_TOOLS:-}" == 'true' ]]; then
+  if [[ "$reset_tools" == true ]]; then
+    printf '[apex-blog] Image tools cannot be reset in-place; rebuild the Docker image.\n' >&2
+    exit 2
+  fi
+  if [[ "$install_hooks" == true ]]; then
+    # A hook installed here points to /opt/apex-blog and would break host Git
+    # operations on the same bind-mounted checkout. Never change host hooks.
+    printf '[apex-blog] Skipping Git hook installation in a container; use make lint.\n' >&2
+  fi
+  printf '[apex-blog] Image-installed tools ready; no runtime installation needed.\n' >&2
+  exit 0
+fi
+
 for command_name in python3 node npm; do
   if ! command -v "$command_name" >/dev/null 2>&1; then
     printf '[apex-blog] Missing %s; install it before setup.\n' "$command_name" >&2

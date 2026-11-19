@@ -1,0 +1,26 @@
+{
+  "less": [
+    {
+      "source": "frontend/less/style.less",
+      "output": "applications/blog/shared-components/static-files/css/style.css"
+    },
+    {
+      "source": "frontend/less/rss.less",
+      "output": "applications/blog/shared-components/static-files/css/rss.css"
+    },
+    {
+      "source": "frontend/less/admin.less",
+      "output": "applications/blog-admin/shared-components/static-files/css/admin.css"
+    }
+  ],
+  "javascript": [
+    {
+      "source": "frontend/js/blog.js",
+      "output": "applications/blog/shared-components/static-files/js/blog.js"
+    },
+    {
+      "source": "frontend/js/admin.js",
+      "output": "applications/blog-admin/shared-components/static-files/js/admin.js"
+    }
+  ]
+}

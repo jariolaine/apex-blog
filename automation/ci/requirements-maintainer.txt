@@ -1,0 +1,3 @@
+# Optional automation-maintainer test runner for the interactive Dev Container.
+# The MCP SDK is supplied by automation/mcp/requirements.txt, not duplicated here.
+pytest==9.0.1

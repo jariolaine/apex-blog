@@ -4,7 +4,7 @@
 set -Eeuo pipefail
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 REPO_DIR="$(cd -- "$SCRIPT_DIR/../.." && pwd -P)"
-TARGET="$REPO_DIR/.venv/bin/actionlint"
+TARGET="${ACTIONLINT_TARGET:-$REPO_DIR/.venv/bin/actionlint}"
 VERSION=1.7.12
 
 if [[ -x "$TARGET" ]]; then

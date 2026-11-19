@@ -1,4 +1,5 @@
 {
+  "ignores": ["automation/docker/apex/**"],
   "config": {
     "default": false,
     "MD009": true,

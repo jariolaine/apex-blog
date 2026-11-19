@@ -123,7 +123,7 @@ SQL
                 die "APEXLang $alias differs from DEV; build never overwrites source automatically"
             }
         cat >"$run_dir/export-sql-${id}.sqlcl" <<SQL
-apex export -applicationid $id -exptype SQL -expsupportingobjects Y -exppubreports -skipExportDate -dir "$run_dir/sql"
+apex export -applicationid $id -exptype APPLICATION_SOURCE -expsupportingobjects Y -exppubreports -skipExportDate -dir "$run_dir/sql"
 SQL
         log "Exporting packaged SQL application $id with Supporting Objects"
         run_sqlcl "$devDbConnName" "$run_dir/logs/export-sql-$id.log" "$run_dir/export-sql-${id}.sqlcl" \

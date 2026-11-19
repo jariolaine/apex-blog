@@ -5,36 +5,25 @@ Use these procedures from the **repository root**, after checking the actual
 before accessing a database. This runbook consolidates the earlier automation
 README, release-candidate guide and emergency hotfix guide.
 
-## Local setup
+## Before running release commands
+
+For host-only tooling installation and diagnosis, see the
+[automation setup instructions](../README.md#setup-and-diagnostics). The
+[Dev Container guide](MCP_AUTOMATION.md#vs-code-development-container)
+describes image-managed tools: rebuild that image to change them;
+`make setup RESET=YES` is **not** a container repair command.
 
 ```bash
-make doctor    # Read-only prerequisite report; does not test DB connections
-make setup     # Local Python/npm tools and Git hooks; no database changes
-make check     # Full local CI gate; no database connection
+make doctor    # Check tool presence; does not test database connections
+make check     # Full offline quality gate, including application tests
 ```
 
-Use `make setup RESET=YES` if local tooling is broken or needs a clean
-reinstall. It recreates `.venv/` and `node_modules/` and reinstalls the Git
-hook; tracked files such as `package-lock.json`, local configuration and
-shared user caches are preserved. This never accesses a database.
-
-`make check` runs lint, schema/source validation, **application tests** and
-SQLcl APEXLang validation. It requires local SQLcl (and its supported Java
-runtime), but **does not run** a real TEST install, upgrade or deinstall.
-`make test` runs application tests from `tests/` (currently frontend JavaScript),
-and `make test-fast` currently runs the same suite. Automation regression tests
-are not part of these commands, the MCP server, builds or application CI.
-See [testing and troubleshooting](#testing-and-troubleshooting) for how
-maintainers run those tests separately. Pre-commit runs static lint only.
-If setup fails because Python cannot create `.venv/`, install the system Python
-`venv` package (for example `python3-venv` on Ubuntu). SQLcl needs a
-compatible Java runtime; `SQLCL_BIN` can select a nonstandard SQLcl executable.
-
-If necessary, configure named SQLcl connections in your local environment.
-Use the ignored `automation/variables.local.sh` to override effective shell
-variables or export `APEX_BLOG_*` before invoking Make; see
-[environments](ENVIRONMENTS.md#local-configuration). `make doctor` does not
-verify saved database connections, workspace names or privileges.
+`make check` requires SQLcl and supported Java and validates APEXLang without
+connecting to DEV/TEST. `make test` and `make test-fast` exercise application
+JavaScript tests only; automation-maintainer suites are separate (see below).
+For connection overrides, use the ignored `automation/variables.local.sh` or
+`APEX_BLOG_*` variables described in [environments](ENVIRONMENTS.md#local-configuration).
+`make doctor` does not verify saved connection identities or privileges.
 
 ## DEV synchronization
 
@@ -183,8 +172,10 @@ python3 -m unittest discover -s automation/tests -v
 python3 -m pytest -q automation/mcp/tests/
 ```
 
-Some tests require optional development dependencies such as `pytest` and the
-MCP SDK. Workflow tests use `automation/tests/mock_sqlcl.py` as a mock SQLcl
+The Dev Container includes `pytest` and the MCP SDK for these tests;
+when running on a host, install those optional maintainer dependencies
+separately. The MCP runtime image is not the maintainer test environment.
+Workflow tests use `automation/tests/mock_sqlcl.py` as a mock SQLcl
 command recorder, not a real Oracle database. Passing these suites does not
 prove an actual Oracle installation, PL/SQL compile or successful deinstall.
 
@@ -248,7 +239,7 @@ If a check fails, use the smallest relevant command:
 
 | Symptom | First check |
 | --- | --- |
-| Missing tool or Git hook | `make doctor`, then `make setup` |
+| Missing tool or Git hook | Run `make doctor`; use `make setup RESET=YES` on a host, or rebuild the Dev/MCP image for container-installed tools |
 | Source/metadata/manifest inconsistency | `make check-schema`, then `make supporting` and review the diff |
 | Local APEXLang reference error | `make check-source` |
 | DEV/parity or release-version failure | `make check-release`; reconcile Git/DEV deliberately |

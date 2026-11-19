@@ -36,9 +36,18 @@ for tool in python3 node npm git curl unzip shellcheck terraform java; do
 done
 check_command "${SQLCL_BIN:-sql}" 'install Oracle SQLcl or set SQLCL_BIN'
 
-check_local_executable '.venv/bin/python' 'run make setup-ci'
-check_local_executable '.venv/bin/pre-commit' 'run make setup-ci'
-check_local_executable '.venv/bin/actionlint' 'run make setup-ci'
+if [[ "${APEX_BLOG_IMAGE_TOOLS:-}" == 'true' ]]; then
+  check_local_executable '/opt/apex-blog/venv/bin/python' 'rebuild the container image'
+else
+  check_local_executable '.venv/bin/python' 'run make setup-ci'
+fi
+for tool in pre-commit ruff sqlfluff actionlint eslint stylelint markdownlint-cli2 prettier; do
+  if path="$(bash automation/ci/run_tool.sh --which "$tool" 2>/dev/null)"; then
+    ok "$tool ($path)"
+  else
+    missing "$tool" 'rebuild the container image or run make setup-ci'
+  fi
+done
 
 if [[ -s 'automation/variables.sh' && -s 'automation/lib/metadata_source.py'
       && -s 'applications/blog-admin/supporting-objects/install-scripts/metadata.sql'
@@ -53,8 +62,8 @@ fi
 if command -v git >/dev/null 2>&1; then
   if [[ "$(git rev-parse --is-inside-work-tree 2>/dev/null || true)" == 'true' ]]; then
     ok 'Git working tree'
-    if [[ "${APEX_BLOG_MCP_CONTAINER:-}" == 'true' ]]; then
-      printf '%s\n' '[INFO] Git hook check skipped: MCP container bootstrap does not install host hooks'
+    if [[ "${APEX_BLOG_IMAGE_TOOLS:-}" == 'true' ]]; then
+      printf '%s\n' '[INFO] Git hook check skipped: hooks are optional for image-installed tooling'
     else
       hooks_dir="$(git config --get core.hooksPath || true)"
       if [[ -n "$hooks_dir" ]]; then

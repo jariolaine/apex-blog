@@ -13,7 +13,7 @@ case "${1:-}" in
         trap 'rm -rf -- "$staging"' EXIT
         for i in "${!uatAppIds[@]}"; do
             id="${uatAppIds[$i]}"
-            printf 'apex export -applicationid %s -exptype SQL -expsupportingobjects Y -exppubreports -dir %s\n' \
+            printf 'apex export -applicationid %s -exptype APPLICATION_SOURCE -expsupportingobjects Y -exppubreports -dir %s\n' \
                 "$id" "$(sqlcl_arg "$staging")" >"$staging/export-$i.sqlcl"
             log "Exporting QA/UAT ${appAliases[$i]} (application $id)"
             run_sqlcl "$uatDbConnName" "$staging/export-$i.log" "$staging/export-$i.sqlcl" \

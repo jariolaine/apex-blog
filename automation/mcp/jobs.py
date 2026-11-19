@@ -22,9 +22,9 @@ DEFAULT_JOB_DIR = Path(os.environ.get('AUTOMATION_JOB_DIR', '/var/lib/apex-blog/
 @dataclass(frozen=True)
 class TargetSpec:
     description: str
-    category: Literal['offline', 'source', 'database'] = 'offline'
+    category: Literal['offline', 'source', 'generation', 'database'] = 'offline'
     database_effect: Literal['none', 'read_dev', 'write_dev', 'reset_test'] = 'none'
-    local_source_effect: Literal['none', 'may_overwrite_apx'] = 'none'
+    local_source_effect: Literal['none', 'may_overwrite_apx', 'generated_assets'] = 'none'
     authorization: Literal['none', 'before_overwriting_uncommitted_changes',
                            'required'] = 'none'
 
@@ -37,6 +37,11 @@ def _database_target(description: str, effect: Literal['write_dev', 'reset_test'
 TARGET_SPECS: dict[str, TargetSpec] = {
     'doctor': TargetSpec('Inspect local automation prerequisites and configuration.'),
     'lint': TargetSpec('Run repository lint checks without database changes.'),
+    'assets': TargetSpec(
+        'Generate application CSS/JS from frontend/; modifies tracked application static files.',
+        category='generation', local_source_effect='generated_assets',
+    ),
+    'check-assets': TargetSpec('Verify application CSS/JS outputs match frontend sources (read-only).'),
     'test-fast': TargetSpec('Run application tests (currently the same frontend suite as test).'),
     'test': TargetSpec('Run application tests; excludes automation infrastructure tests.'),
     'check-schema': TargetSpec('Run offline schema consistency checks.'),
@@ -194,7 +199,7 @@ class JobStore:
     def request_cancel(self, job_id: str) -> dict:
         job = self.get(job_id)
         if job['target'] not in OFFLINE_TARGETS:
-            raise ValueError('Cancellation is disabled for source and database operations')
+            raise ValueError('Cancellation is disabled for file-generating, source and database operations')
         with self.connect() as connection:
             connection.execute('''
                 UPDATE jobs SET state = CASE WHEN state = 'queued'

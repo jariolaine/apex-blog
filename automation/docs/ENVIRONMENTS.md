@@ -45,7 +45,9 @@ there instead. Never commit passwords, wallets, personal connection strings or
 
 These values are **saved SQLcl connection names**, not database URLs.
 Configure and test each SQLcl connection through your organization's approved
-SQLcl/database access process. `make doctor` checks that SQLcl exists; it does
+SQLcl/database access process. When using the optional containerized
+ADB-S wallet, follow the [external wallet and CA instructions](MCP_AUTOMATION.md#optional-adb-s-wallet-and-private-root-ca-certificates); saved
+connection names and authorization rules do not change. `make doctor` checks that SQLcl exists; it does
 **not** verify connections, schemas, workspaces or permissions.
 
 ## Which environments are modified?

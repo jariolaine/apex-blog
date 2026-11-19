@@ -59,7 +59,8 @@ if match:
             metadata = out / output_alias / 'shared-components/static-files.apx'
             with metadata.open('a') as f:
                 f.write('\nfile "css/new-from-dev.css" (\n    mimeType: text/css\n    charSet: utf-8\n)\n')
-    elif kind == 'SQL':
+    elif kind == 'APPLICATION_SOURCE':
+        # SQLcl's packaged, single-file application SQL export (not APEXLang).
         (out / f'f{app_id}.sql').write_text(f'prompt Release app {app_id} with Supporting Objects\n')
     else:
         print(f'Unknown format {kind}', file=sys.stderr)

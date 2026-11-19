@@ -42,8 +42,10 @@ implementation or tests unless explicitly requested.
   update deinstall with schema changes.
 - `applications/*/shared-components/static-files/` contains owned CSS, JS, and binary assets.
   When adding/renaming files, update the corresponding `shared-components/static-files.apx`
-  metadata. The **`frontend/less/`** directory holds the LESS sources that compile into the
-  generated (and minified) CSS under each app's `static-files/css/`; keep both consistent.
+  metadata. Edit application LESS in `frontend/less/` and JavaScript in `frontend/js/`.
+  `make assets` generates CSS and JavaScript under each application's `static-files/`;
+  do not edit generated files directly. `make check-assets` verifies them.
+  Independently developed plugin assets are excluded from this process.
 - `VERSION.txt` defines the release version, including its final `YYYYMMDD` suffix; historical
   upgrade SQL retains its original version dates.
 - `automation/variables.sh` defines defaults; ignored `automation/variables.local.sh` and

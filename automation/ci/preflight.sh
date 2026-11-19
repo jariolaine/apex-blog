@@ -7,6 +7,8 @@ REPO_DIR="$(cd -- "$SCRIPT_DIR/../.." && pwd -P)"
 cd "$REPO_DIR"
 printf '[apex-blog] Preflight: lint\n' >&2
 make --no-print-directory lint
+printf '[apex-blog] Preflight: generated frontend assets\n' >&2
+make --no-print-directory check-assets
 printf '[apex-blog] Preflight: repository schema and metadata\n' >&2
 make --no-print-directory check-schema
 printf '[apex-blog] Preflight: APEXLang source references\n' >&2

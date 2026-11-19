@@ -1,29 +1,86 @@
-# Optional Compose overlay for first-start dependency volume initialization.
-# The base docker-compose.yml already defines the `automation` MCP service.
-# Start from the repository root with both -f files and target `automation`.
+---
+# MCP worker and one-shot job-volume ownership initializer.
+# A first-time `docker compose run --rm setup` is still required.
+name: blog_automation
 services:
-  # Root only within Docker named volumes; no host checkout, SQLcl profiles,
-  # network, or Docker socket mounted. The normal automation process stays
-  # non-root with all capabilities dropped.
-  automation-mcp-volume-init:
+  # Root only inside the job volume. No host checkout, SQLcl profiles,
+  # network, or Docker socket is mounted into the initializer.
+  setup:
     image: busybox:1.36.1
     user: "0:0"
     restart: "no"
     network_mode: none
     security_opt:
       - no-new-privileges:true
+    profiles:
+      - init
     command:
       - sh
       - -ec
       - |
-          chown -R ${HOST_UID:-1000}:${HOST_GID:-1000} \
-            /volumes/venv /volumes/node_modules /volumes/jobs
+          chown -R ${HOST_UID:-1000}:${HOST_GID:-1000} /volumes/jobs
     volumes:
-      - automation_venv:/volumes/venv
-      - automation_node_modules:/volumes/node_modules
-      - automation_jobs:/volumes/jobs
+      - jobs_data:/volumes/jobs
 
-  automation:
-    depends_on:
-      automation-mcp-volume-init:
-        condition: service_completed_successfully
+  mcp:
+    container_name: blog-mcp
+    build:
+      context: ../..
+      dockerfile: automation/docker/Dockerfile.mcp
+      args:
+        RUN_UID: ${HOST_UID:-1000}
+        RUN_GID: ${HOST_GID:-1000}
+      # An optional approved CA bundle is supplied only at image build time.
+      secrets:
+        - apex_blog_build_ca
+    working_dir: /workspace
+    ports:
+      # Local MCP clients only; this endpoint has no remote authentication.
+      - 127.0.0.1:8765:8765/tcp
+    environment:
+      HOME: /home/agent
+      CI: "true"
+      APEX_BLOG_MCP_CONTAINER: "true"
+      APEX_BLOG_IMAGE_TOOLS: "true"
+      AUTOMATION_JOB_DIR: /var/lib/apex-blog/jobs
+      # Runtime trust is always initialized; an empty external mount is valid.
+      APEX_BLOG_CUSTOM_CA_DIR: /run/apex-blog/external/certificates
+      SSL_CERT_FILE: /tmp/apex-blog-trust/ca-bundle.pem
+      REQUESTS_CA_BUNDLE: /tmp/apex-blog-trust/ca-bundle.pem
+      CURL_CA_BUNDLE: /tmp/apex-blog-trust/ca-bundle.pem
+      GIT_SSL_CAINFO: /tmp/apex-blog-trust/ca-bundle.pem
+      NODE_EXTRA_CA_CERTS: /tmp/apex-blog-trust/ca-bundle.pem
+      NPM_CONFIG_CAFILE: /tmp/apex-blog-trust/ca-bundle.pem
+      PIP_CERT: /tmp/apex-blog-trust/ca-bundle.pem
+      JAVA_TOOL_OPTIONS: >-
+        -Djavax.net.ssl.trustStore=/tmp/apex-blog-trust/cacerts
+        -Djavax.net.ssl.trustStorePassword=changeit
+    volumes:
+      - ../..:/workspace
+      - jobs_data:/var/lib/apex-blog/jobs
+      # Never mount developer-wide QA/PROD connections into MCP.
+      - type: bind
+        source: ${APEX_BLOG_MCP_SQLCL_PROFILE_DIR:?Set APEX_BLOG_MCP_SQLCL_PROFILE_DIR to a DEV/TEST-only absolute directory}
+        target: /run/sqlcl-profile
+        read_only: true
+        bind:
+          create_host_path: false
+      # Same optional wallet/CA convention as the Dev Container.
+      - type: bind
+        source: ${APEX_BLOG_EXTERNAL_DIR:-./placeholders/empty-external}
+        target: /run/apex-blog/external
+        read_only: true
+        bind:
+          create_host_path: false
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+secrets:
+  apex_blog_build_ca:
+    # Empty placeholder is harmless when no corporate build CA is configured.
+    file: ${APEX_BLOG_BUILD_CA_BUNDLE:-./placeholders/empty-build-ca.pem}
+
+volumes:
+  jobs_data:

@@ -3,12 +3,14 @@
 SCRIPTS := automation
 # Hotfix import defaults to running Supporting Objects install/upgrade scripts.
 OBJECTS ?= YES
-.PHONY: help setup setup-ci doctor lint test test-fast check-schema preflight check ci prepare-release supporting source sync-dev build validate qa production test-install test-deinstall test-upgrade test-release hotfix-export hotfix-production check-source check-release verify-release release-check
+.PHONY: help setup setup-ci doctor lint test test-fast assets check-assets check-schema preflight check ci prepare-release supporting source sync-dev build validate qa production test-install test-deinstall test-upgrade test-release hotfix-export hotfix-production check-source check-release verify-release release-check
 
 help:
 	@printf '%s\n' \
 	  'Quality checks:' \
 	  '  make lint                          Run repository linters (pre-commit)' \
+	  '  make assets                        Compile LESS and generate application CSS/JS' \
+	  '  make check-assets                  Verify generated application static files (read-only)' \
 	  '  make test                          Run application tests (currently frontend JavaScript)' \
 	  '  make test-fast                     Run fast application tests (currently same as test)' \
 	  '  make validate                      Validate APEXLang with SQLcl' \
@@ -61,6 +63,12 @@ test-fast: test
 test:
 	node --test tests/frontend/*.test.cjs
 
+assets:
+	node automation/ci/build_assets.mjs
+
+check-assets:
+	node automation/ci/build_assets.mjs --check
+
 check-schema:
 	python3 $(SCRIPTS)/lib/assemble_objects.py Database/install.list Database --check-only --check-inventory
 	python3 $(SCRIPTS)/lib/assemble_objects.py Database/upgrade.list Database --check-only
@@ -93,6 +101,7 @@ sync-dev:
 # Its full quality gate runs AFTER temporary DEV exports but BEFORE publication.
 # Recursive Make stages stay sequential, including when the caller uses -j.
 build:
+	@$(MAKE) --no-print-directory check-assets
 	@case "$(OVERWRITE)" in ""|NO|YES) ;; *) echo 'OVERWRITE must be YES (or omitted): make build OVERWRITE=YES' >&2; exit 2 ;; esac
 	@test -z "$(RELEASE_DIR)" || { echo 'build uses current VERSION.txt; omit RELEASE_DIR' >&2; exit 2; }
 	@$(MAKE) --no-print-directory supporting OVERWRITE=NO

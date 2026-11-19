@@ -1,0 +1,15 @@
+{
+  "name": "APEX Blog Development (Ubuntu 26.04)",
+  "dockerComposeFile": "../automation/docker/docker-compose.dev.yml",
+  "service": "dev",
+  "runServices": ["dev"],
+  "workspaceFolder": "/workspace",
+  "remoteUser": "vscode",
+  "updateRemoteUserUID": false,
+  "overrideCommand": false,
+  "shutdownAction": "stopCompose",
+  "initializeCommand": [
+    "bash",
+    "${localWorkspaceFolder}/automation/docker/ensure_compose_env.sh"
+  ]
+}

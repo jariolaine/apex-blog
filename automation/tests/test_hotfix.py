@@ -74,8 +74,10 @@ class HotfixTests(unittest.TestCase):
             self.assertIn('set_auto_install_sup_obj(false)', call['sql'])
             self.assertNotIn('set_auto_install_sup_obj(true)', call['sql'])
             self.assertIn(f'set_application_id({app_id})', call['sql'])
-        # The opt-out affects only import; exports always contain definitions.
+        # The opt-out affects only import; SQLcl exports are packaged
+        # APPLICATION_SOURCE SQL with Supporting Objects included.
         for call in self.calls()[:2]:
+            self.assertIn('-exptype APPLICATION_SOURCE', call['sql'])
             self.assertIn('-expsupportingobjects Y', call['sql'])
 
     def test_hotfix_verifies_prod_target_before_import(self):
